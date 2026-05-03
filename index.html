@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recruit Report | AIESEC Japan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ AIESEC Brand Colors ============ */
+  :root {
+    --aiesec-blue: #037EF3;
+    --aiesec-blue-dark: #0263c2;
+    --aiesec-blue-light: #e6f2fe;
+    --aiesec-yellow: #FFC845;
+    --aiesec-orange: #F48924;
+    --aiesec-red: #F85A40;
+    --aiesec-green: #00C16E;
+    --aiesec-cyan: #0CB9C1;
+    --aiesec-purple: #7552CC;
+    --aiesec-white: #F3F4F7;
+    --aiesec-gray: #CACCD1;
+    --aiesec-black: #52565E;
+    --aiesec-gray-light: #E8EAEE;
+    --aiesec-gray-bg: #FAFBFC;
+
+    --font-jp: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-en: 'Lato', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: var(--font-jp);
+    color: var(--aiesec-black);
+    background: var(--aiesec-gray-bg);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; color: inherit; }
+
+  /* ============ Layout ============ */
+  .app {
+    display: grid;
+    grid-template-rows: 56px 1fr;
+    grid-template-columns: 240px 1fr;
+    grid-template-areas:
+      "header header"
+      "sidebar main";
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ============ Header ============ */
+  .header {
+    grid-area: header;
+    background: #fff;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 24px;
+    z-index: 10;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-en);
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    color: var(--aiesec-black);
+  }
+  .brand-mark {
+    width: 28px; height: 28px;
+    background: var(--aiesec-blue);
+    display: grid; place-items: center;
+    border-radius: 2px;
+  }
+  .brand-mark img { width: 22px; height: 22px; display: block; }
+  .brand-tag {
+    font-family: var(--font-jp);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--aiesec-gray);
+    margin-left: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .header-spacer { flex: 1; }
+
+  .term-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--aiesec-gray-bg);
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--aiesec-gray-light);
+  }
+  .term-tab {
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-family: var(--font-en);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--aiesec-black);
+    background: transparent;
+    border: none;
+    transition: all 0.15s;
+  }
+  .term-tab:hover { background: #fff; }
+  .term-tab.active {
+    background: var(--aiesec-blue);
+    color: #fff;
+  }
+  .term-tab.add {
+    color: var(--aiesec-gray);
+    font-size: 16px;
+    line-height: 1;
+    padding: 6px 10px;
+  }
+  .term-tab.add:hover { color: var(--aiesec-blue); background: #fff; }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--aiesec-gray-light);
+    background: #fff;
+    color: var(--aiesec-black);
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--aiesec-blue); color: var(--aiesec-blue); }
+  .btn.primary {
+    background: var(--aiesec-blue);
+    color: #fff;
+    border-color: var(--aiesec-blue);
+  }
+  .btn.primary:hover { background: var(--aiesec-blue-dark); border-color: var(--aiesec-blue-dark); color: #fff; }
+  .btn.danger { color: var(--aiesec-red); border-color: var(--aiesec-gray-light); }
+  .btn.danger:hover { border-color: var(--aiesec-red); }
+
+  .save-indicator {
+    font-size: 11px;
+    color: var(--aiesec-gray);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .save-indicator::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--aiesec-green);
+  }
+  .save-indicator.saving::before { background: var(--aiesec-yellow); }
+
+  /* ============ Sidebar ============ */
+  .sidebar {
+    grid-area: sidebar;
+    background: #fff;
+    border-right: 1px solid var(--aiesec-gray-light);
+    overflow-y: auto;
+    padding: 16px 0;
+  }
+
+  .nav-group { margin-bottom: 8px; }
+  .nav-group-title {
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: var(--aiesec-gray);
+    padding: 12px 20px 6px;
+    text-transform: uppercase;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--aiesec-black);
+    border-left: 3px solid transparent;
+    transition: all 0.1s;
+  }
+  .nav-item:hover { background: var(--aiesec-gray-bg); }
+  .nav-item.active {
+    background: var(--aiesec-blue-light);
+    border-left-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+    font-weight: 500;
+  }
+  .nav-num {
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--aiesec-gray);
+    min-width: 22px;
+  }
+  .nav-item.active .nav-num { color: var(--aiesec-blue); }
+
+  /* ============ Main ============ */
+  .main {
+    grid-area: main;
+    overflow-y: auto;
+    padding: 32px 48px 80px;
+  }
+  .main-inner {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--aiesec-black);
+  }
+  .page-head-content { flex: 1; min-width: 0; }
+  .page-head-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .page-save-btn {
+    min-width: 110px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    position: relative;
+  }
+  .page-save-btn.saved {
+    background: var(--aiesec-green) !important;
+    border-color: var(--aiesec-green) !important;
+    color: #fff !important;
+  }
+  .page-save-btn .kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 6px;
+    padding: 1px 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+  .page-head .crumbs {
+    font-family: var(--font-en);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--aiesec-gray);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .page-head h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .page-head .desc {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #74787e;
+    max-width: 720px;
+  }
+
+  /* ============ Cards / Sections ============ */
+  .card {
+    background: #fff;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+  }
+  .card-head h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .card-head .sub {
+    font-size: 11px;
+    color: var(--aiesec-gray);
+    font-family: var(--font-en);
+    font-weight: 500;
+  }
+  .card-body { padding: 20px; }
+
+  /* ============ Form Fields ============ */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-row {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .field-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--aiesec-black);
+    margin-bottom: 4px;
+  }
+  label .hint {
+    font-weight: 400;
+    color: var(--aiesec-gray);
+    margin-left: 6px;
+    font-size: 11px;
+  }
+
+  input[type="text"], input[type="number"], input[type="date"], input[type="url"], textarea, select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    font-size: 13px;
+    background: #fff;
+    transition: border-color 0.1s, box-shadow 0.1s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--aiesec-blue);
+    box-shadow: 0 0 0 3px rgba(3, 126, 243, 0.12);
+  }
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+  textarea.tall { min-height: 120px; }
+
+  /* ============ Tables ============ */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  table.data th {
+    background: var(--aiesec-gray-bg);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--aiesec-black);
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    letter-spacing: 0.02em;
+  }
+  table.data td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    vertical-align: top;
+  }
+  table.data td input, table.data td textarea, table.data td select {
+    padding: 5px 6px;
+    font-size: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+  }
+  table.data td input:hover, table.data td textarea:hover {
+    background: var(--aiesec-gray-bg);
+  }
+  table.data td input:focus, table.data td textarea:focus {
+    background: #fff;
+    border-color: var(--aiesec-blue);
+  }
+  table.data tr:last-child td { border-bottom: none; }
+
+  /* ============ Repeater / Add Buttons ============ */
+  .add-row-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px dashed var(--aiesec-gray);
+    border-radius: 4px;
+    color: var(--aiesec-gray);
+    font-size: 12px;
+    font-weight: 500;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.15s;
+    margin-top: 8px;
+  }
+  .add-row-btn:hover {
+    border-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+    border-style: solid;
+  }
+
+  .row-delete {
+    background: transparent;
+    border: none;
+    color: var(--aiesec-gray);
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .row-delete:hover { color: var(--aiesec-red); background: #fef0ee; }
+
+  /* ============ Persona Cards ============ */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .persona-tabs {
+    background: var(--aiesec-gray-bg);
+    border-right: 1px solid var(--aiesec-gray-light);
+    padding: 8px;
+  }
+  .persona-tab {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    border-left: 3px solid transparent;
+    color: var(--aiesec-black);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .persona-tab:hover { background: #fff; }
+  .persona-tab.active {
+    background: #fff;
+    border-left-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+  }
+  .persona-tab .pname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .persona-content { padding: 20px; }
+
+  /* ============ Evaluation Block ============ */
+  .eval-block {
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .eval-head {
+    padding: 10px 14px;
+    background: var(--aiesec-gray-bg);
+    font-weight: 700;
+    font-size: 13px;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eval-head .accent {
+    width: 4px; height: 14px; border-radius: 1px;
+    background: var(--aiesec-blue);
+  }
+  .eval-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+  .eval-cell {
+    padding: 12px 14px;
+    border-right: 1px solid var(--aiesec-gray-light);
+  }
+  .eval-cell:last-child { border-right: none; }
+  .eval-label {
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .eval-label.good { color: var(--aiesec-green); }
+  .eval-label.more { color: var(--aiesec-orange); }
+  .eval-label.next { color: var(--aiesec-blue); }
+  .eval-cell textarea {
+    border: none;
+    padding: 0;
+    background: transparent;
+    min-height: 80px;
+    font-size: 12.5px;
+  }
+  .eval-cell textarea:focus { box-shadow: none; }
+
+  /* ============ Customer Journey Grid ============ */
+  .cj-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .cj-table th {
+    background: var(--aiesec-blue);
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+  }
+  .cj-table th:first-child {
+    background: var(--aiesec-black);
+    width: 130px;
+  }
+  .cj-table td {
+    padding: 4px;
+    border-top: 1px solid var(--aiesec-gray-light);
+    vertical-align: top;
+  }
+  .cj-table tr td:first-child {
+    background: var(--aiesec-gray-bg);
+    font-weight: 500;
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+  .cj-table textarea {
+    min-height: 60px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+  .cj-table textarea:hover { background: var(--aiesec-gray-bg); }
+  .cj-table textarea:focus { background: #fff; border-color: var(--aiesec-blue); }
+
+  /* ============ Tags / Pills ============ */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-en);
+  }
+  .pill.blue { background: var(--aiesec-blue-light); color: var(--aiesec-blue); }
+  .pill.green { background: #e0f7ec; color: var(--aiesec-green); }
+  .pill.orange { background: #feebd9; color: var(--aiesec-orange); }
+  .pill.red { background: #fee4e0; color: var(--aiesec-red); }
+  .pill.gray { background: var(--aiesec-gray-bg); color: var(--aiesec-black); }
+
+  /* ============ MC Recruit Member Card ============ */
+  .member-card {
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 5px;
+    margin-bottom: 14px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .member-head {
+    padding: 12px 16px;
+    background: var(--aiesec-gray-bg);
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .member-head .role-pill {
+    background: var(--aiesec-blue);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: var(--font-en);
+    letter-spacing: 0.05em;
+  }
+  .member-head input.name-input {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 700;
+    flex: 1;
+    padding: 4px 6px;
+  }
+  .member-head input.name-input:hover { background: #fff; }
+  .member-head input.name-input:focus { background: #fff; border: 1px solid var(--aiesec-blue); box-shadow: none; }
+  .member-head input.role-input {
+    border: 1px solid transparent;
+    background: var(--aiesec-blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-en);
+    letter-spacing: 0.05em;
+    width: 110px;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .member-head input.role-input::placeholder { color: rgba(255,255,255,0.6); }
+  .member-head input.role-input:focus {
+    background: #fff;
+    color: var(--aiesec-blue);
+    border-color: var(--aiesec-blue);
+    box-shadow: none;
+  }
+  .member-head input.role-input:focus::placeholder { color: var(--aiesec-gray); }
+  .member-body { padding: 16px; }
+  .member-body .field { margin-bottom: 14px; }
+  .member-body .field:last-child { margin-bottom: 0; }
+  .member-body label { font-size: 11px; color: #74787e; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; font-family: var(--font-en); }
+
+  /* ============ Empty State ============ */
+  .empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--aiesec-gray);
+  }
+  .empty h3 {
+    color: var(--aiesec-black);
+    font-size: 15px;
+    margin: 0 0 6px;
+  }
+  .empty p { font-size: 13px; margin: 0; }
+
+  /* ============ Modal ============ */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(82, 86, 94, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 6px;
+    width: 420px;
+    max-width: 90vw;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .modal-body { padding: 20px; }
+  .modal-foot {
+    padding: 12px 20px;
+    border-top: 1px solid var(--aiesec-gray-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* ============ Compare View ============ */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 180px repeat(auto-fit, minmax(160px, 1fr));
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 12.5px;
+  }
+  .compare-grid > div {
+    padding: 10px 14px;
+    border-right: 1px solid var(--aiesec-gray-light);
+    border-bottom: 1px solid var(--aiesec-gray-light);
+  }
+  .compare-grid > div.row-label {
+    background: var(--aiesec-gray-bg);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .compare-grid > div.col-head {
+    background: var(--aiesec-black);
+    color: #fff;
+    font-family: var(--font-en);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* ============ Scrollbar ============ */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--aiesec-gray); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--aiesec-black); }
+
+  /* Helpers */
+  .muted { color: var(--aiesec-gray); }
+  .mono { font-family: var(--font-mono); }
+  .small { font-size: 11px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-12 { margin-bottom: 12px; }
+  .flex { display: flex; }
+  .flex-between { display: flex; justify-content: space-between; align-items: center; }
+  .gap-8 { gap: 8px; }
+  .text-right { text-align: right; }
+
+  /* Hidden by default */
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="data:image/png;base64,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" alt="AIESEC" />
+      </div>
+      <div>Recruit Report <span class="brand-tag">| AIESEC Japan</span></div>
+    </div>
+
+    <div class="header-spacer"></div>
+
+    <div class="term-switcher" id="termSwitcher">
+      <!-- term tabs injected -->
+    </div>
+
+    <div class="save-indicator" id="saveIndicator">自動保存済み</div>
+
+    <div class="header-actions">
+      <button class="btn" onclick="openCompareView()">年度比較</button>
+      <button class="btn" onclick="exportData()">エクスポート</button>
+      <button class="btn" onclick="importData()">インポート</button>
+    </div>
+  </header>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <div class="nav-item active" data-page="overview">
+        <span class="nav-num">0</span><span>概要・基本情報</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">1-1 やったこと</div>
+      <div class="nav-item" data-page="planning">
+        <span class="nav-num">1.1</span><span>Planning タイムライン</span>
+      </div>
+      <div class="nav-item" data-page="persona">
+        <span class="nav-num">1.2</span><span>ペルソナ設計</span>
+      </div>
+      <div class="nav-item" data-page="kgi">
+        <span class="nav-num">1.3</span><span>採用 KGI / KPI</span>
+      </div>
+      <div class="nav-item" data-page="journey">
+        <span class="nav-num">1.4</span><span>Customer Journey</span>
+      </div>
+      <div class="nav-item" data-page="mconlc">
+        <span class="nav-num">1.5</span><span>MC on LC Agenda</span>
+      </div>
+      <div class="nav-item" data-page="eval">
+        <span class="nav-num">1.6</span><span>Evaluation・申し送り</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">1-2 MC Recruit Structure</div>
+      <div class="nav-item" data-page="structure">
+        <span class="nav-num">2.1</span><span>体制・運営</span>
+      </div>
+      <div class="nav-item" data-page="members">
+        <span class="nav-num">2.2</span><span>メンバー / JD</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">1-3 関連資料</div>
+      <div class="nav-item" data-page="resources">
+        <span class="nav-num">3.1</span><span>資料リスト</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="main-inner" id="mainContent">
+      <!-- pages injected -->
+    </div>
+  </main>
+</div>
+
+<!-- Modals -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal">
+    <div class="modal-head" id="modalHead">Title</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept=".json" style="display:none;">
+
+<script>
+/* =========================================================
+   STATE & STORAGE
+   ========================================================= */
+const STORAGE_KEY = 'aiesec_recruit_tracker_v1';
+
+const DEFAULT_TERM_DATA = () => ({
+  basicInfo: {
+    term: '',
+    period_start: '',
+    period_end: '',
+    overall_kgi: '',
+    direction_text: '',
+    notes: ''
+  },
+  planning: [], // [{period, item, detail, refs}]
+  personas: [], // [{name, career_flow, who, examples, faculty, high_school, exam_type, past_team_exp, abroad_exp, score, family, personality, hobby, expectation, future, comm_skill, must_skill, no_go, others, orientation}]
+  kgi: {
+    total: '',
+    logic: '',
+    pattern_breakdown: '',
+    lc_breakdown: [] // [{lc, persona_a, persona_b, persona_c, persona_d, total, notes}]
+  },
+  journey: {
+    groups: [
+      { name: 'グループA', stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' },
+      { name: 'グループB', stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' }
+    ]
+  },
+  mconlc: [], // [{period, agenda, refs}]
+  eval: {
+    persona: { good: '', more: '', next: '' },
+    lc_planning: { good: '', more: '', next: '' },
+    mc_support: { good: '', more: '', next: '' },
+    crm: { good: '', more: '', next: '' },
+    ixp: { good: '', more: '', next: '' },
+    kgi_reach: { good: '', more: '', next: '' }
+  },
+  structure: {
+    overall_diagram_note: '',
+    mtg_freq: '',
+    mtg_handover: '',
+    mgmt_handover: '',
+    next_year_jd: ''
+  },
+  members: [], // [{name, role, assign_bg, jd, unexpected_jd, awareness, handover}]
+  resources: [] // [{name, purpose, url}]
+});
+
+let state = {
+  currentTerm: null,
+  currentPage: 'overview',
+  terms: {} // { '2627': DEFAULT_TERM_DATA(), '2728': ... }
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+    }
+  } catch (e) { console.error('Load failed', e); }
+
+  // initialize default term if none
+  if (!state.terms || Object.keys(state.terms).length === 0) {
+    const seed = '2627';
+    state.terms = { [seed]: DEFAULT_TERM_DATA() };
+    state.terms[seed].basicInfo.term = seed;
+    state.currentTerm = seed;
+  }
+  if (!state.currentTerm) state.currentTerm = Object.keys(state.terms)[0];
+}
+
+let saveTimer = null;
+function saveState() {
+  const indicator = document.getElementById('saveIndicator');
+  indicator.classList.add('saving');
+  indicator.textContent = '保存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      indicator.classList.remove('saving');
+      indicator.textContent = '自動保存済み';
+    } catch (e) {
+      indicator.textContent = '保存エラー';
+      console.error(e);
+    }
+  }, 400);
+}
+
+function currentData() { return state.terms[state.currentTerm]; }
+
+/* =========================================================
+   TERM SWITCHER
+   ========================================================= */
+function renderTermSwitcher() {
+  const el = document.getElementById('termSwitcher');
+  const terms = Object.keys(state.terms).sort();
+  el.innerHTML = terms.map(t =>
+    `<button class="term-tab ${t === state.currentTerm ? 'active' : ''}" data-term="${t}">${t}</button>`
+  ).join('') + `<button class="term-tab add" id="addTermBtn" title="新しいterm">+</button>`;
+
+  el.querySelectorAll('.term-tab[data-term]').forEach(btn => {
+    btn.onclick = () => {
+      state.currentTerm = btn.dataset.term;
+      saveState();
+      renderTermSwitcher();
+      renderPage();
+    };
+  });
+  document.getElementById('addTermBtn').onclick = openAddTermModal;
+}
+
+function openAddTermModal() {
+  const existing = Object.keys(state.terms).sort();
+  const last = existing[existing.length - 1] || '2627';
+  // best-guess next term: increment last 2 digits
+  let suggested = '';
+  if (/^\d{4}$/.test(last)) {
+    const a = parseInt(last.slice(0, 2)) + 1;
+    const b = parseInt(last.slice(2)) + 1;
+    suggested = `${String(a).padStart(2,'0')}${String(b).padStart(2,'0')}`;
+  }
+
+  showModal('新しいtermを追加', `
+    <div class="field">
+      <label>Term <span class="hint">例: 2627</span></label>
+      <input type="text" id="newTermInput" value="${suggested}" maxlength="6" />
+    </div>
+    <div class="field">
+      <label>前年度のデータをコピーする</label>
+      <select id="copyFromSelect">
+        <option value="">コピーしない（白紙で作成）</option>
+        ${existing.map(t => `<option value="${t}">${t}</option>`).join('')}
+      </select>
+      <div class="small muted mt-16">コピーした場合は実績やGOOD/MOREは引き継がれず、構造（ペルソナ枠・メンバー役職・カスタムフィールド）のみがコピーされます。</div>
+    </div>
+  `, [
+    { label: 'キャンセル', onClick: closeModal },
+    { label: '作成', primary: true, onClick: () => {
+      const newTerm = document.getElementById('newTermInput').value.trim();
+      const copyFrom = document.getElementById('copyFromSelect').value;
+      if (!newTerm) return alert('Termを入力してください');
+      if (state.terms[newTerm]) return alert('そのtermは既に存在します');
+      const data = DEFAULT_TERM_DATA();
+      data.basicInfo.term = newTerm;
+      if (copyFrom && state.terms[copyFrom]) {
+        // Copy structure: persona names, member roles
+        const src = state.terms[copyFrom];
+        data.personas = src.personas.map(p => ({ ...p, who: '', examples: '', score: '', family: '', personality: '' }));
+        data.members = src.members.map(m => ({ ...m, name: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' }));
+        data.resources = src.resources.map(r => ({ name: r.name, purpose: r.purpose, url: '' }));
+      }
+      state.terms[newTerm] = data;
+      state.currentTerm = newTerm;
+      saveState();
+      renderTermSwitcher();
+      renderPage();
+      closeModal();
+    }}
+  ]);
+  setTimeout(() => document.getElementById('newTermInput').focus(), 50);
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+function showModal(title, bodyHtml, buttons) {
+  document.getElementById('modalHead').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  const foot = document.getElementById('modalFoot');
+  foot.innerHTML = '';
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn' + (b.primary ? ' primary' : '');
+    btn.textContent = b.label;
+    btn.onclick = b.onClick;
+    foot.appendChild(btn);
+  });
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('show');
+}
+document.getElementById('modalBackdrop').onclick = (e) => {
+  if (e.target.id === 'modalBackdrop') closeModal();
+};
+
+/* =========================================================
+   ROUTING / NAV
+   ========================================================= */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.onclick = () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    state.currentPage = item.dataset.page;
+    renderPage();
+  };
+});
+
+/* =========================================================
+   INPUT HELPERS
+   ========================================================= */
+function bindInput(selector, getValue, setValue) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.value = getValue() ?? '';
+  el.oninput = () => { setValue(el.value); saveState(); };
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* =========================================================
+   PAGE HEAD HELPER + EXPLICIT SAVE
+   ========================================================= */
+function pageHead(crumbs, title, desc) {
+  return `
+    <div class="page-head">
+      <div class="page-head-content">
+        <div class="crumbs">${crumbs}</div>
+        <h1>${title}</h1>
+        <div class="desc">${desc}</div>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn primary page-save-btn" onclick="savePageNow(this)">保存<span class="kbd">⌘S</span></button>
+      </div>
+    </div>
+  `;
+}
+
+function savePageNow(btn) {
+  clearTimeout(saveTimer);
+  const indicator = document.getElementById('saveIndicator');
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    indicator.classList.remove('saving');
+    indicator.textContent = '自動保存済み';
+    if (btn) {
+      const original = btn.innerHTML;
+      btn.innerHTML = '✓ 保存しました';
+      btn.classList.add('saved');
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.classList.remove('saved');
+        btn.disabled = false;
+      }, 1400);
+    }
+  } catch (e) {
+    indicator.textContent = '保存エラー';
+    if (btn) btn.innerHTML = '保存エラー';
+    console.error(e);
+  }
+}
+
+// Cmd+S / Ctrl+S to save the current page
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    const btn = document.querySelector('.page-save-btn');
+    savePageNow(btn);
+  }
+});
+
+/* =========================================================
+   PAGE RENDERERS
+   ========================================================= */
+function renderPage() {
+  const page = state.currentPage;
+  const data = currentData();
+  const root = document.getElementById('mainContent');
+
+  // Update sidebar active state
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === page);
+  });
+
+  if (page === 'overview') renderOverview(root, data);
+  else if (page === 'planning') renderPlanning(root, data);
+  else if (page === 'persona') renderPersona(root, data);
+  else if (page === 'kgi') renderKGI(root, data);
+  else if (page === 'journey') renderJourney(root, data);
+  else if (page === 'mconlc') renderMConLC(root, data);
+  else if (page === 'eval') renderEval(root, data);
+  else if (page === 'structure') renderStructure(root, data);
+  else if (page === 'members') renderMembers(root, data);
+  else if (page === 'resources') renderResources(root, data);
+}
+
+/* ---------- OVERVIEW ---------- */
+function renderOverview(root, data) {
+  root.innerHTML = `
+    ${pageHead('Overview / 0', '概要・基本情報', 'この期の採用全体に関する基本情報を記入します。Direction・KGI・期間は他のページの数値と整合性を取ってください。')}
+
+    <div class="card">
+      <div class="card-head"><h2>Term Info</h2><div class="sub">Basic</div></div>
+      <div class="card-body">
+        <div class="field-row cols-3">
+          <div class="field">
+            <label>Term <span class="hint">例: 2627</span></label>
+            <input type="text" id="f_term" />
+          </div>
+          <div class="field">
+            <label>採用期間（開始）</label>
+            <input type="date" id="f_start" />
+          </div>
+          <div class="field">
+            <label>採用期間（終了）</label>
+            <input type="date" id="f_end" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Recruit Direction <span class="hint">この期の採用方針・解決したい課題</span></label>
+          <textarea id="f_direction" class="tall" placeholder="この期の採用方針・解決したい課題"></textarea>
+        </div>
+
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>全体採用 KGI <span class="hint">人数</span></label>
+            <input type="text" id="f_kgi" placeholder="例: 500" />
+          </div>
+          <div class="field">
+            <label>備考・メモ</label>
+            <input type="text" id="f_notes" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>このtermのスナップショット</h2><div class="sub">Auto-summary</div></div>
+      <div class="card-body" id="snapshotBox"></div>
+    </div>
+  `;
+
+  bindInput('#f_term', () => data.basicInfo.term, v => data.basicInfo.term = v);
+  bindInput('#f_start', () => data.basicInfo.period_start, v => data.basicInfo.period_start = v);
+  bindInput('#f_end', () => data.basicInfo.period_end, v => data.basicInfo.period_end = v);
+  bindInput('#f_direction', () => data.basicInfo.direction_text, v => data.basicInfo.direction_text = v);
+  bindInput('#f_kgi', () => data.basicInfo.overall_kgi, v => data.basicInfo.overall_kgi = v);
+  bindInput('#f_notes', () => data.basicInfo.notes, v => data.basicInfo.notes = v);
+
+  document.getElementById('snapshotBox').innerHTML = `
+    <div class="field-row cols-4">
+      <div><div class="small muted">ペルソナ数</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.personas.length}</div></div>
+      <div><div class="small muted">Planning項目</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.planning.length}</div></div>
+      <div><div class="small muted">MC Recruit メンバー</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.members.length}</div></div>
+      <div><div class="small muted">資料</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.resources.length}</div></div>
+    </div>
+  `;
+}
+
+/* ---------- PLANNING TIMELINE ---------- */
+function renderPlanning(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.1', 'Planning タイムライン', '採用Planning〜実働期にかけて行ったイベントやマイルストーンを時系列で記録します。Recruit PD、TM call、SNC、MC on LCなど。')}
+
+    <div class="card">
+      <div class="card-head"><h2>タイムライン</h2><div class="sub">${data.planning.length} items</div></div>
+      <div class="card-body" id="planningTable"></div>
+    </div>
+  `;
+  renderPlanningTable(data);
+}
+function renderPlanningTable(data) {
+  const box = document.getElementById('planningTable');
+  if (!data.planning.length) {
+    box.innerHTML = `<div class="empty"><h3>まだ項目がありません</h3><p>下のボタンからPlanning項目を追加してください</p></div>` + addBtnHtml('addPlanning', '＋ 項目を追加');
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:120px">時期</th>
+            <th style="width:200px">項目</th>
+            <th>詳細</th>
+            <th style="width:160px">参考資料</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.planning.map((p, i) => `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="period" value="${escapeHtml(p.period)}" placeholder="" /></td>
+              <td><input type="text" data-k="item" value="${escapeHtml(p.item)}" placeholder="" /></td>
+              <td><textarea data-k="detail" placeholder="">${escapeHtml(p.detail)}</textarea></td>
+              <td><input type="text" data-k="refs" value="${escapeHtml(p.refs)}" placeholder="リンクや資料名" /></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` + addBtnHtml('addPlanning', '＋ 項目を追加');
+  }
+
+  document.getElementById('addPlanning').onclick = () => {
+    data.planning.push({ period: '', item: '', detail: '', refs: '' });
+    saveState(); renderPlanningTable(data);
+  };
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.planning[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      const i = parseInt(btn.dataset.del);
+      data.planning.splice(i, 1);
+      saveState(); renderPlanningTable(data);
+    };
+  });
+}
+
+/* ---------- PERSONA ---------- */
+const PERSONA_FIELDS = [
+  { k: 'career_flow', label: '想定されるキャリアフロー', placeholder: '例: 2627: LDR member → 2728: LCBB → 2829: MCR' },
+  { k: 'who', label: 'どんな人？', placeholder: '' },
+  { k: 'examples', label: '具体例', placeholder: '実在する人物やキャラクターなど' },
+  { k: 'faculty', label: '学部学科タイプ', placeholder: '' },
+  { k: 'high_school', label: '出身高校タイプ', placeholder: '' },
+  { k: 'exam_type', label: '受験形態', placeholder: '' },
+  { k: 'past_team_exp', label: '過去のチーム経験 / リーダー経験', placeholder: '' },
+  { k: 'abroad_exp', label: '海外経験', placeholder: '' },
+  { k: 'score', label: 'スコア', placeholder: '' },
+  { k: 'family', label: '家庭環境', placeholder: '' },
+  { k: 'personality', label: '性格', placeholder: '' },
+  { k: 'hobby', label: '趣味分野', placeholder: '' },
+  { k: 'expectation', label: '大学/課外活動への期待値', placeholder: '' },
+  { k: 'consider', label: '検討する就活軸', placeholder: '' },
+  { k: 'future', label: '将来について考えていること', placeholder: '' },
+  { k: 'comm_skill', label: '伝える能力 / 経験', placeholder: '' },
+  { k: 'must_skill', label: '持っていてほしい能力', placeholder: '' },
+  { k: 'no_go', label: '採用・配置しないほうがいい人', placeholder: '' },
+  { k: 'others', label: 'その他', placeholder: '' },
+  { k: 'orientation', label: '志向性', placeholder: '' }
+];
+
+function renderPersona(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.2', 'ペルソナ設計', 'この期で採用ターゲットとするペルソナを記録します。事業部ヒアリングを元にした上流整理から落とし込んでください。')}
+
+    <div class="card">
+      <div class="card-head">
+        <h2>ペルソナ</h2>
+        <div class="flex gap-8">
+          <div class="sub">${data.personas.length} personas</div>
+          <button class="btn primary" id="addPersona">＋ ペルソナ追加</button>
+        </div>
+      </div>
+      <div class="card-body" id="personaBox"></div>
+    </div>
+  `;
+  document.getElementById('addPersona').onclick = () => {
+    data.personas.push({ name: `ペルソナ${data.personas.length + 1}`, ...Object.fromEntries(PERSONA_FIELDS.map(f => [f.k, ''])) });
+    state._activePersonaIdx = data.personas.length - 1;
+    saveState(); renderPersonaBox(data);
+  };
+  renderPersonaBox(data);
+}
+
+function renderPersonaBox(data) {
+  const box = document.getElementById('personaBox');
+  if (!data.personas.length) {
+    box.innerHTML = `<div class="empty"><h3>ペルソナがまだありません</h3><p>右上の「ペルソナ追加」から始めてください</p></div>`;
+    return;
+  }
+  if (state._activePersonaIdx == null || state._activePersonaIdx >= data.personas.length) {
+    state._activePersonaIdx = 0;
+  }
+  const idx = state._activePersonaIdx;
+  const p = data.personas[idx];
+
+  box.innerHTML = `
+    <div class="persona-grid">
+      <div class="persona-tabs">
+        ${data.personas.map((per, i) => `
+          <div class="persona-tab ${i === idx ? 'active' : ''}" data-i="${i}">
+            <span class="pname">${escapeHtml(per.name) || '(無名)'}</span>
+            <button class="row-delete" data-del="${i}" title="削除">×</button>
+          </div>
+        `).join('')}
+      </div>
+      <div class="persona-content">
+        <div class="field">
+          <label>ペルソナ名</label>
+          <input type="text" id="p_name" value="${escapeHtml(p.name)}" />
+        </div>
+        ${PERSONA_FIELDS.map(f => `
+          <div class="field">
+            <label>${f.label}</label>
+            <textarea data-k="${f.k}" placeholder="${escapeHtml(f.placeholder)}">${escapeHtml(p[f.k] || '')}</textarea>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  box.querySelectorAll('.persona-tab[data-i]').forEach(tab => {
+    tab.onclick = (e) => {
+      if (e.target.dataset.del != null) return;
+      state._activePersonaIdx = parseInt(tab.dataset.i);
+      renderPersonaBox(data);
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      if (!confirm('このペルソナを削除しますか？')) return;
+      data.personas.splice(parseInt(btn.dataset.del), 1);
+      state._activePersonaIdx = 0;
+      saveState(); renderPersonaBox(data);
+    };
+  });
+  document.getElementById('p_name').oninput = (e) => { p.name = e.target.value; saveState(); renderPersonaBox(data); document.getElementById('p_name').focus(); };
+  box.querySelectorAll('[data-k]').forEach(el => {
+    el.oninput = () => { p[el.dataset.k] = el.value; saveState(); };
+  });
+}
+
+/* ---------- KGI / KPI ---------- */
+function renderKGI(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.3', '採用 KGI / KPI', '全体KGIの算出ロジックと、LCごとの内訳を記録します。次年度のリサーチ資料として活用できる形で残してください。')}
+
+    <div class="card">
+      <div class="card-head"><h2>全体 KGI</h2><div class="sub">Top-line</div></div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>全体 KGI（人数）</label>
+            <input type="text" id="kgi_total" />
+          </div>
+          <div class="field">
+            <label>パターン分類 <span class="hint">対面/オンライン × 配布可否など</span></label>
+            <input type="text" id="kgi_pattern" placeholder="対面ビラ × オンライン新歓 など" />
+          </div>
+        </div>
+        <div class="field">
+          <label>算出ロジック</label>
+          <textarea id="kgi_logic" class="tall" placeholder="算出の根拠・計算式・参考にした数値など"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>LCごとの内訳</h2><div class="sub">${data.kgi.lc_breakdown.length} LCs</div></div>
+      <div class="card-body" id="kgiBreakdown"></div>
+    </div>
+  `;
+
+  bindInput('#kgi_total', () => data.kgi.total, v => data.kgi.total = v);
+  bindInput('#kgi_pattern', () => data.kgi.pattern_breakdown, v => data.kgi.pattern_breakdown = v);
+  bindInput('#kgi_logic', () => data.kgi.logic, v => data.kgi.logic = v);
+
+  renderKGIBreakdown(data);
+}
+
+function renderKGIBreakdown(data) {
+  const box = document.getElementById('kgiBreakdown');
+  const personaNames = data.personas.map(p => p.name);
+  box.innerHTML = `
+    <table class="data">
+      <thead>
+        <tr>
+          <th style="width:120px">LC</th>
+          ${personaNames.map(n => `<th>${escapeHtml(n)}</th>`).join('')}
+          <th style="width:80px">合計</th>
+          <th>備考</th>
+          <th style="width:36px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.kgi.lc_breakdown.map((row, i) => `
+          <tr data-i="${i}">
+            <td><input type="text" data-k="lc" value="${escapeHtml(row.lc || '')}" /></td>
+            ${personaNames.map((_, pi) => `<td><input type="number" data-k="p_${pi}" value="${escapeHtml(row['p_' + pi] || '')}" /></td>`).join('')}
+            <td class="mono small" style="padding:8px 10px;font-weight:700">${(personaNames.reduce((s,_,pi) => s + (parseFloat(row['p_'+pi]) || 0), 0)) || '–'}</td>
+            <td><input type="text" data-k="notes" value="${escapeHtml(row.notes || '')}" /></td>
+            <td><button class="row-delete" data-del="${i}">×</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    ${addBtnHtml('addLC', '＋ LCを追加')}
+    ${!personaNames.length ? '<div class="small muted mt-16">ペルソナを先に登録してください。</div>' : ''}
+  `;
+  document.getElementById('addLC').onclick = () => {
+    data.kgi.lc_breakdown.push({ lc: '', notes: '' });
+    saveState(); renderKGIBreakdown(data);
+  };
+  box.querySelectorAll('input').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.kgi.lc_breakdown[i][el.dataset.k] = el.value;
+      saveState(); renderKGIBreakdown(data);
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      data.kgi.lc_breakdown.splice(parseInt(btn.dataset.del), 1);
+      saveState(); renderKGIBreakdown(data);
+    };
+  });
+}
+
+/* ---------- CUSTOMER JOURNEY ---------- */
+function renderJourney(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.4', 'Customer Journey', 'ペルソナをグループに分けて、認知→調査・希望→再認識→決意の各ステージにおける感情変化や接点を設計します。')}
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Journey Groups</h2>
+        <button class="btn primary" id="addGroup">＋ グループ追加</button>
+      </div>
+      <div class="card-body" id="journeyBox"></div>
+    </div>
+  `;
+  document.getElementById('addGroup').onclick = () => {
+    data.journey.groups.push({ name: `グループ${data.journey.groups.length + 1}`, stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' });
+    saveState(); renderJourneyBox(data);
+  };
+  renderJourneyBox(data);
+}
+function renderJourneyBox(data) {
+  const box = document.getElementById('journeyBox');
+  box.innerHTML = data.journey.groups.map((g, gi) => `
+    <div style="margin-bottom:24px">
+      <div class="flex-between mb-12">
+        <input type="text" class="name-input" data-gi="${gi}" data-k="name" value="${escapeHtml(g.name)}" style="border:none; background:transparent; font-size:14px; font-weight:700; padding:4px 6px; flex:1; max-width:300px;" />
+        <button class="btn danger" data-del="${gi}">削除</button>
+      </div>
+      <table class="cj-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>① 認知</th>
+            <th>② 調査・希望</th>
+            <th>③ 再認識</th>
+            <th>④ 決意</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>感情変化（前→後）</td>
+            <td colspan="2"><textarea data-gi="${gi}" data-k="before" placeholder="前">${escapeHtml(g.before)}</textarea></td>
+            <td colspan="2"><textarea data-gi="${gi}" data-k="after" placeholder="後">${escapeHtml(g.after)}</textarea></td>
+          </tr>
+          <tr>
+            <td>各ステージの状態</td>
+            <td><textarea data-gi="${gi}" data-stage="recognize">${escapeHtml(g.stages.recognize)}</textarea></td>
+            <td><textarea data-gi="${gi}" data-stage="interest">${escapeHtml(g.stages.interest)}</textarea></td>
+            <td><textarea data-gi="${gi}" data-stage="reconfirm">${escapeHtml(g.stages.reconfirm)}</textarea></td>
+            <td><textarea data-gi="${gi}" data-stage="decide">${escapeHtml(g.stages.decide)}</textarea></td>
+          </tr>
+          <tr>
+            <td>目的・Barriers・Influences</td>
+            <td colspan="4">
+              <div class="field-row cols-3" style="margin:0">
+                <div><label class="small">目的</label><textarea data-gi="${gi}" data-k="goal">${escapeHtml(g.goal)}</textarea></div>
+                <div><label class="small">Barriers</label><textarea data-gi="${gi}" data-k="barrier">${escapeHtml(g.barrier)}</textarea></div>
+                <div><label class="small">Influences</label><textarea data-gi="${gi}" data-k="influence">${escapeHtml(g.influence)}</textarea></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `).join('');
+
+  box.querySelectorAll('[data-stage]').forEach(el => {
+    el.oninput = () => {
+      const gi = parseInt(el.dataset.gi);
+      data.journey.groups[gi].stages[el.dataset.stage] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-k]').forEach(el => {
+    el.oninput = () => {
+      const gi = parseInt(el.dataset.gi);
+      data.journey.groups[gi][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      if (!confirm('このグループを削除しますか？')) return;
+      data.journey.groups.splice(parseInt(btn.dataset.del), 1);
+      saveState(); renderJourneyBox(data);
+    };
+  });
+}
+
+/* ---------- MC on LC ---------- */
+function renderMConLC(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.5', 'MC on LC Agenda', '時期ごとのMC on LCで取り上げた論点・アジェンダ・参考資料を残します。')}
+    <div class="card">
+      <div class="card-head"><h2>Agenda Log</h2><div class="sub">${data.mconlc.length} entries</div></div>
+      <div class="card-body" id="mcOnLCBox"></div>
+    </div>
+  `;
+  renderMConLCBox(data);
+}
+function renderMConLCBox(data) {
+  const box = document.getElementById('mcOnLCBox');
+  if (!data.mconlc.length) {
+    box.innerHTML = `<div class="empty"><h3>記録がまだありません</h3><p>下のボタンからアジェンダを追加してください</p></div>` + addBtnHtml('addAgenda', '＋ アジェンダを追加');
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead><tr><th style="width:140px">時期</th><th>大項目・アジェンダ</th><th style="width:160px">参考資料</th><th style="width:36px"></th></tr></thead>
+        <tbody>
+          ${data.mconlc.map((m, i) => `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="period" value="${escapeHtml(m.period)}" placeholder="" /></td>
+              <td><textarea data-k="agenda" placeholder="">${escapeHtml(m.agenda)}</textarea></td>
+              <td><input type="text" data-k="refs" value="${escapeHtml(m.refs)}" /></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` + addBtnHtml('addAgenda', '＋ アジェンダを追加');
+  }
+  document.getElementById('addAgenda').onclick = () => {
+    data.mconlc.push({ period: '', agenda: '', refs: '' });
+    saveState(); renderMConLCBox(data);
+  };
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.mconlc[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      data.mconlc.splice(parseInt(btn.dataset.del), 1);
+      saveState(); renderMConLCBox(data);
+    };
+  });
+}
+
+/* ---------- EVALUATION ---------- */
+const EVAL_BLOCKS = [
+  { k: 'persona', label: 'ペルソナ設計' },
+  { k: 'lc_planning', label: 'LC planning' },
+  { k: 'mc_support', label: 'LC説明会設計への MC support' },
+  { k: 'crm', label: 'CRM・アンケ周り' },
+  { k: 'ixp', label: 'IXP 採用' },
+  { k: 'kgi_reach', label: '採用 KGI 到達まで' }
+];
+
+function renderEval(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-1 / 1.6', 'Evaluation・申し送り', '各領域でのGOOD（よかったこと）・MORE（もっとできたこと）・申し送り（次年度への提言）を整理します。')}
+    ${EVAL_BLOCKS.map(b => `
+      <div class="eval-block">
+        <div class="eval-head"><span class="accent"></span>${b.label}</div>
+        <div class="eval-grid">
+          <div class="eval-cell">
+            <div class="eval-label good">Good</div>
+            <textarea data-eb="${b.k}" data-k="good" placeholder="よかった点・続けるべき点">${escapeHtml(data.eval[b.k]?.good || '')}</textarea>
+          </div>
+          <div class="eval-cell">
+            <div class="eval-label more">More</div>
+            <textarea data-eb="${b.k}" data-k="more" placeholder="もっとできたこと・課題">${escapeHtml(data.eval[b.k]?.more || '')}</textarea>
+          </div>
+          <div class="eval-cell">
+            <div class="eval-label next">申し送り</div>
+            <textarea data-eb="${b.k}" data-k="next" placeholder="次年度への提言・引き継ぎ">${escapeHtml(data.eval[b.k]?.next || '')}</textarea>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+  root.querySelectorAll('[data-eb]').forEach(el => {
+    el.oninput = () => {
+      const block = el.dataset.eb;
+      if (!data.eval[block]) data.eval[block] = { good: '', more: '', next: '' };
+      data.eval[block][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+}
+
+/* ---------- STRUCTURE ---------- */
+function renderStructure(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-2 / 2.1', `${state.currentTerm} MC Recruit 体制・運営`, 'MC Recruitの体制全体像と、Mtg運用・マネジメント全体に関する申し送りを記録します。')}
+
+    <div class="card">
+      <div class="card-head"><h2>体制図メモ</h2><div class="sub">Diagram note</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>体制図についてのメモ <span class="hint">体制図画像は資料リストにURLで残してください</span></label>
+          <textarea id="s_diagram" class="tall" placeholder="体制図のメモ（領域分担・連携線・主要担当者など）"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Mtg / マネジメント</h2><div class="sub">Operations</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Mtgの頻度とアジェンダ</label>
+          <textarea id="s_freq"></textarea>
+        </div>
+        <div class="field">
+          <label>Mtgに対する申し送り</label>
+          <textarea id="s_mtg"></textarea>
+        </div>
+        <div class="field">
+          <label>マネジメント全体としての申し送り</label>
+          <textarea id="s_mgmt"></textarea>
+        </div>
+        <div class="field">
+          <label>来年度追加した方が良い JD・役職</label>
+          <textarea id="s_next"></textarea>
+        </div>
+      </div>
+    </div>
+  `;
+  bindInput('#s_diagram', () => data.structure.overall_diagram_note, v => data.structure.overall_diagram_note = v);
+  bindInput('#s_freq', () => data.structure.mtg_freq, v => data.structure.mtg_freq = v);
+  bindInput('#s_mtg', () => data.structure.mtg_handover, v => data.structure.mtg_handover = v);
+  bindInput('#s_mgmt', () => data.structure.mgmt_handover, v => data.structure.mgmt_handover = v);
+  bindInput('#s_next', () => data.structure.next_year_jd, v => data.structure.next_year_jd = v);
+}
+
+/* ---------- MEMBERS ---------- */
+function renderMembers(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-2 / 2.2', `${state.currentTerm} MC Recruit メンバー`, 'メンバーそれぞれのアサイン背景・JD・想定外に発生したJD・申し送りを残します。')}
+
+    <div class="card">
+      <div class="card-head">
+        <h2>メンバー</h2>
+        <button class="btn primary" id="addMember">＋ メンバー追加</button>
+      </div>
+      <div class="card-body" id="memberBox"></div>
+    </div>
+  `;
+  document.getElementById('addMember').onclick = () => {
+    data.members.push({ name: '', role: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' });
+    saveState(); renderMemberBox(data);
+  };
+  renderMemberBox(data);
+}
+function renderMemberBox(data) {
+  const box = document.getElementById('memberBox');
+  if (!data.members.length) {
+    box.innerHTML = `<div class="empty"><h3>メンバーがまだいません</h3><p>右上の「メンバー追加」から始めてください</p></div>`;
+    return;
+  }
+  box.innerHTML = data.members.map((m, i) => `
+    <div class="member-card">
+      <div class="member-head">
+        <input type="text" class="role-input" data-i="${i}" data-k="role" value="${escapeHtml(m.role || '')}" placeholder="役職" />
+        <input type="text" class="name-input" data-i="${i}" data-k="name" value="${escapeHtml(m.name)}" placeholder="名前 (例: Kyoka Sasaki)" />
+        <button class="btn danger" data-del="${i}">削除</button>
+      </div>
+      <div class="member-body">
+        <div class="field">
+          <label>アサインの背景</label>
+          <textarea data-i="${i}" data-k="assign_bg">${escapeHtml(m.assign_bg)}</textarea>
+        </div>
+        <div class="field">
+          <label>該当termにおける JD</label>
+          <textarea data-i="${i}" data-k="jd" class="tall">${escapeHtml(m.jd)}</textarea>
+        </div>
+        <div class="field">
+          <label>想定外に発生した JD・要因</label>
+          <textarea data-i="${i}" data-k="unexpected_jd">${escapeHtml(m.unexpected_jd)}</textarea>
+        </div>
+        <div class="field">
+          <label>MC Recruit として意識すべきこと</label>
+          <textarea data-i="${i}" data-k="awareness">${escapeHtml(m.awareness)}</textarea>
+        </div>
+        <div class="field">
+          <label>全体としての申し送り</label>
+          <textarea data-i="${i}" data-k="handover">${escapeHtml(m.handover)}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  box.querySelectorAll('[data-i]').forEach(el => {
+    if (el.matches('[data-del]')) {
+      el.onclick = () => {
+        if (!confirm('このメンバーを削除しますか？')) return;
+        data.members.splice(parseInt(el.dataset.del), 1);
+        saveState(); renderMemberBox(data);
+      };
+    } else {
+      el.oninput = () => {
+        const i = parseInt(el.dataset.i);
+        data.members[i][el.dataset.k] = el.value;
+        saveState();
+      };
+    }
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      if (!confirm('このメンバーを削除しますか？')) return;
+      data.members.splice(parseInt(btn.dataset.del), 1);
+      saveState(); renderMemberBox(data);
+    };
+  });
+}
+
+/* ---------- RESOURCES ---------- */
+function renderResources(root, data) {
+  root.innerHTML = `
+    ${pageHead('1-3 / 3.1', '関連資料リスト', 'この期で使用したslackチャンネル・GSS・ドキュメント等を一覧で残します。')}
+    <div class="card">
+      <div class="card-head"><h2>資料</h2><div class="sub">${data.resources.length} items</div></div>
+      <div class="card-body" id="resBox"></div>
+    </div>
+  `;
+  renderResBox(data);
+}
+function renderResBox(data) {
+  const box = document.getElementById('resBox');
+  if (!data.resources.length) {
+    box.innerHTML = `<div class="empty"><h3>資料がまだありません</h3><p>下のボタンから追加してください</p></div>` + addBtnHtml('addRes', '＋ 資料を追加');
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead><tr><th style="width:240px">資料名</th><th>使用用途</th><th style="width:240px">URL</th><th style="width:36px"></th></tr></thead>
+        <tbody>
+          ${data.resources.map((r, i) => `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="name" value="${escapeHtml(r.name)}" placeholder="" /></td>
+              <td><input type="text" data-k="purpose" value="${escapeHtml(r.purpose)}" placeholder="" /></td>
+              <td><input type="url" data-k="url" value="${escapeHtml(r.url || '')}" placeholder="https://..." /></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    ` + addBtnHtml('addRes', '＋ 資料を追加');
+  }
+  document.getElementById('addRes').onclick = () => {
+    data.resources.push({ name: '', purpose: '', url: '' });
+    saveState(); renderResBox(data);
+  };
+  box.querySelectorAll('input').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.resources[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      data.resources.splice(parseInt(btn.dataset.del), 1);
+      saveState(); renderResBox(data);
+    };
+  });
+}
+
+/* =========================================================
+   COMPARE VIEW
+   ========================================================= */
+function openCompareView() {
+  const terms = Object.keys(state.terms).sort();
+  if (terms.length < 2) {
+    showModal('年度比較', `<p>2年度以上のデータが必要です。現在は ${terms.length} 件のtermしかありません。</p>`, [{ label: 'OK', primary: true, onClick: closeModal }]);
+    return;
+  }
+
+  const rows = [
+    { label: 'Direction', getter: t => t.basicInfo.direction_text },
+    { label: 'KGI', getter: t => t.basicInfo.overall_kgi },
+    { label: 'ペルソナ数', getter: t => t.personas.length },
+    { label: 'Planning項目数', getter: t => t.planning.length },
+    { label: 'MC Recruit メンバー数', getter: t => t.members.length },
+    { label: 'ペルソナ設計 GOOD', getter: t => t.eval.persona?.good },
+    { label: 'ペルソナ設計 MORE', getter: t => t.eval.persona?.more },
+    { label: 'ペルソナ設計 申し送り', getter: t => t.eval.persona?.next },
+    { label: 'KGI到達 申し送り', getter: t => t.eval.kgi_reach?.next }
+  ];
+
+  const html = `
+    <div class="compare-grid" style="grid-template-columns: 180px repeat(${terms.length}, minmax(180px, 1fr));">
+      <div class="row-label">　</div>
+      ${terms.map(t => `<div class="col-head">${t}</div>`).join('')}
+      ${rows.map(r => `
+        <div class="row-label">${r.label}</div>
+        ${terms.map(t => `<div style="white-space:pre-wrap; font-size:12px;">${escapeHtml(r.getter(state.terms[t]) ?? '–') || '<span style="color:#CACCD1">–</span>'}</div>`).join('')}
+      `).join('')}
+    </div>
+  `;
+
+  const modalBody = `<div style="max-height:60vh; overflow:auto">${html}</div>`;
+  document.getElementById('modalHead').textContent = '年度比較ビュー';
+  document.getElementById('modalBody').innerHTML = modalBody;
+  document.getElementById('modal').style.width = '90vw';
+  document.getElementById('modal').style.maxWidth = '1100px';
+  const foot = document.getElementById('modalFoot');
+  foot.innerHTML = '';
+  const btn = document.createElement('button');
+  btn.className = 'btn primary';
+  btn.textContent = '閉じる';
+  btn.onclick = () => { closeModal(); document.getElementById('modal').style.width = '420px'; };
+  foot.appendChild(btn);
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+
+/* =========================================================
+   IMPORT / EXPORT
+   ========================================================= */
+function exportData() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `aiesec-recruit-tracker-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  document.getElementById('importFile').click();
+}
+document.getElementById('importFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed.terms) throw new Error('Invalid file');
+      if (!confirm('現在のデータを上書きします。続行しますか？')) return;
+      state = parsed;
+      saveState();
+      renderTermSwitcher();
+      renderPage();
+    } catch (err) {
+      alert('インポートに失敗しました: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+};
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function addBtnHtml(id, label) {
+  return `<button class="add-row-btn" id="${id}">${label}</button>`;
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+loadState();
+renderTermSwitcher();
+renderPage();
+</script>
+</body>
+</html>
