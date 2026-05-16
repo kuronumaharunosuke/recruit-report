@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recruit Report | AIESEC Japan</title>
+<title>2627term Spring Recruitment FR | AIESEC Japan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* ============ AIESEC Brand Colors ============ */
   :root {
     --aiesec-blue: #037EF3;
     --aiesec-blue-dark: #0263c2;
@@ -31,7 +30,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-
   html, body {
     margin: 0; padding: 0;
     font-family: var(--font-jp);
@@ -40,44 +38,38 @@
     font-size: 14px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
-
   button { font-family: inherit; cursor: pointer; }
   input, textarea, select { font-family: inherit; color: inherit; }
 
-  /* ============ Layout ============ */
+  /* Layout */
   .app {
     display: grid;
     grid-template-rows: 56px 1fr;
-    grid-template-columns: 240px 1fr;
-    grid-template-areas:
-      "header header"
-      "sidebar main";
+    grid-template-columns: 260px 1fr;
+    grid-template-areas: "header header" "sidebar main";
     height: 100vh;
     overflow: hidden;
   }
 
-  /* ============ Header ============ */
+  /* Header */
   .header {
     grid-area: header;
     background: #fff;
     border-bottom: 1px solid var(--aiesec-gray-light);
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    gap: 24px;
+    padding: 0 20px;
+    gap: 16px;
     z-index: 10;
   }
-
   .brand {
     display: flex;
     align-items: center;
     gap: 10px;
     font-family: var(--font-en);
     font-weight: 900;
-    font-size: 18px;
-    letter-spacing: -0.02em;
+    font-size: 16px;
     color: var(--aiesec-black);
   }
   .brand-mark {
@@ -87,73 +79,58 @@
     border-radius: 2px;
   }
   .brand-mark img { width: 22px; height: 22px; display: block; }
-  .brand-tag {
+  .brand-title {
+    display: flex; flex-direction: column; line-height: 1.2;
+  }
+  .brand-title .t1 { font-weight: 900; font-size: 14px; }
+  .brand-title .t2 {
     font-family: var(--font-jp);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--aiesec-gray);
-    margin-left: 4px;
     letter-spacing: 0.05em;
   }
-
   .header-spacer { flex: 1; }
 
-  .term-switcher {
+  .lc-selector {
     display: flex;
     align-items: center;
     gap: 8px;
     background: var(--aiesec-gray-bg);
-    padding: 4px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 5px;
     border: 1px solid var(--aiesec-gray-light);
   }
-  .term-tab {
-    padding: 6px 14px;
-    border-radius: 4px;
+  .lc-selector label {
     font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--aiesec-gray);
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .lc-selector select {
+    border: none;
+    background: transparent;
     font-weight: 700;
     font-size: 13px;
-    color: var(--aiesec-black);
-    background: transparent;
-    border: none;
-    transition: all 0.15s;
+    padding: 2px 4px;
+    min-width: 70px;
+    font-family: var(--font-en);
   }
-  .term-tab:hover { background: #fff; }
-  .term-tab.active {
-    background: var(--aiesec-blue);
-    color: #fff;
-  }
-  .term-tab.add {
-    color: var(--aiesec-gray);
-    font-size: 16px;
-    line-height: 1;
-    padding: 6px 10px;
-  }
-  .term-tab.add:hover { color: var(--aiesec-blue); background: #fff; }
+  .lc-selector select:focus { outline: none; box-shadow: none; }
 
-  .header-actions {
-    display: flex;
-    gap: 8px;
-  }
-  .btn {
-    padding: 7px 14px;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1px solid var(--aiesec-gray-light);
-    background: #fff;
-    color: var(--aiesec-black);
-    transition: all 0.15s;
-  }
-  .btn:hover { border-color: var(--aiesec-blue); color: var(--aiesec-blue); }
-  .btn.primary {
+  .term-pill {
     background: var(--aiesec-blue);
     color: #fff;
-    border-color: var(--aiesec-blue);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: var(--font-en);
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.05em;
   }
-  .btn.primary:hover { background: var(--aiesec-blue-dark); border-color: var(--aiesec-blue-dark); color: #fff; }
-  .btn.danger { color: var(--aiesec-red); border-color: var(--aiesec-gray-light); }
-  .btn.danger:hover { border-color: var(--aiesec-red); }
 
   .save-indicator {
     font-size: 11px;
@@ -168,33 +145,86 @@
   }
   .save-indicator.saving::before { background: var(--aiesec-yellow); }
 
-  /* ============ Sidebar ============ */
+  .btn {
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--aiesec-gray-light);
+    background: #fff;
+    color: var(--aiesec-black);
+    transition: all 0.12s;
+  }
+  .btn:hover { border-color: var(--aiesec-blue); color: var(--aiesec-blue); }
+  .btn.primary {
+    background: var(--aiesec-blue);
+    color: #fff;
+    border-color: var(--aiesec-blue);
+  }
+  .btn.primary:hover { background: var(--aiesec-blue-dark); border-color: var(--aiesec-blue-dark); color: #fff; }
+  .btn.danger { color: var(--aiesec-red); }
+  .btn.danger:hover { border-color: var(--aiesec-red); }
+  .btn.sm { padding: 5px 10px; font-size: 11px; }
+
+  /* Checklist button (completion tracker) */
+  .checklist-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    opacity: 0.65;
+  }
+  .checklist-btn .dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    border: 1.5px solid var(--aiesec-gray);
+    background: transparent;
+    flex-shrink: 0;
+  }
+  .checklist-btn.done {
+    background: #e0f7ec;
+    color: var(--aiesec-green);
+    border-color: #a8e5c5;
+    opacity: 1;
+  }
+  .checklist-btn.done .dot {
+    background: var(--aiesec-green);
+    border-color: var(--aiesec-green);
+  }
+
+  /* Sidebar */
   .sidebar {
     grid-area: sidebar;
     background: #fff;
     border-right: 1px solid var(--aiesec-gray-light);
     overflow-y: auto;
-    padding: 16px 0;
+    padding: 12px 0 60px;
   }
-
-  .nav-group { margin-bottom: 8px; }
+  .nav-group { margin-bottom: 4px; }
   .nav-group-title {
     font-family: var(--font-en);
     font-size: 10px;
     font-weight: 900;
     letter-spacing: 0.12em;
     color: var(--aiesec-gray);
-    padding: 12px 20px 6px;
+    padding: 14px 20px 6px;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-
+  .nav-group-title::before {
+    content: '';
+    width: 14px;
+    height: 2px;
+    background: var(--aiesec-gray);
+  }
   .nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 20px;
+    padding: 7px 20px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--aiesec-black);
     border-left: 3px solid transparent;
     transition: all 0.1s;
@@ -204,7 +234,7 @@
     background: var(--aiesec-blue-light);
     border-left-color: var(--aiesec-blue);
     color: var(--aiesec-blue);
-    font-weight: 500;
+    font-weight: 600;
   }
   .nav-num {
     font-family: var(--font-en);
@@ -214,33 +244,60 @@
     min-width: 22px;
   }
   .nav-item.active .nav-num { color: var(--aiesec-blue); }
+  .nav-item .badge-new {
+    background: var(--aiesec-yellow);
+    color: var(--aiesec-black);
+    font-family: var(--font-en);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: auto;
+  }
 
-  /* ============ Main ============ */
+  /* Main */
   .main {
     grid-area: main;
     overflow-y: auto;
-    padding: 32px 48px 80px;
+    padding: 28px 40px 80px;
   }
-  .main-inner {
-    max-width: 980px;
-    margin: 0 auto;
-  }
+  .main-inner { max-width: 1100px; margin: 0 auto; }
 
   .page-head {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--aiesec-black);
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     gap: 24px;
-    margin-bottom: 28px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid var(--aiesec-black);
   }
   .page-head-content { flex: 1; min-width: 0; }
-  .page-head-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .page-head .crumbs {
+    font-family: var(--font-en);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--aiesec-gray);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .page-head h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .page-head .desc {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #74787e;
+    max-width: 760px;
+  }
   .page-save-btn {
-    min-width: 110px;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-    position: relative;
+    min-width: 100px;
+    transition: all 0.2s;
   }
   .page-save-btn.saved {
     background: var(--aiesec-green) !important;
@@ -256,73 +313,183 @@
     border: 1px solid rgba(255,255,255,0.3);
     border-radius: 2px;
   }
-  .page-head .crumbs {
-    font-family: var(--font-en);
+
+  /* Per-card save button (auto-injected into every .card-head) */
+  .card-save-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--aiesec-gray);
-    text-transform: uppercase;
-    margin-bottom: 6px;
+    border: 1px solid var(--aiesec-blue);
+    background: var(--aiesec-blue);
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
   }
-  .page-head h1 {
-    margin: 0;
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+  .card-save-btn::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
   }
-  .page-head .desc {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #74787e;
-    max-width: 720px;
+  .card-save-btn:hover {
+    background: var(--aiesec-blue-dark);
+    border-color: var(--aiesec-blue-dark);
+  }
+  .card-save-btn.saved {
+    background: var(--aiesec-green);
+    border-color: var(--aiesec-green);
+  }
+  .card-save-btn:disabled { cursor: default; }
+  /* When card-head has an existing action button, keep save btn after it */
+  .card-head .btn + .card-save-btn { margin-left: 8px; }
+  @media (max-width: 767px) {
+    .card-save-btn { padding: 4px 9px; font-size: 10px; }
+    .card-save-btn::before { width: 5px; height: 5px; }
   }
 
-  /* ============ Cards / Sections ============ */
+  /* Reference Panel - per-tab */
+  .ref-panel {
+    background: linear-gradient(135deg, #fffaeb 0%, #fff5d8 100%);
+    border: 1px solid #f0d780;
+    border-left: 4px solid var(--aiesec-yellow);
+    border-radius: 5px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .ref-panel-icon {
+    flex-shrink: 0;
+    width: 36px; height: 22px;
+    background: var(--aiesec-yellow);
+    border-radius: 3px;
+    display: grid; place-items: center;
+    color: var(--aiesec-black);
+    font-weight: 900;
+    font-family: var(--font-en);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+  }
+  .ref-panel-content { flex: 1; min-width: 0; }
+  .ref-panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--aiesec-black);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    font-family: var(--font-en);
+    text-transform: uppercase;
+  }
+  .ref-panel-title::after {
+    content: ' / このタブで参照する資料';
+    font-family: var(--font-jp);
+    font-size: 10px;
+    color: var(--aiesec-gray);
+    font-weight: 500;
+    text-transform: none;
+    margin-left: 4px;
+  }
+  .ref-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .ref-link {
+    background: #fff;
+    border: 1px solid #e8d899;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--aiesec-black);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.12s;
+  }
+  .ref-link:hover {
+    border-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+    background: var(--aiesec-blue-light);
+  }
+  .ref-link.no-url {
+    color: var(--aiesec-gray);
+    cursor: default;
+    border-style: dashed;
+  }
+  .ref-link.no-url::after {
+    content: '未登録';
+    font-size: 9px;
+    color: var(--aiesec-orange);
+    background: #fff3e0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-weight: 700;
+  }
+  .ref-link.no-url:hover {
+    border-color: #e8d899;
+    color: var(--aiesec-gray);
+    background: #fff;
+  }
+  .ref-panel-hint {
+    font-size: 10.5px;
+    color: var(--aiesec-gray);
+    margin-top: 6px;
+  }
+
+  /* Cards */
   .card {
     background: #fff;
     border: 1px solid var(--aiesec-gray-light);
-    border-radius: 6px;
+    border-radius: 5px;
     margin-bottom: 16px;
     overflow: hidden;
   }
   .card-head {
-    padding: 14px 20px;
+    padding: 12px 18px;
     border-bottom: 1px solid var(--aiesec-gray-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #fff;
+    gap: 12px;
   }
   .card-head h2 {
     margin: 0;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
   }
   .card-head .sub {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--aiesec-gray);
     font-family: var(--font-en);
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
-  .card-body { padding: 20px; }
+  .card-body { padding: 18px; }
 
-  /* ============ Form Fields ============ */
-  .field { margin-bottom: 16px; }
+  /* Form */
+  .field { margin-bottom: 14px; }
   .field:last-child { margin-bottom: 0; }
-  .field-row {
-    display: grid;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
+  .field-row { display: grid; gap: 14px; margin-bottom: 14px; }
   .field-row.cols-2 { grid-template-columns: 1fr 1fr; }
   .field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
   .field-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
   label {
     display: block;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 11.5px;
+    font-weight: 600;
     color: var(--aiesec-black);
     margin-bottom: 4px;
   }
@@ -330,15 +497,20 @@
     font-weight: 400;
     color: var(--aiesec-gray);
     margin-left: 6px;
-    font-size: 11px;
+    font-size: 10.5px;
+  }
+  label .required {
+    color: var(--aiesec-red);
+    margin-left: 4px;
+    font-weight: 700;
   }
 
   input[type="text"], input[type="number"], input[type="date"], input[type="url"], textarea, select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 7px 9px;
     border: 1px solid var(--aiesec-gray-light);
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 12.5px;
     background: #fff;
     transition: border-color 0.1s, box-shadow 0.1s;
   }
@@ -348,73 +520,145 @@
     box-shadow: 0 0 0 3px rgba(3, 126, 243, 0.12);
   }
   textarea {
-    min-height: 80px;
+    min-height: 70px;
     resize: vertical;
     font-family: inherit;
-    line-height: 1.6;
+    line-height: 1.55;
   }
-  textarea.tall { min-height: 120px; }
+  textarea.tall { min-height: 110px; }
+  textarea.gkm {
+    background-image: linear-gradient(to bottom, transparent 0, transparent 100%);
+    font-size: 12.5px;
+  }
+  input[readonly], textarea[readonly] {
+    background: var(--aiesec-gray-bg);
+    color: var(--aiesec-gray);
+    cursor: not-allowed;
+  }
 
-  /* ============ Tables ============ */
+  /* KPI Grid (Customer Flow) */
+  .kpi-flow {
+    overflow-x: auto;
+    margin: -4px;
+    padding: 4px;
+  }
+  .kpi-flow-inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: max-content;
+  }
+  .kpi-step {
+    background: #fff;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 5px;
+    padding: 10px 12px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .kpi-step-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--aiesec-black);
+    line-height: 1.3;
+    min-height: 28px;
+  }
+  .kpi-step input {
+    padding: 4px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    text-align: center;
+    border-radius: 3px;
+  }
+  .kpi-step .kpi-target {
+    font-size: 10px;
+    color: var(--aiesec-gray);
+    text-align: center;
+    font-family: var(--font-mono);
+  }
+  .kpi-arrow {
+    align-self: center;
+    color: var(--aiesec-gray);
+    font-size: 16px;
+    padding: 0 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 60px;
+  }
+  .kpi-cvr {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--aiesec-blue);
+    background: var(--aiesec-blue-light);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 2px;
+  }
+  .kpi-cvr.good { color: var(--aiesec-green); background: #e0f7ec; }
+  .kpi-cvr.warn { color: var(--aiesec-orange); background: #feebd9; }
+  .kpi-cvr.bad { color: var(--aiesec-red); background: #fee4e0; }
+
+  /* Tables */
   table.data {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12.5px;
+    font-size: 12px;
   }
   table.data th {
     background: var(--aiesec-gray-bg);
-    padding: 8px 10px;
+    padding: 7px 10px;
     text-align: left;
     font-weight: 700;
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--aiesec-black);
     border-bottom: 1px solid var(--aiesec-gray-light);
     letter-spacing: 0.02em;
   }
   table.data td {
-    padding: 6px 10px;
+    padding: 5px 10px;
     border-bottom: 1px solid var(--aiesec-gray-light);
     vertical-align: top;
   }
   table.data td input, table.data td textarea, table.data td select {
-    padding: 5px 6px;
-    font-size: 12px;
+    padding: 4px 6px;
+    font-size: 11.5px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 3px;
   }
-  table.data td input:hover, table.data td textarea:hover {
-    background: var(--aiesec-gray-bg);
-  }
-  table.data td input:focus, table.data td textarea:focus {
-    background: #fff;
-    border-color: var(--aiesec-blue);
-  }
+  table.data td input:hover, table.data td textarea:hover { background: var(--aiesec-gray-bg); }
+  table.data td input:focus, table.data td textarea:focus { background: #fff; border-color: var(--aiesec-blue); }
   table.data tr:last-child td { border-bottom: none; }
 
-  /* ============ Repeater / Add Buttons ============ */
+  /* Add buttons */
   .add-row-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
+    padding: 7px 12px;
     background: transparent;
     border: 1px dashed var(--aiesec-gray);
     border-radius: 4px;
     color: var(--aiesec-gray);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 11.5px;
+    font-weight: 600;
     width: 100%;
     justify-content: center;
-    transition: all 0.15s;
     margin-top: 8px;
+    transition: all 0.15s;
   }
   .add-row-btn:hover {
     border-color: var(--aiesec-blue);
     color: var(--aiesec-blue);
     border-style: solid;
+    background: var(--aiesec-blue-light);
   }
-
   .row-delete {
     background: transparent;
     border: none;
@@ -426,74 +670,38 @@
   }
   .row-delete:hover { color: var(--aiesec-red); background: #fef0ee; }
 
-  /* ============ Persona Cards ============ */
-  .persona-grid {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 0;
+  /* KPT block */
+  .kpt-block {
     border: 1px solid var(--aiesec-gray-light);
     border-radius: 4px;
     overflow: hidden;
-  }
-  .persona-tabs {
-    background: var(--aiesec-gray-bg);
-    border-right: 1px solid var(--aiesec-gray-light);
-    padding: 8px;
-  }
-  .persona-tab {
-    padding: 10px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 12.5px;
-    font-weight: 500;
-    margin-bottom: 2px;
-    border-left: 3px solid transparent;
-    color: var(--aiesec-black);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .persona-tab:hover { background: #fff; }
-  .persona-tab.active {
-    background: #fff;
-    border-left-color: var(--aiesec-blue);
-    color: var(--aiesec-blue);
-  }
-  .persona-tab .pname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .persona-content { padding: 20px; }
-
-  /* ============ Evaluation Block ============ */
-  .eval-block {
-    border: 1px solid var(--aiesec-gray-light);
-    border-radius: 4px;
     margin-bottom: 12px;
-    overflow: hidden;
   }
-  .eval-head {
-    padding: 10px 14px;
+  .kpt-head {
+    padding: 9px 14px;
     background: var(--aiesec-gray-bg);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12.5px;
     border-bottom: 1px solid var(--aiesec-gray-light);
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .eval-head .accent {
+  .kpt-head .accent {
     width: 4px; height: 14px; border-radius: 1px;
     background: var(--aiesec-blue);
   }
-  .eval-grid {
+  .kpt-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0;
   }
-  .eval-cell {
-    padding: 12px 14px;
+  .kpt-cell {
+    padding: 11px 14px;
     border-right: 1px solid var(--aiesec-gray-light);
   }
-  .eval-cell:last-child { border-right: none; }
-  .eval-label {
+  .kpt-cell:last-child { border-right: none; }
+  .kpt-label {
     font-family: var(--font-en);
     font-size: 10px;
     font-weight: 900;
@@ -501,60 +709,49 @@
     margin-bottom: 6px;
     text-transform: uppercase;
   }
-  .eval-label.good { color: var(--aiesec-green); }
-  .eval-label.more { color: var(--aiesec-orange); }
-  .eval-label.next { color: var(--aiesec-blue); }
-  .eval-cell textarea {
+  .kpt-label.keep { color: var(--aiesec-green); }
+  .kpt-label.problem { color: var(--aiesec-orange); }
+  .kpt-label.try { color: var(--aiesec-blue); }
+  .kpt-cell textarea {
     border: none;
     padding: 0;
     background: transparent;
-    min-height: 80px;
-    font-size: 12.5px;
+    min-height: 70px;
+    font-size: 12px;
   }
-  .eval-cell textarea:focus { box-shadow: none; }
+  .kpt-cell textarea:focus { box-shadow: none; }
 
-  /* ============ Customer Journey Grid ============ */
-  .cj-table {
-    width: 100%;
-    border-collapse: collapse;
+  /* Good/More inline */
+  .gm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
     border: 1px solid var(--aiesec-gray-light);
     border-radius: 4px;
     overflow: hidden;
   }
-  .cj-table th {
-    background: var(--aiesec-blue);
-    color: #fff;
-    padding: 10px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
+  .gm-cell { padding: 11px 14px; }
+  .gm-cell:first-child { border-right: 1px solid var(--aiesec-gray-light); }
+  .gm-cell .gm-label {
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
   }
-  .cj-table th:first-child {
-    background: var(--aiesec-black);
-    width: 130px;
-  }
-  .cj-table td {
-    padding: 4px;
-    border-top: 1px solid var(--aiesec-gray-light);
-    vertical-align: top;
-  }
-  .cj-table tr td:first-child {
-    background: var(--aiesec-gray-bg);
-    font-weight: 500;
-    font-size: 12px;
-    padding: 10px 12px;
-  }
-  .cj-table textarea {
-    min-height: 60px;
-    border: 1px solid transparent;
+  .gm-cell.good .gm-label { color: var(--aiesec-green); }
+  .gm-cell.more .gm-label { color: var(--aiesec-orange); }
+  .gm-cell textarea {
+    border: none;
+    padding: 0;
     background: transparent;
+    min-height: 70px;
     font-size: 12px;
-    padding: 6px 8px;
   }
-  .cj-table textarea:hover { background: var(--aiesec-gray-bg); }
-  .cj-table textarea:focus { background: #fff; border-color: var(--aiesec-blue); }
+  .gm-cell textarea:focus { box-shadow: none; }
 
-  /* ============ Tags / Pills ============ */
+  /* Pills / Tags */
   .pill {
     display: inline-flex;
     align-items: center;
@@ -570,83 +767,128 @@
   .pill.green { background: #e0f7ec; color: var(--aiesec-green); }
   .pill.orange { background: #feebd9; color: var(--aiesec-orange); }
   .pill.red { background: #fee4e0; color: var(--aiesec-red); }
+  .pill.yellow { background: #fff5d8; color: #8a6d00; }
   .pill.gray { background: var(--aiesec-gray-bg); color: var(--aiesec-black); }
+  .pill.new {
+    background: var(--aiesec-yellow);
+    color: var(--aiesec-black);
+    font-weight: 900;
+  }
 
-  /* ============ MC Recruit Member Card ============ */
-  .member-card {
+  /* OC member */
+  .oc-card {
     border: 1px solid var(--aiesec-gray-light);
     border-radius: 5px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     background: #fff;
     overflow: hidden;
   }
-  .member-head {
-    padding: 12px 16px;
+  .oc-head {
+    padding: 10px 14px;
     background: var(--aiesec-gray-bg);
     border-bottom: 1px solid var(--aiesec-gray-light);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
-  .member-head .role-pill {
+  .oc-role-input {
+    border: 1px solid transparent;
     background: var(--aiesec-blue);
     color: #fff;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
     font-family: var(--font-en);
     letter-spacing: 0.05em;
+    width: 130px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
   }
-  .member-head input.name-input {
+  .oc-role-input:focus { background: #fff; color: var(--aiesec-blue); border-color: var(--aiesec-blue); box-shadow: none; }
+  .oc-name-input {
     border: none;
     background: transparent;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     flex: 1;
     padding: 4px 6px;
   }
-  .member-head input.name-input:hover { background: #fff; }
-  .member-head input.name-input:focus { background: #fff; border: 1px solid var(--aiesec-blue); box-shadow: none; }
-  .member-head input.role-input {
-    border: 1px solid transparent;
-    background: var(--aiesec-blue);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    font-family: var(--font-en);
-    letter-spacing: 0.05em;
-    width: 110px;
-    padding: 3px 8px;
-    border-radius: 3px;
-  }
-  .member-head input.role-input::placeholder { color: rgba(255,255,255,0.6); }
-  .member-head input.role-input:focus {
-    background: #fff;
-    color: var(--aiesec-blue);
-    border-color: var(--aiesec-blue);
-    box-shadow: none;
-  }
-  .member-head input.role-input:focus::placeholder { color: var(--aiesec-gray); }
-  .member-body { padding: 16px; }
-  .member-body .field { margin-bottom: 14px; }
-  .member-body .field:last-child { margin-bottom: 0; }
-  .member-body label { font-size: 11px; color: #74787e; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; font-family: var(--font-en); }
+  .oc-name-input:hover { background: #fff; }
+  .oc-name-input:focus { background: #fff; border: 1px solid var(--aiesec-blue); box-shadow: none; }
+  .oc-body { padding: 14px; }
 
-  /* ============ Empty State ============ */
+  /* Snapshot dashboard */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat-tile {
+    background: #fff;
+    border: 1px solid var(--aiesec-gray-light);
+    border-left: 3px solid var(--aiesec-blue);
+    padding: 12px 14px;
+    border-radius: 4px;
+  }
+  .stat-tile.green { border-left-color: var(--aiesec-green); }
+  .stat-tile.orange { border-left-color: var(--aiesec-orange); }
+  .stat-tile.red { border-left-color: var(--aiesec-red); }
+  .stat-tile.yellow { border-left-color: var(--aiesec-yellow); }
+  .stat-label {
+    font-size: 10.5px;
+    color: var(--aiesec-gray);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-en);
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-family: var(--font-en);
+    font-weight: 900;
+    font-size: 24px;
+    color: var(--aiesec-black);
+    line-height: 1;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--aiesec-gray);
+    margin-top: 4px;
+  }
+
+  /* Section dividers */
+  .section-divider {
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--aiesec-black);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-divider::before {
+    content: '';
+    width: 12px;
+    height: 2px;
+    background: var(--aiesec-blue);
+  }
+
+  /* Empty state */
   .empty {
     text-align: center;
-    padding: 48px 20px;
+    padding: 36px 20px;
     color: var(--aiesec-gray);
   }
   .empty h3 {
     color: var(--aiesec-black);
-    font-size: 15px;
+    font-size: 14px;
     margin: 0 0 6px;
   }
-  .empty p { font-size: 13px; margin: 0; }
+  .empty p { font-size: 12px; margin: 0; }
 
-  /* ============ Modal ============ */
+  /* Modal */
   .modal-backdrop {
     position: fixed; inset: 0;
     background: rgba(82, 86, 94, 0.5);
@@ -659,7 +901,7 @@
   .modal {
     background: #fff;
     border-radius: 6px;
-    width: 420px;
+    width: 480px;
     max-width: 90vw;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
@@ -679,34 +921,7 @@
     gap: 8px;
   }
 
-  /* ============ Compare View ============ */
-  .compare-grid {
-    display: grid;
-    grid-template-columns: 180px repeat(auto-fit, minmax(160px, 1fr));
-    border: 1px solid var(--aiesec-gray-light);
-    border-radius: 4px;
-    overflow: hidden;
-    font-size: 12.5px;
-  }
-  .compare-grid > div {
-    padding: 10px 14px;
-    border-right: 1px solid var(--aiesec-gray-light);
-    border-bottom: 1px solid var(--aiesec-gray-light);
-  }
-  .compare-grid > div.row-label {
-    background: var(--aiesec-gray-bg);
-    font-weight: 700;
-    font-size: 12px;
-  }
-  .compare-grid > div.col-head {
-    background: var(--aiesec-black);
-    color: #fff;
-    font-family: var(--font-en);
-    font-weight: 700;
-    font-size: 13px;
-  }
-
-  /* ============ Scrollbar ============ */
+  /* Scrollbar */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--aiesec-gray); border-radius: 4px; }
@@ -716,104 +931,488 @@
   .muted { color: var(--aiesec-gray); }
   .mono { font-family: var(--font-mono); }
   .small { font-size: 11px; }
+  .mt-12 { margin-top: 12px; }
   .mt-16 { margin-top: 16px; }
   .mb-12 { margin-bottom: 12px; }
   .flex { display: flex; }
   .flex-between { display: flex; justify-content: space-between; align-items: center; }
   .gap-8 { gap: 8px; }
-  .text-right { text-align: right; }
+  .gap-12 { gap: 12px; }
 
-  /* Hidden by default */
-  .page { display: none; }
-  .page.active { display: block; }
+  /* Info callout */
+  .callout {
+    background: var(--aiesec-blue-light);
+    border-left: 3px solid var(--aiesec-blue);
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--aiesec-black);
+    margin-bottom: 14px;
+  }
+  .callout.warn {
+    background: #fff5d8;
+    border-left-color: var(--aiesec-yellow);
+  }
+  .callout-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 11.5px;
+  }
+
+  /* Page transition fade */
+  .page-content {
+    animation: fadeIn 0.18s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========================================================
+     RESPONSIVE
+     - Desktop:  >= 1024px (default styles above)
+     - Tablet:   768 - 1023px
+     - Mobile:   < 768px
+     ======================================================== */
+
+  /* Hamburger button - hidden on desktop */
+  .hamburger {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 4px;
+    width: 36px; height: 36px;
+    padding: 0;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  }
+  .hamburger span {
+    display: block;
+    width: 18px; height: 2px;
+    background: var(--aiesec-black);
+    border-radius: 1px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(82, 86, 94, 0.45);
+    z-index: 9;
+  }
+  .sidebar-backdrop.show { display: block; }
+
+  /* ====== TABLET (< 1024px) ====== */
+  @media (max-width: 1023px) {
+    .app {
+      grid-template-columns: 220px 1fr;
+    }
+    .main {
+      padding: 24px 24px 80px;
+    }
+    .main-inner { max-width: 100%; }
+    .field-row.cols-4 { grid-template-columns: 1fr 1fr; }
+    .kpt-grid { grid-template-columns: 1fr 1fr; }
+    .kpt-cell:nth-child(2) { border-right: none; }
+    .kpt-cell:nth-child(3) {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--aiesec-gray-light);
+    }
+  }
+
+  /* ====== MOBILE (< 768px) ====== */
+  @media (max-width: 767px) {
+    .app {
+      grid-template-rows: 52px 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "header" "main";
+    }
+
+    /* Header */
+    .header {
+      padding: 0 12px;
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .hamburger {
+      display: flex;
+      flex-shrink: 0;
+    }
+    .brand-title { display: none; }
+    .header-spacer { flex: 1; min-width: 0; }
+    .lc-selector {
+      padding: 4px 8px;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .lc-selector label { display: none; }
+    .lc-selector select {
+      min-width: 60px;
+      font-size: 12px;
+    }
+    .term-pill {
+      padding: 4px 7px;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .save-indicator {
+      font-size: 10px;
+      gap: 4px;
+    }
+    .save-indicator { display: none; } /* hide on mobile, keep status only in save button */
+    .header .btn.sm {
+      padding: 4px 7px;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Sidebar becomes slide-out drawer */
+    .sidebar {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      bottom: 0;
+      width: 250px;
+      transform: translateX(-100%);
+      transition: transform 0.22s ease-out;
+      z-index: 10;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    /* Main */
+    .main {
+      padding: 18px 14px 60px;
+    }
+
+    /* Page head: stack save btn below */
+    .page-head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    .page-head h1 { font-size: 20px; }
+    .page-head .desc { font-size: 12px; }
+    .page-save-btn { width: 100%; }
+
+    /* Reference panel */
+    .ref-panel {
+      padding: 10px 12px;
+      gap: 10px;
+    }
+    .ref-panel-icon {
+      width: 32px; height: 20px;
+      font-size: 9px;
+    }
+    .ref-panel-title { font-size: 10px; }
+    .ref-panel-title::after { display: block; margin-left: 0; margin-top: 2px; }
+    .ref-link { font-size: 10.5px; padding: 3px 8px; }
+
+    /* Cards */
+    .card-head {
+      padding: 10px 12px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .card-head h2 { font-size: 13px; }
+    .card-head .sub { font-size: 9.5px; }
+    .card-body { padding: 14px 12px; }
+
+    /* Field rows: stack everything */
+    .field-row.cols-2,
+    .field-row.cols-3,
+    .field-row.cols-4 {
+      grid-template-columns: 1fr;
+    }
+
+    /* KPT: full stack */
+    .kpt-grid { grid-template-columns: 1fr; }
+    .kpt-cell {
+      border-right: none;
+      border-bottom: 1px solid var(--aiesec-gray-light);
+    }
+    .kpt-cell:last-child { border-bottom: none; }
+
+    /* Good/More: stack */
+    .gm-grid { grid-template-columns: 1fr; }
+    .gm-cell:first-child {
+      border-right: none;
+      border-bottom: 1px solid var(--aiesec-gray-light);
+    }
+
+    /* Stat tiles: 2 cols on mobile */
+    .stat-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .stat-tile { padding: 10px 12px; }
+    .stat-value { font-size: 20px; }
+
+    /* Tables: horizontal scroll wrapper */
+    .card-body table.data {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      min-width: 0;
+    }
+    table.data th, table.data td { white-space: normal; }
+    table.data td input,
+    table.data td textarea { min-width: 100px; }
+
+    /* OC member card */
+    .oc-head {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 10px;
+    }
+    .oc-role-input { width: 100px; font-size: 9.5px; }
+    .oc-name-input { font-size: 12px; min-width: 100px; }
+    .oc-body { padding: 12px; }
+
+    /* Modal */
+    .modal {
+      width: 92vw;
+    }
+
+    /* Page-save kbd hidden on mobile */
+    .page-save-btn .kbd { display: none; }
+
+    /* Add row button */
+    .add-row-btn { font-size: 11px; padding: 8px 10px; }
+
+    /* Section divider */
+    .section-divider { font-size: 11.5px; margin: 18px 0 10px; }
+  }
+
+  /* ====== SMALL MOBILE (< 400px) ====== */
+  @media (max-width: 399px) {
+    .stat-grid { grid-template-columns: 1fr; }
+    .main { padding: 14px 10px 60px; }
+    .card-body { padding: 12px 10px; }
+    .page-head h1 { font-size: 18px; }
+  }
+
+  /* ========================================================
+     LOGIN / IDENTITY
+     ======================================================== */
+  .login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, #037EF3 0%, #0257b8 100%);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px 36px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .login-logo {
+    width: 64px; height: 64px;
+    margin: 0 auto 18px;
+    background: var(--aiesec-blue);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+  }
+  .login-logo img { width: 42px; height: auto; display: block; }
+  .login-title {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--aiesec-black);
+  }
+  .login-sub {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--aiesec-gray);
+    margin: 0 0 26px;
+  }
+  .login-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--aiesec-gray);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .login-role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .login-role-btn {
+    border: 2px solid var(--aiesec-gray-light);
+    background: #fff;
+    border-radius: 9px;
+    padding: 20px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  .login-role-btn:hover {
+    border-color: var(--aiesec-blue);
+    background: var(--aiesec-blue-light);
+    transform: translateY(-2px);
+  }
+  .login-role-btn .lr-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--aiesec-black);
+  }
+  .login-role-btn .lr-desc {
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: var(--aiesec-gray);
+  }
+  .login-select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 2px solid var(--aiesec-gray-light);
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 18px;
+    font-family: var(--font-jp);
+  }
+  .login-select:focus {
+    outline: none;
+    border-color: var(--aiesec-blue);
+  }
+  .login-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  .login-actions .btn { flex: 1; }
+
+  .identity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--aiesec-gray-bg);
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--aiesec-black);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .identity-badge:hover {
+    border-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+  }
+  .identity-badge .ib-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--aiesec-green);
+    flex-shrink: 0;
+  }
+
+  .perm-note {
+    background: #fff3e0;
+    border: 1px solid #f0c98a;
+    color: #8a5a00;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 767px) {
+    .login-card { padding: 30px 22px; }
+    .login-role-grid { grid-template-columns: 1fr; }
+    .identity-badge { padding: 5px 8px; font-size: 10px; }
+    .identity-badge span:not(.ib-dot) { max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
 </style>
 </head>
 <body>
 
+<!-- LOGIN / IDENTITY SCREEN -->
+<div class="login-screen" id="loginScreen" style="display:none;">
+  <div class="login-card">
+    <div class="login-logo" id="loginLogo"></div>
+    <h1 class="login-title">2627term Spring Recruitment FR</h1>
+    <p class="login-sub">あなたの LC を選択してください。<br>カスタム資料は自 LC のメンバーのみ編集できます (閲覧は全員可)。</p>
+
+    <div class="login-step" id="loginStep2">
+      <div class="login-label">LC を選択</div>
+      <select id="loginLcSelect" class="login-select"></select>
+      <div class="login-actions">
+        <button class="btn primary" id="loginConfirmLC" style="flex:1;">この LC で開始</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app">
 
-  <!-- ============ HEADER ============ -->
+  <!-- HEADER -->
   <header class="header">
+    <button class="hamburger" id="hamburger" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
     <div class="brand">
       <div class="brand-mark">
         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAIbklEQVR42u1dWYxURRQ9t3tmEBBFcNxgRlkEUVRQIRHQCNHgksEY44fREOIW44dGf/jAuH2o4YuEuMYf0UgIiWJUXDAKRIkmYhTjGsQYXBgQRGVGmJnXx4++N1OU7/UydE+/N1M3eal+1d2vqu+te+5SSwOBAgUKFChQoECBAgUabiRZ7DTJnNP3gogwiHJwmV+2LmhAfYVwLoDpALoB7BCR38PQrC/DhWSOZDPJZ0geYT/9RXIlyXyWNSETsEPyJWV6gWSfXkaP6WfygWP1Yf5UZXSfCoDOfR/JP0meZBqTld+Xy1AfL0iwXXm9HwvgvAz9rmx1FMA5phRxiqLXiVnT8CwJ4J8y3pwAOBwEUAczoOXOBNeZ+jt6AfxYQktSSU0ZGix/JAyaggrlGwC7SYqIFIIG1J5aYuoKeuUAvCgikRrlAEG1jNbVrWzX+8jrfzOArQCe189FQQA17qMm2+Y4dcbkNQDmA1gsIl0AEBJztQ3C8lpOILlbA7BIL5KcZcFaloKvrDH/fJI7leGREwUXSE7THFBIP9Qp/XAByU6H+fQEcJ77+SxSLqXMJ8nxAF4HcAqAPqevovcC4JIMenOZMcIvADhLmZ0Ur3RkLfDKCu5f6WQ648jgaBfJFv2OBA2oHd2L/gRbbGygZTuAMxNSFEEA1WK/iEQk2wAs0up8CQEU9P3JQQC17ct1AEZrsFWKqZbvmRIEUCMl0HJxlUZ1SpbtXioEoBnMiOQYTS0IKk+qtQUB1K4fCwC0oj/FXIrsfTPCURDAwMmYeZWH75V8p5Vkk4gwi65oWgQQKfMuq6JfxuzxKE7IBwg6BveTakxnDcCjGQlgvAowaMAx9GG+phwsz8MKNKCA4oTMWBViPghg4O7nogSIqeT7q0meLCK9YXniAN1Qkju8nP8vrIwsL7Sd5Bn6vKbA1QrxX8vTSB5ymLqX5FqPwaWoV8svSE7MkhAara4GMzM0/dCr95sA7KjSJe0BcCGAD0lOF5G+LAghTQJwg6n1ytBKKY/ispUjAKYC2ExyThaEkBaDdZGWLShuutgEYGKFxrsLwMMAvgUwQr2o0wC8T3KxCSEY5wTjq+WnDp5v1Lp1Hr77ZHPDh0geR3IUydWece4leYfTXpi8j2H+OJIHHMbdpvUflpkVMwH8Y96Pfm8hyW894T2n8wyB3NGo7uflDlOPkDxdR/M+j9FxAijod2bos2x6cizJjfq5Hmcr0yPWbhCAGkeSKxymfqx1C8ow33c/H7dnOs8dQXKDvn/Y+U5HmuAo10D4iUiOAnCrY1C36ntzPa+oXP+XkhwlIn363LyIHAGwDMDvapzNxZ06gHzTkPOC8pq7WYrizhdjzidaf3EV/Y8ATADQocLL6+ROk4gcBHAXgH3qHX0A4LUsLuKtOf5ruUlhxnB6ntZ/XsYA+zBUIPmGDy2OoR9PclKwvEczRUh+7yy4pa71HEFyf4U2wDXGh43Jrs/vvZa0GeBcg9tuUSzOobgD5icNosZUGU1HivO3+L9LRAq20VtEmLbl64MuAJ06zGuO51kA/wLYD2C5iPQCOB7V5/VtVF8fZ7yV8YWAP/GQNIFkq3O/qEwWNCoBRT0kp/vQE3JBJeyBiPwqIvtINmv1GC/XU2mfIxRnx25KWZ4rvQJQOLLdLcbwUxIEYPevKmwlwdANWXIzGz5KRMQ/cOnUOGVRBncBuAfAZ1rnMjmvdbMAzDThBgFUT5MT4IUANotIJ4DVCZFspL9pSVZgKE0dNC+lLSZVYEtO1iu8bACw3YmE/d9zkybmhm+0O9AImeR3CXvCDthxNPrZ6xKi5YK/gzJoQHnG5xwD3O5pgAs/f9rJWCLyFoBtiv1RDFxdq9oSBFBFIDUFxZVudOoMfl520ghWPpTwLAGwRI17gKEKNKBJ0wV3enl+g5P9JE/wckmW0HszBorsSLPz0w5DqdEAHa2zY7waAFgnIn9rnt+PD1agmGp2YwU7tKMjS0FZQ/FfM6F7nOymu0pujjvqXc3Rco2nOZGzUCscY1AqFaFGtVmXFrrMs8P5tigTYw9s1WdM0sn5yBMeSS6ME16go3F8ecwSFMP0q0sx0HnGk94zrHwlCCABenT0tsWMXmP+u6oduTJalNNZr9+cCR57VqfuPUOAoviR+3SM5xORPEjyrEq8GOdZ93gCtPJmFVRYNR2D3V2e4TVB3O0a2gpsidmTnd7KuALJVwMMxY/Ypzym24jdUi3DHI/oCW+ynqpNrQGGjh797Yr9BeeKNOiaatg+AHd2RoI9uS3A0NGjf43HINOC2yuFnhLPfs07V5ok38lCcq7uzNdRONs7+82YtHagzPcEMNcL5Gy++OxhKwQzkvr6I4fxxqQ9ulJajoVBThtvOG38bw3pcIaeRxOgZ0ktPBWnnXkOBJmm7SE5Oo0LtAYr33N/gtezppZuoiOEtU571tZ9+t4IS3HolR+SeSOH+e26lj/yotVdJFuT8j3H6GlNI9mtbZkm7CU5thxcDkXouTQBeu6oBy477a707A1Jvqfn0s0meSbJc3VPwqwhJwQnVzOa5JcxkLBM32+qU7vjdNQXvIjbqNubzPlB81MyGN5S3RuwCRQ927kDwM8onglhewKu1XWbUod2cyJyAMAq9C/itXNHbRvsSPSvRd0L4EunbxxKUGS2YDLJr5w9Yd318s8dWzBT4afHG+3dJN8n+SDJK9xVF0PdFT1JN2dY9nOb4nBN3UMnSTdSXVCjr0k+QHJyUrA4HITQ7KQjjNpqrQmO5l1DchXJG52FwKYlTY1ivDQKjmy9Psn5KP79VCeAt0WkZ5D60ITiH4E2dN+ANFATxDXSg6R5tgo7Nf/AKimBJAFA/Q+YQIECBQoUKFCgQIECBRrS9B/iRN3U+yyQuAAAAABJRU5ErkJggg==" alt="AIESEC" />
       </div>
-      <div>Recruit Report <span class="brand-tag">| AIESEC Japan</span></div>
+      <div class="brand-title">
+        <span class="t1">Spring Recruitment FR</span>
+        <span class="t2">AIESEC Japan</span>
+      </div>
     </div>
 
     <div class="header-spacer"></div>
 
-    <div class="term-switcher" id="termSwitcher">
-      <!-- term tabs injected -->
+    <div class="lc-selector">
+      <label>LC</label>
+      <select id="lcSelect"></select>
     </div>
+
+    <div class="term-pill" id="termPill">2627</div>
+
+    <button class="identity-badge" id="identityBadge" title="ログイン情報を変更">
+      <span class="ib-dot"></span><span id="identityBadgeText">未ログイン</span>
+    </button>
 
     <div class="save-indicator" id="saveIndicator">自動保存済み</div>
 
-    <div class="header-actions">
-      <button class="btn" onclick="openCompareView()">年度比較</button>
-      <button class="btn" onclick="exportData()">エクスポート</button>
-      <button class="btn" onclick="importData()">インポート</button>
-    </div>
+    <button class="btn sm" onclick="exportData()">エクスポート</button>
+    <button class="btn sm" onclick="importData()">インポート</button>
   </header>
 
-  <!-- ============ SIDEBAR ============ -->
-  <aside class="sidebar">
-    <div class="nav-group">
-      <div class="nav-group-title">Overview</div>
-      <div class="nav-item active" data-page="overview">
-        <span class="nav-num">0</span><span>概要・基本情報</span>
-      </div>
-    </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <div class="nav-group">
-      <div class="nav-group-title">1-1 やったこと</div>
-      <div class="nav-item" data-page="planning">
-        <span class="nav-num">1.1</span><span>Planning タイムライン</span>
-      </div>
-      <div class="nav-item" data-page="persona">
-        <span class="nav-num">1.2</span><span>ペルソナ設計</span>
-      </div>
-      <div class="nav-item" data-page="kgi">
-        <span class="nav-num">1.3</span><span>採用 KGI / KPI</span>
-      </div>
-      <div class="nav-item" data-page="journey">
-        <span class="nav-num">1.4</span><span>Customer Journey</span>
-      </div>
-      <div class="nav-item" data-page="mconlc">
-        <span class="nav-num">1.5</span><span>MC on LC Agenda</span>
-      </div>
-      <div class="nav-item" data-page="eval">
-        <span class="nav-num">1.6</span><span>Evaluation・申し送り</span>
-      </div>
-    </div>
-
-    <div class="nav-group">
-      <div class="nav-group-title">1-2 MC Recruit Structure</div>
-      <div class="nav-item" data-page="structure">
-        <span class="nav-num">2.1</span><span>体制・運営</span>
-      </div>
-      <div class="nav-item" data-page="members">
-        <span class="nav-num">2.2</span><span>メンバー / JD</span>
-      </div>
-    </div>
-
-    <div class="nav-group">
-      <div class="nav-group-title">1-3 関連資料</div>
-      <div class="nav-item" data-page="resources">
-        <span class="nav-num">3.1</span><span>資料リスト</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ============ MAIN ============ -->
+  <!-- MAIN -->
   <main class="main">
-    <div class="main-inner" id="mainContent">
-      <!-- pages injected -->
-    </div>
+    <div class="main-inner" id="mainContent"></div>
   </main>
 </div>
 
-<!-- Modals -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal" id="modal">
     <div class="modal-head" id="modalHead">Title</div>
@@ -821,62 +1420,274 @@
     <div class="modal-foot" id="modalFoot"></div>
   </div>
 </div>
-
 <input type="file" id="importFile" accept=".json" style="display:none;">
 
 <script>
 /* =========================================================
    STATE & STORAGE
    ========================================================= */
-const STORAGE_KEY = 'aiesec_recruit_tracker_v1';
+const STORAGE_KEY = 'aiesec_recruit_fr_2627_v1';
+const TERM = '2627';
 
-const DEFAULT_TERM_DATA = () => ({
-  basicInfo: {
-    term: '',
-    period_start: '',
-    period_end: '',
-    overall_kgi: '',
-    direction_text: '',
-    notes: ''
+// 25LC構成（East 12 / Central 3 / West 10）写真通りロールコール順
+const LC_GROUPS = [
+  { region: 'East', lcs: [
+    { code: 'HD',  name: '北海道' },
+    { code: 'AG',  name: '青山学院' },
+    { code: 'CH',  name: '中央' },
+    { code: 'HI',  name: '一橋' },
+    { code: 'JO',  name: '上智' },
+    { code: 'KO',  name: '慶應義塾' },
+    { code: 'MJ',  name: '明治' },
+    { code: 'SFC', name: '慶應SFC' },
+    { code: 'SP',  name: '立教' },
+    { code: 'TKB', name: '筑波' },
+    { code: 'TO',  name: '東京' },
+    { code: 'WA',  name: '早稲田' }
+  ]},
+  { region: 'Central', lcs: [
+    { code: 'NA', name: '名古屋' },
+    { code: 'NI', name: '名古屋市立' },
+    { code: 'NZ', name: '南山' }
+  ]},
+  { region: 'West', lcs: [
+    { code: 'DO',  name: '同志社' },
+    { code: 'KB',  name: '神戸' },
+    { code: 'KG',  name: '関西学院' },
+    { code: 'KT',  name: '京都' },
+    { code: 'OI',  name: '大阪市立' },
+    { code: 'OS',  name: '大阪' },
+    { code: 'SG',  name: '滋賀' },
+    { code: 'HU',  name: '広島' },
+    { code: 'APU', name: '立命館APU' },
+    { code: 'FK',  name: '福岡' }
+  ]}
+];
+
+// 互換用フラットリスト（コードのみ）
+const LC_LIST = LC_GROUPS.flatMap(g => g.lcs.map(l => l.code));
+// コード→表示名（例: 'KO 慶應義塾'）
+const LC_LABEL = Object.fromEntries(
+  LC_GROUPS.flatMap(g => g.lcs.map(l => [l.code, `${l.code} ${l.name}`]))
+);
+// コード→地域
+const LC_REGION = Object.fromEntries(
+  LC_GROUPS.flatMap(g => g.lcs.map(l => [l.code, g.region]))
+);
+
+// Reference materials catalog (centralized)
+// per-tab references are pulled from here via keys
+const REF_CATALOG = {
+  'lc_share': { name: 'LC共有用フォルダ', desc: '採用関連資料のマスターフォルダ', url: '' },
+  'recruit_call': { name: '2627 Recruit Callスライド', desc: 'MC on LCの各回スライド', url: '' },
+  'framework': { name: 'Recruit Framework', desc: 'カスタマージャーニー・KPI設計', url: '' },
+  'crm_sheet': { name: 'CRMシート / 事後アンケート', desc: 'CVR算出の元データ', url: '' },
+  'bliss': { name: 'BLISS関連アナウンス', desc: 'BLISSの運用に関するMCからのアナウンス', url: '' },
+  'ad_template': { name: '広告物テンプレート', desc: 'Reach施策用のテンプレ集', url: '' },
+  'biraposter': { name: 'ビラ・ポスター', desc: 'ビラ配り・ポスターの素材', url: '' },
+  'bluebook': { name: 'BlueBook', desc: 'AIESECブランドガイドライン', url: '' },
+  'ad_standard': { name: '広告物精査基準', desc: '公開前チェック用', url: '' },
+  'dashboard': { name: 'Recruit数値管理Dashboard', desc: 'リアルタイムKPIダッシュボード', url: '' },
+  'mkt_research': { name: 'AJ Mkt Research', desc: '市場調査データ', url: '' },
+  'event_check': { name: '説明会スライド・Eventチェック', desc: '5. 説明会フォルダ', url: '' },
+  'selection': { name: 'Selection資料', desc: '面接・選考', url: '' },
+  'survey_form': { name: '一律メンバーアンケート', desc: 'MC→LCの働きかけFB', url: '' },
+  'kintone_ep': { name: 'Kintone / EXPA EPデータ', desc: '実測値の取得元', url: '' },
+  'gss_legacy': { name: '2526term FR (旧GSS版)', desc: '参考に閲覧可能', url: '' }
+};
+
+const DEFAULT_LC_DATA = () => ({
+  meta: {
+    lc: 'KO',
+    fr_status: '記入中',
+    completion: {} // page_key -> bool
   },
-  planning: [], // [{period, item, detail, refs}]
-  personas: [], // [{name, career_flow, who, examples, faculty, high_school, exam_type, past_team_exp, abroad_exp, score, family, personality, hobby, expectation, future, comm_skill, must_skill, no_go, others, orientation}]
-  kgi: {
-    total: '',
-    logic: '',
-    pattern_breakdown: '',
-    lc_breakdown: [] // [{lc, persona_a, persona_b, persona_c, persona_d, total, notes}]
+  overview: {
+    target_total: '',
+    actual_total: '',
+    handover_summary: '',
+    top_priority: ''
   },
-  journey: {
-    groups: [
-      { name: 'グループA', stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' },
-      { name: 'グループB', stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' }
-    ]
+  // KGI / KPI funnel (top-line)
+  funnel: {
+    total_reach:       { plan: '', actual: '' },
+    line_registration: { plan: '', actual: '' },
+    tagged:            { plan: '', actual: '' },
+    event_apply:       { plan: '', actual: '' },
+    event_attend:      { plan: '', actual: '' },
+    af_distribute:     { plan: '', actual: '' },
+    af_submit:         { plan: '', actual: '' },
+    pass:              { plan: '', actual: '' },
+    paid:              { plan: '', actual: '' }
   },
-  mconlc: [], // [{period, agenda, refs}]
-  eval: {
-    persona: { good: '', more: '', next: '' },
-    lc_planning: { good: '', more: '', next: '' },
-    mc_support: { good: '', more: '', next: '' },
-    crm: { good: '', more: '', next: '' },
-    ixp: { good: '', more: '', next: '' },
-    kgi_reach: { good: '', more: '', next: '' }
+  funnel_handover: { calc_method: '', good: '', more: '' },
+  customer_journey: { design: '', good: '', more: '', cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
+  direction: {
+    lc_direction: '',
+    lc_issue: '',
+    long_term_issue: '',
+    ixp_direction: '',
+    direction_handover: '',
+    investments: [], // {item, cost, note}
+    food_meeting_note: ''
   },
-  structure: {
-    overall_diagram_note: '',
-    mtg_freq: '',
-    mtg_handover: '',
-    mgmt_handover: '',
-    next_year_jd: ''
+  uni_constraints: { // NEW
+    distribute_allowed: '',
+    distribute_rules: '',
+    booth_event: '',
+    classroom_speak: '',
+    paid_ad_rule: '',
+    sns_rule: '',
+    others: ''
   },
-  members: [], // [{name, role, assign_bg, jd, unexpected_jd, awareness, handover}]
-  resources: [] // [{name, purpose, url}]
+  oc: {
+    structure_note: '',
+    role_split: '',
+    diagram_note: '',
+    members: [] // {role, name, assign_bg, jd, unexpected_jd, awareness, handover}
+  },
+  reach_overall: {
+    purpose: '',
+    direction: '',
+    why: '',
+    how_implemented: '',
+    keep: '', stop: '', try: ''
+  },
+  reach_sns_ig: {
+    role: '', purpose: '', performance: 'fair',
+    good_case: '', bad_case: '', insight: '',
+    top_posts: [], // {rank, type, summary, goal, hypothesis, link}
+    keep: '', stop: '', try: ''
+  },
+  reach_sns_x: {
+    role: '', purpose: '', performance: 'fair',
+    good_case: '', bad_case: '', insight: '',
+    top_posts: [],
+    keep: '', stop: '', try: ''
+  },
+  reach_flyer: {
+    role: '',
+    note: '',
+    samples: [], // {img_note, reason, effect}
+    keep: '', stop: '', try: ''
+  },
+  reach_circle: {
+    role: '',
+    gather_good: '', gather_bad: '',
+    booth_good: '', booth_bad: '',
+    note: '',
+    keep: '', stop: '', try: ''
+  },
+  reach_paid_class: { // NEW per Sanshiro
+    paid_ad_used: 'no',
+    paid_ad_platform: '',
+    paid_ad_spend: '',
+    paid_ad_result: '',
+    paid_ad_good: '',
+    paid_ad_more: '',
+    class_speak_used: 'no',
+    class_speak_list: [], // {prof, faculty, count, content, result}
+    class_speak_good: '',
+    class_speak_more: '',
+    keep: '', stop: '', try: ''
+  },
+  line_bliss: {
+    line_purpose: '',
+    line_performance: 'fair',
+    line_good: '', line_bad: '',
+    line_insight: '',
+    bliss_good: '', bliss_bad: '',
+    keep: '', stop: '', try: ''
+  },
+  ldr_event: {
+    purpose: '',
+    events: [], // {name, date, apply, attend, content, good_more}
+    online_good: '', online_bad: '', online_notes: '', online_handover: '',
+    offline_good: '', offline_bad: '', offline_notes: '', offline_handover: ''
+  },
+  ixp_event: {
+    purpose: '',
+    events: [],
+    online_good: '', online_bad: '', online_notes: '', online_handover: '',
+    offline_good: '', offline_bad: '', offline_notes: '', offline_handover: ''
+  },
+  post_event_com: {
+    com_structure: '',
+    af_distribute_target: '',
+    good_case: '', bad_case: '',
+    handover_prep: '', handover_day: ''
+  },
+  lcmkt_to_lcmem: { // NEW
+    handoff_timing: '',
+    handoff_method: '',
+    info_transferred: '',
+    issues: '',
+    good: '', more: ''
+  },
+  selection: {
+    af_target: '', af_actual: '',
+    interview_target: '', interview_actual: '',
+    pass_target: '', pass_actual: '',
+    paid_target: '', paid_actual: '',
+    af_custom_questions: '',
+    af_handover: '',
+    interview_custom: '',
+    interview_handover: '',
+    drop_reasons: [] // {reason, count, note}
+  },
+  ixp_selection: {
+    summer_apply: '', summer_signup: '', summer_score: '',
+    signup_eval_good: 'fair', signup_eval_reason: '',
+    summer_eval_good: 'fair', summer_eval_reason: '',
+    handover: ''
+  },
+  member_survey: { // NEW
+    response_count: '',
+    response_rate: '',
+    mc_to_lc_fb: '',
+    lcmkt_to_lcmem_fb: '',
+    other_findings: '',
+    actions_for_next: ''
+  },
+  evaluation: {
+    items: [] // {topic, summary, note}
+  },
+  resources: {
+    custom: [] // {category, name, url, note}
+  }
 });
 
+// Per-page reference catalog mapping
+const PAGE_REFS = {
+  'overview': ['framework', 'dashboard', 'kintone_ep'],
+  'funnel': ['framework', 'dashboard', 'kintone_ep', 'crm_sheet'],
+  'journey': ['framework', 'mkt_research', 'crm_sheet'],
+  'direction': ['lc_share', 'recruit_call', 'mkt_research'],
+  'uni_constraints': ['lc_share'],
+  'oc': ['lc_share', 'recruit_call'],
+  'reach_overall': ['ad_template', 'bluebook', 'ad_standard', 'dashboard'],
+  'reach_sns': ['ad_template', 'bluebook', 'ad_standard'],
+  'reach_flyer': ['biraposter', 'bluebook', 'ad_standard'],
+  'reach_circle': ['biraposter', 'bluebook'],
+  'reach_paid_class': ['ad_template', 'ad_standard'],
+  'line_bliss': ['bliss', 'crm_sheet'],
+  'ldr_event': ['event_check', 'crm_sheet'],
+  'ixp_event': ['event_check', 'crm_sheet'],
+  'post_event_com': ['crm_sheet'],
+  'lcmkt_to_lcmem': ['lc_share'],
+  'selection': ['selection', 'crm_sheet'],
+  'ixp_selection': ['selection', 'crm_sheet'],
+  'member_survey': ['survey_form'],
+  'evaluation': [],
+  'resources': []
+};
+
 let state = {
-  currentTerm: null,
+  currentLC: 'KO',
   currentPage: 'overview',
-  terms: {} // { '2627': DEFAULT_TERM_DATA(), '2728': ... }
+  identity: null,        // { role:'MC'|'LC', lc:コード }  未設定ならログイン画面
+  globalCatalog: {},     // { catalog_key: url }  MC共通管理・全LC共有
+  lcs: {} // {lc_code: LC_DATA}
 };
 
 function loadState() {
@@ -887,15 +1698,48 @@ function loadState() {
       state = { ...state, ...parsed };
     }
   } catch (e) { console.error('Load failed', e); }
-
-  // initialize default term if none
-  if (!state.terms || Object.keys(state.terms).length === 0) {
-    const seed = '2627';
-    state.terms = { [seed]: DEFAULT_TERM_DATA() };
-    state.terms[seed].basicInfo.term = seed;
-    state.currentTerm = seed;
+  if (!state.lcs) state.lcs = {};
+  // 旧版（Keio/Waseda等の英語名）→新版（KO/WA等のコード）マイグレーション
+  const LEGACY_MAP = {
+    'Hokkaido':'HD','Aoyama':'AG','Chiba':null,'ICU':null,'Kanazawa':null,
+    'Hitotsubashi':'HI','Sophia':'JO','Keio':'KO','Meiji':'MJ','Rikkyo':'SP',
+    'Tsukuba':'TKB','Tokyo':'TO','Waseda':'WA','Nagoya':'NA','Doshisha':'DO',
+    'Kobe':'KB','Kwansei':'KG','Kyoto':'KT','Osaka':'OS','Hiroshima':'HU',
+    'Tohoku':null,'Yokohama':null,'Other':null
+  };
+  Object.keys(state.lcs).forEach(k => {
+    if (LEGACY_MAP[k] && !state.lcs[LEGACY_MAP[k]]) {
+      state.lcs[LEGACY_MAP[k]] = state.lcs[k];
+      state.lcs[LEGACY_MAP[k]].meta.lc = LEGACY_MAP[k];
+      delete state.lcs[k];
+    }
+  });
+  if (LEGACY_MAP[state.currentLC]) state.currentLC = LEGACY_MAP[state.currentLC];
+  if (!state.currentLC || !LC_LIST.includes(state.currentLC)) state.currentLC = 'KO';
+  if (!state.lcs[state.currentLC]) {
+    state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+    state.lcs[state.currentLC].meta.lc = state.currentLC;
   }
-  if (!state.currentTerm) state.currentTerm = Object.keys(state.terms)[0];
+
+  // --- 標準カタログURLをグローバル共有領域へマイグレーション ---
+  if (!state.globalCatalog || typeof state.globalCatalog !== 'object') state.globalCatalog = {};
+  Object.values(state.lcs).forEach(lcData => {
+    if (lcData.resources && Array.isArray(lcData.resources.custom)) {
+      lcData.resources.custom.forEach(r => {
+        if (r.catalog_key && r.url && !state.globalCatalog[r.catalog_key]) {
+          state.globalCatalog[r.catalog_key] = r.url;
+        }
+      });
+      // 旧catalog_keyエントリは各LCのcustomから除去（グローバルに移したため）
+      lcData.resources.custom = lcData.resources.custom.filter(r => !r.catalog_key);
+    }
+  });
+
+  // identity 未設定ならログインフローへ（INITで判定）
+  if (state.identity && (!state.identity.role ||
+      (state.identity.role === 'LC' && !LC_LIST.includes(state.identity.lc)))) {
+    state.identity = null;
+  }
 }
 
 let saveTimer = null;
@@ -913,82 +1757,148 @@ function saveState() {
       indicator.textContent = '保存エラー';
       console.error(e);
     }
-  }, 400);
+  }, 350);
 }
 
-function currentData() { return state.terms[state.currentTerm]; }
+function currentData() {
+  if (!state.lcs[state.currentLC]) {
+    state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+    state.lcs[state.currentLC].meta.lc = state.currentLC;
+  }
+  return state.lcs[state.currentLC];
+}
 
 /* =========================================================
-   TERM SWITCHER
+   HELPERS
    ========================================================= */
-function renderTermSwitcher() {
-  const el = document.getElementById('termSwitcher');
-  const terms = Object.keys(state.terms).sort();
-  el.innerHTML = terms.map(t =>
-    `<button class="term-tab ${t === state.currentTerm ? 'active' : ''}" data-term="${t}">${t}</button>`
-  ).join('') + `<button class="term-tab add" id="addTermBtn" title="新しいterm">+</button>`;
-
-  el.querySelectorAll('.term-tab[data-term]').forEach(btn => {
-    btn.onclick = () => {
-      state.currentTerm = btn.dataset.term;
-      saveState();
-      renderTermSwitcher();
-      renderPage();
-    };
-  });
-  document.getElementById('addTermBtn').onclick = openAddTermModal;
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-function openAddTermModal() {
-  const existing = Object.keys(state.terms).sort();
-  const last = existing[existing.length - 1] || '2627';
-  // best-guess next term: increment last 2 digits
-  let suggested = '';
-  if (/^\d{4}$/.test(last)) {
-    const a = parseInt(last.slice(0, 2)) + 1;
-    const b = parseInt(last.slice(2)) + 1;
-    suggested = `${String(a).padStart(2,'0')}${String(b).padStart(2,'0')}`;
+function bindInput(selector, getValue, setValue, onChange) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.value = getValue() ?? '';
+  el.oninput = () => {
+    setValue(el.value);
+    saveState();
+    if (onChange) onChange();
+  };
+}
+
+function pct(n, d) {
+  if (!n || !d) return null;
+  const v = (parseFloat(n) / parseFloat(d)) * 100;
+  if (!isFinite(v) || isNaN(v)) return null;
+  return v;
+}
+function fmtPct(v) {
+  if (v == null) return '–';
+  return v.toFixed(1) + '%';
+}
+function cvrClass(v) {
+  if (v == null) return '';
+  if (v >= 40) return 'good';
+  if (v >= 15) return '';
+  if (v >= 5) return 'warn';
+  return 'bad';
+}
+
+function addBtnHtml(id, label) {
+  return `<button class="add-row-btn" id="${id}">${label}</button>`;
+}
+
+/* =========================================================
+   PERMISSIONS (self-declared role; soft enforcement)
+   ========================================================= */
+function isMC()  { return state.identity && state.identity.role === 'MC'; }
+// 標準カタログ: MCのみ編集可
+function canEditCatalog() { return isMC(); }
+// カスタム資料: 表示中LC本人 または MC(管理者) のみ編集可
+function canEditCustom(lcCode) {
+  if (isMC()) return true;
+  return state.identity && state.identity.role === 'LC' && state.identity.lc === lcCode;
+}
+function identityLabel() {
+  if (!state.identity) return '未ログイン';
+  return state.identity.role === 'MC' ? 'MC' : state.identity.lc;
+}
+
+function renderRefPanel(refKeys) {
+  if (!refKeys || !refKeys.length) return '';
+  const data = currentData();
+  const refs = refKeys.map(k => {
+    // 標準カタログURLはグローバル共有領域から解決
+    const base = REF_CATALOG[k];
+    if (!base) return null;
+    const url = state.globalCatalog[k] || base.url || '';
+    return { ...base, url, key: k };
+  }).filter(Boolean);
+  if (!refs.length) return '';
+  return `
+    <div class="ref-panel">
+      <div class="ref-panel-icon">REF</div>
+      <div class="ref-panel-content">
+        <div class="ref-panel-title">References</div>
+        <div class="ref-links">
+          ${refs.map(r => r.url
+            ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="ref-link" title="${escapeHtml(r.desc)}">${escapeHtml(r.name)}</a>`
+            : `<span class="ref-link no-url" title="URLが未登録です。資料集タブで登録してください。">${escapeHtml(r.name)}</span>`
+          ).join('')}
+        </div>
+        <div class="ref-panel-hint">URLが灰色のものは「資料集」タブでURLを登録すると有効になります。</div>
+      </div>
+    </div>
+  `;
+}
+
+function pageHead(crumbs, title, desc, refKeys) {
+  return `
+    <div class="page-head">
+      <div class="page-head-content">
+        <div class="crumbs">${crumbs}</div>
+        <h1>${title}</h1>
+        <div class="desc">${desc}</div>
+      </div>
+      <div>
+        <button class="btn primary page-save-btn" onclick="savePageNow(this)">保存<span class="kbd">⌘S</span></button>
+      </div>
+    </div>
+    ${renderRefPanel(refKeys || [])}
+  `;
+}
+
+function savePageNow(btn) {
+  clearTimeout(saveTimer);
+  const indicator = document.getElementById('saveIndicator');
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    indicator.classList.remove('saving');
+    indicator.textContent = '自動保存済み';
+    if (btn) {
+      const original = btn.innerHTML;
+      btn.innerHTML = '保存しました';
+      btn.classList.add('saved');
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.classList.remove('saved');
+        btn.disabled = false;
+      }, 1300);
+    }
+  } catch (e) {
+    indicator.textContent = '保存エラー';
+    console.error(e);
   }
-
-  showModal('新しいtermを追加', `
-    <div class="field">
-      <label>Term <span class="hint">例: 2627</span></label>
-      <input type="text" id="newTermInput" value="${suggested}" maxlength="6" />
-    </div>
-    <div class="field">
-      <label>前年度のデータをコピーする</label>
-      <select id="copyFromSelect">
-        <option value="">コピーしない（白紙で作成）</option>
-        ${existing.map(t => `<option value="${t}">${t}</option>`).join('')}
-      </select>
-      <div class="small muted mt-16">コピーした場合は実績やGOOD/MOREは引き継がれず、構造（ペルソナ枠・メンバー役職・カスタムフィールド）のみがコピーされます。</div>
-    </div>
-  `, [
-    { label: 'キャンセル', onClick: closeModal },
-    { label: '作成', primary: true, onClick: () => {
-      const newTerm = document.getElementById('newTermInput').value.trim();
-      const copyFrom = document.getElementById('copyFromSelect').value;
-      if (!newTerm) return alert('Termを入力してください');
-      if (state.terms[newTerm]) return alert('そのtermは既に存在します');
-      const data = DEFAULT_TERM_DATA();
-      data.basicInfo.term = newTerm;
-      if (copyFrom && state.terms[copyFrom]) {
-        // Copy structure: persona names, member roles
-        const src = state.terms[copyFrom];
-        data.personas = src.personas.map(p => ({ ...p, who: '', examples: '', score: '', family: '', personality: '' }));
-        data.members = src.members.map(m => ({ ...m, name: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' }));
-        data.resources = src.resources.map(r => ({ name: r.name, purpose: r.purpose, url: '' }));
-      }
-      state.terms[newTerm] = data;
-      state.currentTerm = newTerm;
-      saveState();
-      renderTermSwitcher();
-      renderPage();
-      closeModal();
-    }}
-  ]);
-  setTimeout(() => document.getElementById('newTermInput').focus(), 50);
 }
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    savePageNow(document.querySelector('.page-save-btn'));
+  }
+});
 
 /* =========================================================
    MODAL
@@ -1015,844 +1925,1886 @@ document.getElementById('modalBackdrop').onclick = (e) => {
 };
 
 /* =========================================================
-   ROUTING / NAV
+   HEADER (LC SELECTOR)
    ========================================================= */
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.onclick = () => {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    item.classList.add('active');
-    state.currentPage = item.dataset.page;
+function renderLCSelector() {
+  const el = document.getElementById('lcSelect');
+  el.innerHTML = LC_GROUPS.map(g => `
+    <optgroup label="${g.region}">
+      ${g.lcs.map(l => `<option value="${l.code}" ${l.code === state.currentLC ? 'selected' : ''}>${l.code}</option>`).join('')}
+    </optgroup>
+  `).join('');
+  el.onchange = () => {
+    state.currentLC = el.value;
+    if (!state.lcs[state.currentLC]) {
+      state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+      state.lcs[state.currentLC].meta.lc = state.currentLC;
+    }
+    saveState();
     renderPage();
   };
-});
-
-/* =========================================================
-   INPUT HELPERS
-   ========================================================= */
-function bindInput(selector, getValue, setValue) {
-  const el = document.querySelector(selector);
-  if (!el) return;
-  el.value = getValue() ?? '';
-  el.oninput = () => { setValue(el.value); saveState(); };
-}
-
-function escapeHtml(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 /* =========================================================
-   PAGE HEAD HELPER + EXPLICIT SAVE
+   SIDEBAR
    ========================================================= */
-function pageHead(crumbs, title, desc) {
-  return `
-    <div class="page-head">
-      <div class="page-head-content">
-        <div class="crumbs">${crumbs}</div>
-        <h1>${title}</h1>
-        <div class="desc">${desc}</div>
-      </div>
-      <div class="page-head-actions">
-        <button class="btn primary page-save-btn" onclick="savePageNow(this)">保存<span class="kbd">⌘S</span></button>
-      </div>
+const NAV = [
+  { group: 'Overview', items: [
+    { page: 'overview', num: '0', label: '概要・申し送りサマリー' }
+  ]},
+  { group: '1. 採用方針', items: [
+    { page: 'direction', num: '1.1', label: 'Direction Reporting' },
+    { page: 'uni_constraints', num: '1.2', label: '大学特有の与件', newTag: true },
+    { page: 'oc', num: '1.3', label: 'OC体制・JD' }
+  ]},
+  { group: '2. KGI / KPI', items: [
+    { page: 'funnel', num: '2.1', label: 'Customer Flow (KPI)' },
+    { page: 'journey', num: '2.2', label: 'Customer Journey' }
+  ]},
+  { group: '3. Reach', items: [
+    { page: 'reach_overall', num: '3.1', label: 'Reach Overall' },
+    { page: 'reach_sns', num: '3.2', label: 'SNS (Instagram / X)' },
+    { page: 'reach_flyer', num: '3.3', label: 'ビラ配り' },
+    { page: 'reach_circle', num: '3.4', label: 'サークル紹介イベント' },
+    { page: 'reach_paid_class', num: '3.5', label: '有料広告 / 授業登壇', newTag: true },
+    { page: 'line_bliss', num: '3.6', label: 'AJ Official LINE / BLISS' }
+  ]},
+  { group: '4. Lead', items: [
+    { page: 'ldr_event', num: '4.1', label: 'LC説明会' },
+    { page: 'ixp_event', num: '4.2', label: 'GV説明会' },
+    { page: 'post_event_com', num: '4.3', label: '説明会後新入生com' },
+    { page: 'lcmkt_to_lcmem', num: '4.4', label: 'LCmkt → LCmem 引き継ぎ', newTag: true }
+  ]},
+  { group: '5. 入会 / Selection', items: [
+    { page: 'selection', num: '5.1', label: '入会Reporting' },
+    { page: 'ixp_selection', num: '5.2', label: 'IXP採用Reporting' }
+  ]},
+  { group: '6. 振り返り', items: [
+    { page: 'member_survey', num: '6.1', label: 'メンバーアンケート', newTag: true },
+    { page: 'evaluation', num: '6.2', label: 'Evaluation' }
+  ]},
+  { group: '資料', items: [
+    { page: 'resources', num: '*', label: '資料集 / Reference URL' }
+  ]}
+];
+
+function renderSidebar() {
+  const data = currentData();
+  document.getElementById('sidebar').innerHTML = NAV.map(g => `
+    <div class="nav-group">
+      <div class="nav-group-title">${g.group}</div>
+      ${g.items.map(it => `
+        <div class="nav-item ${it.page === state.currentPage ? 'active' : ''}" data-page="${it.page}">
+          <span class="nav-num">${it.num}</span>
+          <span>${it.label}</span>
+        </div>
+      `).join('')}
     </div>
-  `;
-}
+  `).join('');
 
-function savePageNow(btn) {
-  clearTimeout(saveTimer);
-  const indicator = document.getElementById('saveIndicator');
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    indicator.classList.remove('saving');
-    indicator.textContent = '自動保存済み';
-    if (btn) {
-      const original = btn.innerHTML;
-      btn.innerHTML = '✓ 保存しました';
-      btn.classList.add('saved');
-      btn.disabled = true;
-      setTimeout(() => {
-        btn.innerHTML = original;
-        btn.classList.remove('saved');
-        btn.disabled = false;
-      }, 1400);
-    }
-  } catch (e) {
-    indicator.textContent = '保存エラー';
-    if (btn) btn.innerHTML = '保存エラー';
-    console.error(e);
-  }
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.onclick = () => {
+      state.currentPage = el.dataset.page;
+      renderSidebar();
+      renderPage();
+    };
+  });
 }
-
-// Cmd+S / Ctrl+S to save the current page
-document.addEventListener('keydown', (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-    e.preventDefault();
-    const btn = document.querySelector('.page-save-btn');
-    savePageNow(btn);
-  }
-});
 
 /* =========================================================
-   PAGE RENDERERS
+   ROUTER
    ========================================================= */
 function renderPage() {
-  const page = state.currentPage;
   const data = currentData();
   const root = document.getElementById('mainContent');
-
-  // Update sidebar active state
-  document.querySelectorAll('.nav-item').forEach(n => {
-    n.classList.toggle('active', n.dataset.page === page);
-  });
-
-  if (page === 'overview') renderOverview(root, data);
-  else if (page === 'planning') renderPlanning(root, data);
-  else if (page === 'persona') renderPersona(root, data);
-  else if (page === 'kgi') renderKGI(root, data);
-  else if (page === 'journey') renderJourney(root, data);
-  else if (page === 'mconlc') renderMConLC(root, data);
-  else if (page === 'eval') renderEval(root, data);
-  else if (page === 'structure') renderStructure(root, data);
-  else if (page === 'members') renderMembers(root, data);
-  else if (page === 'resources') renderResources(root, data);
+  const fn = PAGE_RENDERERS[state.currentPage] || PAGE_RENDERERS.overview;
+  root.innerHTML = '<div class="page-content"></div>';
+  fn(root.querySelector('.page-content'), data);
+  injectCardSaveButtons(root);
 }
 
-/* ---------- OVERVIEW ---------- */
-function renderOverview(root, data) {
+// 各カードのヘッダーに保存ボタンを必ず付ける
+function injectCardSaveButtons(root) {
+  root.querySelectorAll('.card-head').forEach(head => {
+    if (head.querySelector('.card-save-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'card-save-btn';
+    btn.type = 'button';
+    btn.textContent = '保存';
+    btn.title = 'この記入欄を保存 (全データを保存します)';
+    btn.onclick = () => savePageNow(btn);
+    head.appendChild(btn);
+  });
+}
+
+const PAGE_RENDERERS = {};
+
+/* =========================================================
+   PAGE: OVERVIEW
+   ========================================================= */
+PAGE_RENDERERS.overview = (root, data) => {
+  // compute funnel CVRs for snapshot
+  const f = data.funnel;
+  const totalActual = parseFloat(f.paid.actual) || 0;
+  const totalTarget = parseFloat(f.paid.plan) || 0;
+  const achievement = totalTarget ? (totalActual / totalTarget * 100) : null;
+
   root.innerHTML = `
-    ${pageHead('Overview / 0', '概要・基本情報', 'この期の採用全体に関する基本情報を記入します。Direction・KGI・期間は他のページの数値と整合性を取ってください。')}
+    ${pageHead('Overview', '概要・申し送りサマリー', 'このtermのRecruit全体の概況と、最も伝えたい申し送りを最初にまとめます。引き継ぎを受ける人は、まずここを読みます。', PAGE_REFS.overview)}
 
     <div class="card">
-      <div class="card-head"><h2>Term Info</h2><div class="sub">Basic</div></div>
+      <div class="card-head"><h2>このtermのスナップショット</h2><div class="sub">${state.currentLC} / ${TERM} / ${LC_REGION[state.currentLC] || ''}</div></div>
       <div class="card-body">
-        <div class="field-row cols-3">
-          <div class="field">
-            <label>Term <span class="hint">例: 2627</span></label>
-            <input type="text" id="f_term" />
+        <div class="stat-grid">
+          <div class="stat-tile">
+            <div class="stat-label">採用目標 (KGI)</div>
+            <div class="stat-value">${f.paid.plan || '–'}</div>
+            <div class="stat-sub">入金者数</div>
           </div>
-          <div class="field">
-            <label>採用期間（開始）</label>
-            <input type="date" id="f_start" />
+          <div class="stat-tile ${achievement != null && achievement >= 100 ? 'green' : achievement != null && achievement >= 80 ? 'yellow' : achievement != null ? 'red' : ''}">
+            <div class="stat-label">実績</div>
+            <div class="stat-value">${f.paid.actual || '–'}</div>
+            <div class="stat-sub">${achievement != null ? '達成率 ' + achievement.toFixed(1) + '%' : '入金者数'}</div>
           </div>
-          <div class="field">
-            <label>採用期間（終了）</label>
-            <input type="date" id="f_end" />
+          <div class="stat-tile">
+            <div class="stat-label">説明会参加</div>
+            <div class="stat-value">${f.event_attend.actual || '–'}</div>
+            <div class="stat-sub">目標 ${f.event_attend.plan || '–'}</div>
           </div>
+          <div class="stat-tile">
+            <div class="stat-label">AF提出</div>
+            <div class="stat-value">${f.af_submit.actual || '–'}</div>
+            <div class="stat-sub">目標 ${f.af_submit.plan || '–'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>申し送りサマリー</h2><div class="sub">Top-line handover</div></div>
+      <div class="card-body">
+        <div class="callout">
+          <div class="callout-title">ここに書く内容</div>
+          少なくとも「<strong>次年度の人が最初に読むべき結論</strong>」を3〜5行で書いてください。各タブの詳細は後回しでも、ここだけは丁寧に。
         </div>
 
         <div class="field">
-          <label>Recruit Direction <span class="hint">この期の採用方針・解決したい課題</span></label>
-          <textarea id="f_direction" class="tall" placeholder="この期の採用方針・解決したい課題"></textarea>
+          <label>最優先で伝えたいこと <span class="required">*</span></label>
+          <textarea id="ov_top" class="tall" placeholder="例: 今termは説明会参加→AF提出のCVRが課題だった。要因は…。次termでは…を優先するべき。"></textarea>
         </div>
 
-        <div class="field-row cols-2">
-          <div class="field">
-            <label>全体採用 KGI <span class="hint">人数</span></label>
-            <input type="text" id="f_kgi" placeholder="例: 500" />
-          </div>
-          <div class="field">
-            <label>備考・メモ</label>
-            <input type="text" id="f_notes" />
-          </div>
+        <div class="field">
+          <label>全体総括</label>
+          <textarea id="ov_summary" class="tall" placeholder="採用方針、組織課題への接続、特筆すべきイベント、メンバー体制など、全体を俯瞰した総括"></textarea>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>このtermのスナップショット</h2><div class="sub">Auto-summary</div></div>
-      <div class="card-body" id="snapshotBox"></div>
+      <div class="card-head"><h2>記入進捗</h2><div class="sub">Completion</div></div>
+      <div class="card-body" id="completionBox"></div>
     </div>
   `;
 
-  bindInput('#f_term', () => data.basicInfo.term, v => data.basicInfo.term = v);
-  bindInput('#f_start', () => data.basicInfo.period_start, v => data.basicInfo.period_start = v);
-  bindInput('#f_end', () => data.basicInfo.period_end, v => data.basicInfo.period_end = v);
-  bindInput('#f_direction', () => data.basicInfo.direction_text, v => data.basicInfo.direction_text = v);
-  bindInput('#f_kgi', () => data.basicInfo.overall_kgi, v => data.basicInfo.overall_kgi = v);
-  bindInput('#f_notes', () => data.basicInfo.notes, v => data.basicInfo.notes = v);
+  bindInput('#ov_top', () => data.overview.top_priority, v => data.overview.top_priority = v);
+  bindInput('#ov_summary', () => data.overview.handover_summary, v => data.overview.handover_summary = v);
 
-  document.getElementById('snapshotBox').innerHTML = `
-    <div class="field-row cols-4">
-      <div><div class="small muted">ペルソナ数</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.personas.length}</div></div>
-      <div><div class="small muted">Planning項目</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.planning.length}</div></div>
-      <div><div class="small muted">MC Recruit メンバー</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.members.length}</div></div>
-      <div><div class="small muted">資料</div><div style="font-size:22px;font-weight:700;font-family:var(--font-en)">${data.resources.length}</div></div>
+  // Completion progress (heuristic: any text in major fields)
+  const checks = [
+    { page: 'direction', label: 'Direction', test: () => data.direction.lc_direction || data.direction.lc_issue },
+    { page: 'uni_constraints', label: '大学与件', test: () => data.uni_constraints.distribute_allowed || data.uni_constraints.classroom_speak },
+    { page: 'oc', label: 'OC体制', test: () => data.oc.members.length > 0 },
+    { page: 'funnel', label: 'KPI実測', test: () => data.funnel.paid.actual },
+    { page: 'journey', label: 'Journey', test: () => data.customer_journey.design },
+    { page: 'reach_overall', label: 'Reach Overall', test: () => data.reach_overall.purpose },
+    { page: 'reach_sns', label: 'SNS', test: () => data.reach_sns_ig.role || data.reach_sns_x.role },
+    { page: 'reach_flyer', label: 'ビラ', test: () => data.reach_flyer.role },
+    { page: 'reach_circle', label: 'サークル紹介', test: () => data.reach_circle.role },
+    { page: 'reach_paid_class', label: '有料広告/授業', test: () => data.reach_paid_class.paid_ad_used === 'yes' || data.reach_paid_class.class_speak_used === 'yes' },
+    { page: 'line_bliss', label: 'LINE/BLISS', test: () => data.line_bliss.line_purpose },
+    { page: 'ldr_event', label: 'LC説明会', test: () => data.ldr_event.events.length > 0 },
+    { page: 'ixp_event', label: 'GV説明会', test: () => data.ixp_event.events.length > 0 },
+    { page: 'post_event_com', label: '新入生com', test: () => data.post_event_com.com_structure },
+    { page: 'lcmkt_to_lcmem', label: 'LCmkt→mem', test: () => data.lcmkt_to_lcmem.handoff_timing },
+    { page: 'selection', label: '入会Reporting', test: () => data.selection.af_actual },
+    { page: 'ixp_selection', label: 'IXP採用', test: () => data.ixp_selection.summer_signup },
+    { page: 'member_survey', label: 'メンバー調査', test: () => data.member_survey.response_count },
+    { page: 'evaluation', label: 'Evaluation', test: () => data.evaluation.items.length > 0 }
+  ];
+  const done = checks.filter(c => c.test()).length;
+  const completionBox = document.getElementById('completionBox');
+  completionBox.innerHTML = `
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px">
+      <div style="flex:1">
+        <div style="height:8px; background:var(--aiesec-gray-light); border-radius:4px; overflow:hidden">
+          <div style="height:100%; width:${(done/checks.length*100).toFixed(0)}%; background:linear-gradient(90deg, var(--aiesec-blue), var(--aiesec-green)); transition: width 0.3s"></div>
+        </div>
+      </div>
+      <div style="font-family: var(--font-en); font-weight:900; font-size:18px;">
+        ${done} <span style="color:var(--aiesec-gray); font-weight:500; font-size:13px">/ ${checks.length}</span>
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px">
+      ${checks.map(c => `
+        <button class="btn sm checklist-btn ${c.test() ? 'done' : ''}" data-jump="${c.page}">
+          <span class="dot"></span>${c.label}
+        </button>
+      `).join('')}
     </div>
   `;
-}
+  completionBox.querySelectorAll('[data-jump]').forEach(b => {
+    b.onclick = () => {
+      state.currentPage = b.dataset.jump;
+      renderSidebar(); renderPage();
+    };
+  });
+};
 
-/* ---------- PLANNING TIMELINE ---------- */
-function renderPlanning(root, data) {
+/* =========================================================
+   PAGE: FUNNEL (KGI / KPI)
+   ========================================================= */
+PAGE_RENDERERS.funnel = (root, data) => {
   root.innerHTML = `
-    ${pageHead('1-1 / 1.1', 'Planning タイムライン', '採用Planning〜実働期にかけて行ったイベントやマイルストーンを時系列で記録します。Recruit PD、TM call、SNC、MC on LCなど。')}
+    ${pageHead('2. KGI / KPI / 2.1', 'Customer Flow (採用KGI / KPI)', '採用ファネルの各ステージごとに、Planで立てたKPIと実測値を記入します。CVRは自動計算されます。', PAGE_REFS.funnel)}
+
+    <div class="callout">
+      <div class="callout-title">数値の入力について</div>
+      実測値はKintone/EXPA/CRMシートから取得できる場合が多いです。<a href="#" onclick="event.preventDefault(); jumpTo('resources')">資料集</a>でデータソースのURLを登録すると、ここから直接飛べます。
+    </div>
 
     <div class="card">
-      <div class="card-head"><h2>タイムライン</h2><div class="sub">${data.planning.length} items</div></div>
-      <div class="card-body" id="planningTable"></div>
+      <div class="card-head"><h2>採用ファネル</h2><div class="sub">Plan vs Actual</div></div>
+      <div class="card-body">
+        <div class="kpi-flow">
+          <div class="kpi-flow-inner" id="funnelBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>KGI / KPI 算出ロジック</h2><div class="sub">Calculation</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>採用KGI / KPI / CVRの出し方</label>
+          <textarea id="f_calc" class="tall" placeholder="どのデータをどう積み上げてKGIを設定したか / CVRをどう算出したか"></textarea>
+        </div>
+        <div class="section-divider">申し送り</div>
+        <div class="gm-grid">
+          <div class="gm-cell good">
+            <div class="gm-label">Good</div>
+            <textarea id="f_good"></textarea>
+          </div>
+          <div class="gm-cell more">
+            <div class="gm-label">More</div>
+            <textarea id="f_more"></textarea>
+          </div>
+        </div>
+      </div>
     </div>
   `;
-  renderPlanningTable(data);
+
+  const stages = [
+    { key: 'total_reach', label: 'Total Reach' },
+    { key: 'line_registration', label: 'LINE登録 (追加経路)' },
+    { key: 'tagged', label: 'タグ付け数' },
+    { key: 'event_apply', label: '説明会申込' },
+    { key: 'event_attend', label: '説明会参加' },
+    { key: 'af_distribute', label: 'AF配布' },
+    { key: 'af_submit', label: 'AF提出' },
+    { key: 'pass', label: '合格者' },
+    { key: 'paid', label: '入金者' }
+  ];
+
+  const fb = document.getElementById('funnelBox');
+  fb.innerHTML = stages.map((s, i) => {
+    const cur = data.funnel[s.key] || { plan: '', actual: '' };
+    let arrowHtml = '';
+    if (i < stages.length - 1) {
+      const next = stages[i + 1].key;
+      const cvr = pct(data.funnel[next]?.actual, cur.actual);
+      const cvrPlan = pct(data.funnel[next]?.plan, cur.plan);
+      arrowHtml = `
+        <div class="kpi-arrow">
+          <span>→</span>
+          <span class="kpi-cvr ${cvrClass(cvr)}">${fmtPct(cvr)}</span>
+          ${cvrPlan != null ? `<span class="small mono muted">plan ${cvrPlan.toFixed(1)}%</span>` : ''}
+        </div>
+      `;
+    }
+    return `
+      <div class="kpi-step">
+        <div class="kpi-step-label">${s.label}</div>
+        <input type="number" data-stage="${s.key}" data-k="actual" value="${escapeHtml(cur.actual)}" placeholder="実測" />
+        <div class="kpi-target">
+          <input type="number" data-stage="${s.key}" data-k="plan" value="${escapeHtml(cur.plan)}" placeholder="目標" style="font-size:11px; padding:3px 4px" />
+        </div>
+      </div>
+      ${arrowHtml}
+    `;
+  }).join('');
+
+  fb.querySelectorAll('input').forEach(el => {
+    el.oninput = () => {
+      const s = el.dataset.stage, k = el.dataset.k;
+      if (!data.funnel[s]) data.funnel[s] = { plan: '', actual: '' };
+      data.funnel[s][k] = el.value;
+      saveState();
+      // re-render funnel only (cheap)
+      PAGE_RENDERERS.funnel(root, data);
+    };
+  });
+
+  bindInput('#f_calc', () => data.funnel_handover.calc_method, v => data.funnel_handover.calc_method = v);
+  bindInput('#f_good', () => data.funnel_handover.good, v => data.funnel_handover.good = v);
+  bindInput('#f_more', () => data.funnel_handover.more, v => data.funnel_handover.more = v);
+};
+
+/* =========================================================
+   PAGE: JOURNEY
+   ========================================================= */
+PAGE_RENDERERS.journey = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('2. KGI / KPI / 2.2', 'Customer Journey / 感情設計', '市場視点と組織視点の両面から、ペルソナの認知〜入会までの感情設計を振り返ります。', PAGE_REFS.journey)}
+
+    <div class="card">
+      <div class="card-head"><h2>顧客の感情設計</h2><div class="sub">Touch points</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>設計内容</label>
+          <textarea id="j_design" class="tall" placeholder="ペルソナの各ステージでどんな感情を作りたかったか、それに対応するtouchpointの設計"></textarea>
+        </div>
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="j_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="j_more"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>CVR向上施策 — 認知 → 説明会参加申込</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('cvr1')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>CVR向上施策 — 申込 → 参加</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('cvr2')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>CVR向上施策 — 参加 → AF提出</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('cvr3')}</div>
+    </div>
+  `;
+
+  bindInput('#j_design', () => data.customer_journey.design, v => data.customer_journey.design = v);
+  bindInput('#j_good', () => data.customer_journey.good, v => data.customer_journey.good = v);
+  bindInput('#j_more', () => data.customer_journey.more, v => data.customer_journey.more = v);
+
+  ['cvr1', 'cvr2', 'cvr3'].forEach(prefix => {
+    bindInput(`#${prefix}_keep`, () => data.customer_journey[`${prefix}_keep`] || data.customer_journey[`${prefix.replace('cvr','cvr_keep')}`], v => data.customer_journey[`cvr_keep${prefix.slice(-1)}`] = v);
+    bindInput(`#${prefix}_problem`, () => data.customer_journey[`cvr_problem${prefix.slice(-1)}`], v => data.customer_journey[`cvr_problem${prefix.slice(-1)}`] = v);
+    bindInput(`#${prefix}_try`, () => data.customer_journey[`cvr_try${prefix.slice(-1)}`], v => data.customer_journey[`cvr_try${prefix.slice(-1)}`] = v);
+  });
+};
+
+function kptHtml(prefix) {
+  return `
+    <div class="kpt-block">
+      <div class="kpt-grid">
+        <div class="kpt-cell">
+          <div class="kpt-label keep">Keep</div>
+          <textarea id="${prefix}_keep" placeholder="続けるべきこと"></textarea>
+        </div>
+        <div class="kpt-cell">
+          <div class="kpt-label problem">Problem</div>
+          <textarea id="${prefix}_problem" placeholder="課題に感じたこと"></textarea>
+        </div>
+        <div class="kpt-cell">
+          <div class="kpt-label try">Try</div>
+          <textarea id="${prefix}_try" placeholder="次にやってみたいこと"></textarea>
+        </div>
+      </div>
+    </div>
+  `;
 }
-function renderPlanningTable(data) {
-  const box = document.getElementById('planningTable');
-  if (!data.planning.length) {
-    box.innerHTML = `<div class="empty"><h3>まだ項目がありません</h3><p>下のボタンからPlanning項目を追加してください</p></div>` + addBtnHtml('addPlanning', '＋ 項目を追加');
+
+/* =========================================================
+   PAGE: DIRECTION REPORTING
+   ========================================================= */
+PAGE_RENDERERS.direction = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('1. 採用方針 / 1.1', 'Direction Reporting', '今termの採用方針・経営課題・投資判断を振り返ります。', PAGE_REFS.direction)}
+
+    <div class="card">
+      <div class="card-head"><h2>LCの方針・課題</h2><div class="sub">Strategy</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>LCの経営方針</label>
+          <textarea id="d_direction" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>LC独自の経営課題</label>
+          <textarea id="d_issue" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>採用によって解決したい中長期の課題 <span class="hint">退会者アンケート、EB/アルムナイヒアリングなど参考データを元に</span></label>
+          <textarea id="d_long_issue" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>IXP採用方針 <span class="hint">採用段階でoGVとどうシナジーを生むか</span></label>
+          <textarea id="d_ixp" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>採用方針に対する申し送り <span class="hint">プランニング段階と異なる示唆が得られた場合</span></label>
+          <textarea id="d_handover" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>投資項目とその振り返り</h2>
+        <div class="sub">Investments</div>
+      </div>
+      <div class="card-body" id="investBox"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>ご飯会など非本質機会</h2><div class="sub">Non-core ops</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>運営についての申し送り</label>
+          <textarea id="d_food" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindInput('#d_direction', () => data.direction.lc_direction, v => data.direction.lc_direction = v);
+  bindInput('#d_issue', () => data.direction.lc_issue, v => data.direction.lc_issue = v);
+  bindInput('#d_long_issue', () => data.direction.long_term_issue, v => data.direction.long_term_issue = v);
+  bindInput('#d_ixp', () => data.direction.ixp_direction, v => data.direction.ixp_direction = v);
+  bindInput('#d_handover', () => data.direction.direction_handover, v => data.direction.direction_handover = v);
+  bindInput('#d_food', () => data.direction.food_meeting_note, v => data.direction.food_meeting_note = v);
+
+  renderInvestBox(data);
+};
+
+function renderInvestBox(data) {
+  const box = document.getElementById('investBox');
+  if (!data.direction.investments.length) {
+    box.innerHTML = `<div class="empty"><h3>投資項目がまだありません</h3><p>ハード、ビラ印刷、有料広告などの費用感を残します</p></div>${addBtnHtml('addInvest', '＋ 投資項目を追加')}`;
   } else {
     box.innerHTML = `
       <table class="data">
-        <thead>
-          <tr>
-            <th style="width:120px">時期</th>
-            <th style="width:200px">項目</th>
-            <th>詳細</th>
-            <th style="width:160px">参考資料</th>
-            <th style="width:36px"></th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th style="width:220px">投資した項目</th>
+          <th style="width:120px">費用</th>
+          <th>申し送り</th>
+          <th style="width:36px"></th>
+        </tr></thead>
         <tbody>
-          ${data.planning.map((p, i) => `
+          ${data.direction.investments.map((it, i) => `
             <tr data-i="${i}">
-              <td><input type="text" data-k="period" value="${escapeHtml(p.period)}" placeholder="" /></td>
-              <td><input type="text" data-k="item" value="${escapeHtml(p.item)}" placeholder="" /></td>
-              <td><textarea data-k="detail" placeholder="">${escapeHtml(p.detail)}</textarea></td>
-              <td><input type="text" data-k="refs" value="${escapeHtml(p.refs)}" placeholder="リンクや資料名" /></td>
+              <td><input type="text" data-k="item" value="${escapeHtml(it.item)}" /></td>
+              <td><input type="text" data-k="cost" value="${escapeHtml(it.cost)}" placeholder="¥" /></td>
+              <td><textarea data-k="note">${escapeHtml(it.note)}</textarea></td>
               <td><button class="row-delete" data-del="${i}">×</button></td>
             </tr>
           `).join('')}
         </tbody>
       </table>
-    ` + addBtnHtml('addPlanning', '＋ 項目を追加');
+      ${addBtnHtml('addInvest', '＋ 投資項目を追加')}
+    `;
   }
-
-  document.getElementById('addPlanning').onclick = () => {
-    data.planning.push({ period: '', item: '', detail: '', refs: '' });
-    saveState(); renderPlanningTable(data);
+  document.getElementById('addInvest').onclick = () => {
+    data.direction.investments.push({ item: '', cost: '', note: '' });
+    saveState();
+    renderInvestBox(data);
   };
   box.querySelectorAll('input,textarea').forEach(el => {
     el.oninput = () => {
       const i = parseInt(el.closest('tr').dataset.i);
-      data.planning[i][el.dataset.k] = el.value;
+      data.direction.investments[i][el.dataset.k] = el.value;
       saveState();
     };
   });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      const i = parseInt(btn.dataset.del);
-      data.planning.splice(i, 1);
-      saveState(); renderPlanningTable(data);
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      data.direction.investments.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderInvestBox(data);
     };
   });
 }
 
-/* ---------- PERSONA ---------- */
-const PERSONA_FIELDS = [
-  { k: 'career_flow', label: '想定されるキャリアフロー', placeholder: '例: 2627: LDR member → 2728: LCBB → 2829: MCR' },
-  { k: 'who', label: 'どんな人？', placeholder: '' },
-  { k: 'examples', label: '具体例', placeholder: '実在する人物やキャラクターなど' },
-  { k: 'faculty', label: '学部学科タイプ', placeholder: '' },
-  { k: 'high_school', label: '出身高校タイプ', placeholder: '' },
-  { k: 'exam_type', label: '受験形態', placeholder: '' },
-  { k: 'past_team_exp', label: '過去のチーム経験 / リーダー経験', placeholder: '' },
-  { k: 'abroad_exp', label: '海外経験', placeholder: '' },
-  { k: 'score', label: 'スコア', placeholder: '' },
-  { k: 'family', label: '家庭環境', placeholder: '' },
-  { k: 'personality', label: '性格', placeholder: '' },
-  { k: 'hobby', label: '趣味分野', placeholder: '' },
-  { k: 'expectation', label: '大学/課外活動への期待値', placeholder: '' },
-  { k: 'consider', label: '検討する就活軸', placeholder: '' },
-  { k: 'future', label: '将来について考えていること', placeholder: '' },
-  { k: 'comm_skill', label: '伝える能力 / 経験', placeholder: '' },
-  { k: 'must_skill', label: '持っていてほしい能力', placeholder: '' },
-  { k: 'no_go', label: '採用・配置しないほうがいい人', placeholder: '' },
-  { k: 'others', label: 'その他', placeholder: '' },
-  { k: 'orientation', label: '志向性', placeholder: '' }
-];
-
-function renderPersona(root, data) {
+/* =========================================================
+   PAGE: UNI CONSTRAINTS (NEW)
+   ========================================================= */
+PAGE_RENDERERS.uni_constraints = (root, data) => {
   root.innerHTML = `
-    ${pageHead('1-1 / 1.2', 'ペルソナ設計', 'この期で採用ターゲットとするペルソナを記録します。事業部ヒアリングを元にした上流整理から落とし込んでください。')}
+    ${pageHead('1. 採用方針 / 1.2', '大学特有の与件', 'さんしろうさんのお願い: 「いい加減来年『このLCってビラ配れるんだっけ？』みたいなコミュ取りたくない」を解決するセクション。集客における大学固有の制約を、次年度が読めばわかる形で残します。', PAGE_REFS.uni_constraints)}
 
     <div class="card">
-      <div class="card-head">
-        <h2>ペルソナ</h2>
-        <div class="flex gap-8">
-          <div class="sub">${data.personas.length} personas</div>
-          <button class="btn primary" id="addPersona">＋ ペルソナ追加</button>
-        </div>
-      </div>
-      <div class="card-body" id="personaBox"></div>
-    </div>
-  `;
-  document.getElementById('addPersona').onclick = () => {
-    data.personas.push({ name: `ペルソナ${data.personas.length + 1}`, ...Object.fromEntries(PERSONA_FIELDS.map(f => [f.k, ''])) });
-    state._activePersonaIdx = data.personas.length - 1;
-    saveState(); renderPersonaBox(data);
-  };
-  renderPersonaBox(data);
-}
-
-function renderPersonaBox(data) {
-  const box = document.getElementById('personaBox');
-  if (!data.personas.length) {
-    box.innerHTML = `<div class="empty"><h3>ペルソナがまだありません</h3><p>右上の「ペルソナ追加」から始めてください</p></div>`;
-    return;
-  }
-  if (state._activePersonaIdx == null || state._activePersonaIdx >= data.personas.length) {
-    state._activePersonaIdx = 0;
-  }
-  const idx = state._activePersonaIdx;
-  const p = data.personas[idx];
-
-  box.innerHTML = `
-    <div class="persona-grid">
-      <div class="persona-tabs">
-        ${data.personas.map((per, i) => `
-          <div class="persona-tab ${i === idx ? 'active' : ''}" data-i="${i}">
-            <span class="pname">${escapeHtml(per.name) || '(無名)'}</span>
-            <button class="row-delete" data-del="${i}" title="削除">×</button>
-          </div>
-        `).join('')}
-      </div>
-      <div class="persona-content">
-        <div class="field">
-          <label>ペルソナ名</label>
-          <input type="text" id="p_name" value="${escapeHtml(p.name)}" />
-        </div>
-        ${PERSONA_FIELDS.map(f => `
-          <div class="field">
-            <label>${f.label}</label>
-            <textarea data-k="${f.k}" placeholder="${escapeHtml(f.placeholder)}">${escapeHtml(p[f.k] || '')}</textarea>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-
-  box.querySelectorAll('.persona-tab[data-i]').forEach(tab => {
-    tab.onclick = (e) => {
-      if (e.target.dataset.del != null) return;
-      state._activePersonaIdx = parseInt(tab.dataset.i);
-      renderPersonaBox(data);
-    };
-  });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      if (!confirm('このペルソナを削除しますか？')) return;
-      data.personas.splice(parseInt(btn.dataset.del), 1);
-      state._activePersonaIdx = 0;
-      saveState(); renderPersonaBox(data);
-    };
-  });
-  document.getElementById('p_name').oninput = (e) => { p.name = e.target.value; saveState(); renderPersonaBox(data); document.getElementById('p_name').focus(); };
-  box.querySelectorAll('[data-k]').forEach(el => {
-    el.oninput = () => { p[el.dataset.k] = el.value; saveState(); };
-  });
-}
-
-/* ---------- KGI / KPI ---------- */
-function renderKGI(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-1 / 1.3', '採用 KGI / KPI', '全体KGIの算出ロジックと、LCごとの内訳を記録します。次年度のリサーチ資料として活用できる形で残してください。')}
-
-    <div class="card">
-      <div class="card-head"><h2>全体 KGI</h2><div class="sub">Top-line</div></div>
+      <div class="card-head"><h2>ビラ配り</h2><div class="sub">Flyer distribution</div></div>
       <div class="card-body">
         <div class="field-row cols-2">
           <div class="field">
-            <label>全体 KGI（人数）</label>
-            <input type="text" id="kgi_total" />
+            <label>そもそも配布できるか</label>
+            <select id="u_dist_allow">
+              <option value="">未選択</option>
+              <option value="ok">配れる</option>
+              <option value="conditional">条件付きで配れる</option>
+              <option value="no">配れない</option>
+            </select>
           </div>
           <div class="field">
-            <label>パターン分類 <span class="hint">対面/オンライン × 配布可否など</span></label>
-            <input type="text" id="kgi_pattern" placeholder="対面ビラ × オンライン新歓 など" />
+            <label>配布できる場所 / できない場所</label>
+            <input type="text" id="u_dist_loc" placeholder="例: 正門前OK、講義棟内NG" />
           </div>
         </div>
         <div class="field">
-          <label>算出ロジック</label>
-          <textarea id="kgi_logic" class="tall" placeholder="算出の根拠・計算式・参考にした数値など"></textarea>
+          <label>配布のルール・申請プロセス・注意点</label>
+          <textarea id="u_dist_rules" class="tall" placeholder="例: 学生部に2週間前申請、団体名スタンプ必須、〇〇日はNG など"></textarea>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>LCごとの内訳</h2><div class="sub">${data.kgi.lc_breakdown.length} LCs</div></div>
-      <div class="card-body" id="kgiBreakdown"></div>
+      <div class="card-head"><h2>ブース / サークル紹介イベント</h2><div class="sub">Booth event</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>サークル紹介イベントの有無・概要・参加条件・注意点</label>
+          <textarea id="u_booth" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>授業内発表 / 教員ルート</h2><div class="sub">Class speak</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>可能な授業・教員ルート、依頼方法、注意点</label>
+          <textarea id="u_class" class="tall" placeholder="例: 〇〇教授(英語I)はAIESEC OBで毎年5分喋らせてくれる、依頼は3月末まで、など"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>有料広告 / 大学広告枠</h2><div class="sub">Paid ads</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>使える広告枠、料金感、申請ルート</label>
+          <textarea id="u_paid_ad" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>SNS / その他の制約</h2><div class="sub">Other</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>SNS運用上の制約 / 大学公認サークル特有のルール</label>
+          <textarea id="u_sns" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>その他、来年度に伝えたい大学固有の与件</label>
+          <textarea id="u_others" class="tall"></textarea>
+        </div>
+      </div>
     </div>
   `;
 
-  bindInput('#kgi_total', () => data.kgi.total, v => data.kgi.total = v);
-  bindInput('#kgi_pattern', () => data.kgi.pattern_breakdown, v => data.kgi.pattern_breakdown = v);
-  bindInput('#kgi_logic', () => data.kgi.logic, v => data.kgi.logic = v);
+  bindInput('#u_dist_allow', () => data.uni_constraints.distribute_allowed, v => data.uni_constraints.distribute_allowed = v);
+  bindInput('#u_dist_loc', () => data.uni_constraints.distribute_rules, v => data.uni_constraints.distribute_rules = v);
+  bindInput('#u_dist_rules', () => data.uni_constraints.distribute_rules_detail || data.uni_constraints.distribute_rules, v => data.uni_constraints.distribute_rules_detail = v);
+  bindInput('#u_booth', () => data.uni_constraints.booth_event, v => data.uni_constraints.booth_event = v);
+  bindInput('#u_class', () => data.uni_constraints.classroom_speak, v => data.uni_constraints.classroom_speak = v);
+  bindInput('#u_paid_ad', () => data.uni_constraints.paid_ad_rule, v => data.uni_constraints.paid_ad_rule = v);
+  bindInput('#u_sns', () => data.uni_constraints.sns_rule, v => data.uni_constraints.sns_rule = v);
+  bindInput('#u_others', () => data.uni_constraints.others, v => data.uni_constraints.others = v);
+};
 
-  renderKGIBreakdown(data);
+/* =========================================================
+   PAGE: OC
+   ========================================================= */
+PAGE_RENDERERS.oc = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('1. 採用方針 / 1.3', 'OC体制・組閣・メンバーマネジメント', '採用OCP・説明会OC・広報OCなど、組閣の全体像とJD、申し送りを記録します。', PAGE_REFS.oc)}
+
+    <div class="card">
+      <div class="card-head"><h2>組閣・全体構造</h2><div class="sub">Structure</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>MktD / TMD / RecruitDの役割の棲み分け</label>
+          <textarea id="oc_role"></textarea>
+        </div>
+        <div class="field">
+          <label>体制図についてのメモ <span class="hint">画像URLは資料集に登録</span></label>
+          <textarea id="oc_diagram" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>組閣・マネジメント構造全体の申し送り</label>
+          <textarea id="oc_handover" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>メンバー一覧</h2>
+        <button class="btn primary sm" id="addOC">＋ メンバー追加</button>
+      </div>
+      <div class="card-body" id="ocMembers"></div>
+    </div>
+  `;
+
+  bindInput('#oc_role', () => data.oc.role_split, v => data.oc.role_split = v);
+  bindInput('#oc_diagram', () => data.oc.diagram_note, v => data.oc.diagram_note = v);
+  bindInput('#oc_handover', () => data.oc.structure_note, v => data.oc.structure_note = v);
+
+  document.getElementById('addOC').onclick = () => {
+    data.oc.members.push({ role: '', name: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' });
+    saveState();
+    renderOCMembers(data);
+  };
+  renderOCMembers(data);
+};
+
+function renderOCMembers(data) {
+  const box = document.getElementById('ocMembers');
+  if (!data.oc.members.length) {
+    box.innerHTML = `<div class="empty"><h3>メンバーがまだいません</h3><p>「メンバー追加」から始めてください</p></div>`;
+    return;
+  }
+  box.innerHTML = data.oc.members.map((m, i) => `
+    <div class="oc-card">
+      <div class="oc-head">
+        <input type="text" class="oc-role-input" data-i="${i}" data-k="role" value="${escapeHtml(m.role)}" placeholder="役職 (例: 採用OCP)" />
+        <input type="text" class="oc-name-input" data-i="${i}" data-k="name" value="${escapeHtml(m.name)}" placeholder="名前" />
+        <button class="btn danger sm" data-del="${i}">削除</button>
+      </div>
+      <div class="oc-body">
+        <div class="field"><label>アサインの背景</label><textarea data-i="${i}" data-k="assign_bg">${escapeHtml(m.assign_bg)}</textarea></div>
+        <div class="field"><label>該当termにおけるJD</label><textarea data-i="${i}" data-k="jd" class="tall">${escapeHtml(m.jd)}</textarea></div>
+        <div class="field"><label>想定外に発生したJD / 要因</label><textarea data-i="${i}" data-k="unexpected_jd">${escapeHtml(m.unexpected_jd)}</textarea></div>
+        <div class="field"><label>この役職として意識すべきこと</label><textarea data-i="${i}" data-k="awareness">${escapeHtml(m.awareness)}</textarea></div>
+        <div class="field"><label>全体としての申し送り</label><textarea data-i="${i}" data-k="handover">${escapeHtml(m.handover)}</textarea></div>
+      </div>
+    </div>
+  `).join('');
+  box.querySelectorAll('input,textarea').forEach(el => {
+    if (el.matches('[data-del]')) return;
+    el.oninput = () => {
+      const i = parseInt(el.dataset.i);
+      data.oc.members[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      if (!confirm('このメンバーを削除しますか？')) return;
+      data.oc.members.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderOCMembers(data);
+    };
+  });
 }
 
-function renderKGIBreakdown(data) {
-  const box = document.getElementById('kgiBreakdown');
-  const personaNames = data.personas.map(p => p.name);
+/* =========================================================
+   PAGE: REACH OVERALL
+   ========================================================= */
+PAGE_RENDERERS.reach_overall = (root, data) => {
+  const f = data.funnel;
+  // Compute Reach -> 説明会CVR from sub-data
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.1', 'Reach Overall', '全体のReach戦略 (SNS/ビラ/サークル紹介/有料広告/授業登壇) を俯瞰し、Brand Direction・市場/組織課題からの根拠と振り返りを残します。', PAGE_REFS.reach_overall)}
+
+    <div class="card">
+      <div class="card-head"><h2>Reachの目的と全体方針</h2><div class="sub">Purpose</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Reachの目的</label>
+          <textarea id="ro_purpose"></textarea>
+        </div>
+        <div class="field">
+          <label>Brand Direction <span class="hint">どのような見せ方をしたか (VM強め / 事業強め / グローバル強め など)</span></label>
+          <textarea id="ro_direction"></textarea>
+        </div>
+        <div class="field">
+          <label>Why? <span class="hint">それはなぜ (市場傾向 / 組織課題)</span></label>
+          <textarea id="ro_why" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>How? <span class="hint">実働にどう反映したか</span></label>
+          <textarea id="ro_how" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度へのReach申し送り</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('ro')}</div>
+    </div>
+  `;
+
+  bindInput('#ro_purpose', () => data.reach_overall.purpose, v => data.reach_overall.purpose = v);
+  bindInput('#ro_direction', () => data.reach_overall.direction, v => data.reach_overall.direction = v);
+  bindInput('#ro_why', () => data.reach_overall.why, v => data.reach_overall.why = v);
+  bindInput('#ro_how', () => data.reach_overall.how_implemented, v => data.reach_overall.how_implemented = v);
+  bindInput('#ro_keep', () => data.reach_overall.keep, v => data.reach_overall.keep = v);
+  bindInput('#ro_problem', () => data.reach_overall.stop, v => data.reach_overall.stop = v);
+  bindInput('#ro_try', () => data.reach_overall.try, v => data.reach_overall.try = v);
+};
+
+/* =========================================================
+   PAGE: REACH SNS
+   ========================================================= */
+PAGE_RENDERERS.reach_sns = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.2', 'SNS (Instagram / X)', 'Instagram (優先度高) と Xそれぞれの運用振り返り。Top Engagement投稿・成功/失敗パターン・学び・申し送りを残します。', PAGE_REFS.reach_sns)}
+
+    ${snsBlockHtml('ig', 'Instagram Analysis', '優先度: 高', data.reach_sns_ig)}
+    ${snsBlockHtml('x', 'X Analysis', '', data.reach_sns_x)}
+  `;
+
+  ['ig', 'x'].forEach(p => {
+    const src = p === 'ig' ? data.reach_sns_ig : data.reach_sns_x;
+    bindInput(`#${p}_role`, () => src.role, v => src.role = v);
+    bindInput(`#${p}_purpose`, () => src.purpose, v => src.purpose = v);
+    bindInput(`#${p}_perf`, () => src.performance, v => src.performance = v);
+    bindInput(`#${p}_good`, () => src.good_case, v => src.good_case = v);
+    bindInput(`#${p}_bad`, () => src.bad_case, v => src.bad_case = v);
+    bindInput(`#${p}_insight`, () => src.insight, v => src.insight = v);
+    bindInput(`#${p}_keep`, () => src.keep, v => src.keep = v);
+    bindInput(`#${p}_problem`, () => src.stop, v => src.stop = v);
+    bindInput(`#${p}_try`, () => src.try, v => src.try = v);
+
+    renderSNSPosts(p, src);
+  });
+};
+
+function snsBlockHtml(prefix, title, badge, src) {
+  return `
+    <div class="card">
+      <div class="card-head">
+        <h2>${title} ${badge ? `<span class="pill orange" style="margin-left:6px">${badge}</span>` : ''}</h2>
+        <div class="sub">${prefix.toUpperCase()}</div>
+      </div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>Role / Reach戦略での位置付け</label>
+            <textarea id="${prefix}_role">${escapeHtml(src.role)}</textarea>
+          </div>
+          <div class="field">
+            <label>Overall Purpose</label>
+            <textarea id="${prefix}_purpose">${escapeHtml(src.purpose)}</textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label>Performance</label>
+          <select id="${prefix}_perf">
+            <option value="good" ${src.performance==='good'?'selected':''}>Good</option>
+            <option value="fair" ${src.performance==='fair'?'selected':''}>Fair</option>
+            <option value="bad" ${src.performance==='bad'?'selected':''}>Bad</option>
+          </select>
+        </div>
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>Good Case <span class="hint">運用上うまくいったこと</span></label>
+            <textarea id="${prefix}_good">${escapeHtml(src.good_case)}</textarea>
+          </div>
+          <div class="field">
+            <label>Bad Case <span class="hint">うまくいかなかったこと</span></label>
+            <textarea id="${prefix}_bad">${escapeHtml(src.bad_case)}</textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label>運用を通した学び / インサイト</label>
+          <textarea id="${prefix}_insight"></textarea>
+        </div>
+
+        <div class="section-divider">Top Engagement Posts</div>
+        <div id="${prefix}_posts"></div>
+
+        <div class="section-divider">次年度への申し送り</div>
+        ${kptHtml(prefix)}
+      </div>
+    </div>
+  `;
+}
+
+function renderSNSPosts(prefix, src) {
+  const box = document.getElementById(`${prefix}_posts`);
+  if (!src.top_posts) src.top_posts = [];
+  if (!src.top_posts.length) {
+    box.innerHTML = `<div class="empty small"><p>Top投稿がまだ登録されていません</p></div>${addBtnHtml(`add_${prefix}_post`, '＋ Top投稿を追加 (Reach / Profile visit / CVR上位)')}`;
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead><tr>
+          <th style="width:80px">指標</th>
+          <th style="width:30px">#</th>
+          <th>投稿概要</th>
+          <th>目的</th>
+          <th>背景にある仮説</th>
+          <th style="width:140px">リンク</th>
+          <th style="width:36px"></th>
+        </tr></thead>
+        <tbody>
+          ${src.top_posts.map((p, i) => `
+            <tr data-i="${i}">
+              <td><select data-k="type">
+                ${['reach', 'profile_visit', 'cvr'].map(t => `<option value="${t}" ${p.type===t?'selected':''}>${t}</option>`).join('')}
+              </select></td>
+              <td><input type="number" data-k="rank" value="${escapeHtml(p.rank)}" /></td>
+              <td><input type="text" data-k="summary" value="${escapeHtml(p.summary)}" /></td>
+              <td><input type="text" data-k="goal" value="${escapeHtml(p.goal)}" /></td>
+              <td><textarea data-k="hypothesis">${escapeHtml(p.hypothesis)}</textarea></td>
+              <td><input type="url" data-k="link" value="${escapeHtml(p.link)}" placeholder="https://..." /></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      ${addBtnHtml(`add_${prefix}_post`, '＋ Top投稿を追加')}
+    `;
+  }
+  document.getElementById(`add_${prefix}_post`).onclick = () => {
+    src.top_posts.push({ type: 'reach', rank: src.top_posts.length + 1, summary: '', goal: '', hypothesis: '', link: '' });
+    saveState();
+    renderSNSPosts(prefix, src);
+  };
+  box.querySelectorAll('input,textarea,select').forEach(el => {
+    el.oninput = el.onchange = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      src.top_posts[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      src.top_posts.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderSNSPosts(prefix, src);
+    };
+  });
+}
+
+/* =========================================================
+   PAGE: REACH FLYER
+   ========================================================= */
+PAGE_RENDERERS.reach_flyer = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.3', 'ビラ配り', 'ビラ配り戦略の振り返り。ビラごとに「選んだ背景・実際の反応」をサンプル単位で残します。大学固有の与件は<a href="#" onclick="event.preventDefault(); jumpTo(\'uni_constraints\')">大学特有の与件</a>に。', PAGE_REFS.reach_flyer)}
+
+    <div class="card">
+      <div class="card-head"><h2>ビラ Role / 注意点</h2><div class="sub">Role</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Reach戦略での位置付け</label>
+          <textarea id="fl_role"></textarea>
+        </div>
+        <div class="field">
+          <label>ビラ配りの注意点 (大学制約はNG、運用上の注意のみ)</label>
+          <textarea id="fl_note" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>配ったビラ サンプル</h2>
+        <button class="btn primary sm" id="addFlyer">＋ サンプル追加</button>
+      </div>
+      <div class="card-body" id="flyerSamples"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度への申し送り</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('fl')}</div>
+    </div>
+  `;
+
+  bindInput('#fl_role', () => data.reach_flyer.role, v => data.reach_flyer.role = v);
+  bindInput('#fl_note', () => data.reach_flyer.note, v => data.reach_flyer.note = v);
+  bindInput('#fl_keep', () => data.reach_flyer.keep, v => data.reach_flyer.keep = v);
+  bindInput('#fl_problem', () => data.reach_flyer.stop, v => data.reach_flyer.stop = v);
+  bindInput('#fl_try', () => data.reach_flyer.try, v => data.reach_flyer.try = v);
+
+  document.getElementById('addFlyer').onclick = () => {
+    data.reach_flyer.samples.push({ img_note: '', reason: '', effect: '' });
+    saveState();
+    renderFlyerSamples(data);
+  };
+  renderFlyerSamples(data);
+};
+
+function renderFlyerSamples(data) {
+  const box = document.getElementById('flyerSamples');
+  if (!data.reach_flyer.samples.length) {
+    box.innerHTML = `<div class="empty"><h3>サンプルがまだありません</h3><p>1種類につき1サンプルを登録します</p></div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px">
+      ${data.reach_flyer.samples.map((s, i) => `
+        <div style="border:1px solid var(--aiesec-gray-light); border-radius:5px; padding:12px; background: var(--aiesec-gray-bg)">
+          <div class="flex-between mb-12">
+            <span class="pill blue">サンプル ${i + 1}</span>
+            <button class="row-delete" data-del="${i}">×</button>
+          </div>
+          <div class="field"><label>写真のメモ / URL</label><input type="text" data-i="${i}" data-k="img_note" value="${escapeHtml(s.img_note)}" placeholder="Google Drive URLなど" /></div>
+          <div class="field"><label>選んだ背景</label><textarea data-i="${i}" data-k="reason">${escapeHtml(s.reason)}</textarea></div>
+          <div class="field"><label>実際の効果 / 新入生の反応</label><textarea data-i="${i}" data-k="effect">${escapeHtml(s.effect)}</textarea></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.dataset.i);
+      data.reach_flyer.samples[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      data.reach_flyer.samples.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderFlyerSamples(data);
+    };
+  });
+}
+
+/* =========================================================
+   PAGE: REACH CIRCLE
+   ========================================================= */
+PAGE_RENDERERS.reach_circle = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.4', 'サークル紹介イベント', 'サークル紹介イベントでの参加者集め・ブース運営の振り返り。', PAGE_REFS.reach_circle)}
+
+    <div class="card">
+      <div class="card-head"><h2>Role / 注意点</h2><div class="sub">Role</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Reach戦略での位置付け</label>
+          <textarea id="cr_role"></textarea>
+        </div>
+        <div class="field">
+          <label>サークル紹介イベントの注意点</label>
+          <textarea id="cr_note"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>参加者集め</h2><div class="sub">Acquisition</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="cr_gather_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">Bad</div><textarea id="cr_gather_bad"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>ブース説明</h2><div class="sub">Booth</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="cr_booth_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">Bad</div><textarea id="cr_booth_bad"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度への申し送り</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('cr')}</div>
+    </div>
+  `;
+
+  bindInput('#cr_role', () => data.reach_circle.role, v => data.reach_circle.role = v);
+  bindInput('#cr_note', () => data.reach_circle.note, v => data.reach_circle.note = v);
+  bindInput('#cr_gather_good', () => data.reach_circle.gather_good, v => data.reach_circle.gather_good = v);
+  bindInput('#cr_gather_bad', () => data.reach_circle.gather_bad, v => data.reach_circle.gather_bad = v);
+  bindInput('#cr_booth_good', () => data.reach_circle.booth_good, v => data.reach_circle.booth_good = v);
+  bindInput('#cr_booth_bad', () => data.reach_circle.booth_bad, v => data.reach_circle.booth_bad = v);
+  bindInput('#cr_keep', () => data.reach_circle.keep, v => data.reach_circle.keep = v);
+  bindInput('#cr_problem', () => data.reach_circle.stop, v => data.reach_circle.stop = v);
+  bindInput('#cr_try', () => data.reach_circle.try, v => data.reach_circle.try = v);
+};
+
+/* =========================================================
+   PAGE: REACH PAID / CLASS (NEW)
+   ========================================================= */
+PAGE_RENDERERS.reach_paid_class = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.5', '有料広告 / 授業登壇', 'さんしろうさんのお願い項目。有料広告・授業登壇など、従来のFRに無かったReach施策をここに集約します。', PAGE_REFS.reach_paid_class)}
+
+    <div class="card">
+      <div class="card-head"><h2>有料広告</h2><div class="sub">Paid ads</div></div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>実施したか</label>
+            <select id="p_used">
+              <option value="">未選択</option>
+              <option value="yes">実施した</option>
+              <option value="no">実施しなかった</option>
+              <option value="considered">検討して見送った</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>使ったプラットフォーム</label>
+            <input type="text" id="p_platform" placeholder="例: Instagram広告、X広告、大学媒体 など" />
+          </div>
+        </div>
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>支出 (合計)</label>
+            <input type="text" id="p_spend" placeholder="¥" />
+          </div>
+          <div class="field">
+            <label>結果サマリ <span class="hint">Reach / 流入 / CVR</span></label>
+            <input type="text" id="p_result" />
+          </div>
+        </div>
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="p_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="p_more"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>授業登壇</h2>
+        <div class="sub">Class speak</div>
+      </div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>実施したか</label>
+            <select id="c_used">
+              <option value="">未選択</option>
+              <option value="yes">実施した</option>
+              <option value="no">実施しなかった</option>
+              <option value="considered">検討して見送った</option>
+            </select>
+          </div>
+          <div class="field"></div>
+        </div>
+
+        <div class="section-divider">登壇授業一覧</div>
+        <div id="classList"></div>
+
+        <div class="section-divider">申し送り</div>
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="c_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="c_more"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度への申し送り (有料広告 / 授業登壇 共通)</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('pc')}</div>
+    </div>
+  `;
+
+  bindInput('#p_used', () => data.reach_paid_class.paid_ad_used, v => data.reach_paid_class.paid_ad_used = v);
+  bindInput('#p_platform', () => data.reach_paid_class.paid_ad_platform, v => data.reach_paid_class.paid_ad_platform = v);
+  bindInput('#p_spend', () => data.reach_paid_class.paid_ad_spend, v => data.reach_paid_class.paid_ad_spend = v);
+  bindInput('#p_result', () => data.reach_paid_class.paid_ad_result, v => data.reach_paid_class.paid_ad_result = v);
+  bindInput('#p_good', () => data.reach_paid_class.paid_ad_good, v => data.reach_paid_class.paid_ad_good = v);
+  bindInput('#p_more', () => data.reach_paid_class.paid_ad_more, v => data.reach_paid_class.paid_ad_more = v);
+  bindInput('#c_used', () => data.reach_paid_class.class_speak_used, v => data.reach_paid_class.class_speak_used = v);
+  bindInput('#c_good', () => data.reach_paid_class.class_speak_good, v => data.reach_paid_class.class_speak_good = v);
+  bindInput('#c_more', () => data.reach_paid_class.class_speak_more, v => data.reach_paid_class.class_speak_more = v);
+  bindInput('#pc_keep', () => data.reach_paid_class.keep, v => data.reach_paid_class.keep = v);
+  bindInput('#pc_problem', () => data.reach_paid_class.stop, v => data.reach_paid_class.stop = v);
+  bindInput('#pc_try', () => data.reach_paid_class.try, v => data.reach_paid_class.try = v);
+
+  renderClassList(data);
+};
+
+function renderClassList(data) {
+  const box = document.getElementById('classList');
+  if (!data.reach_paid_class.class_speak_list.length) {
+    box.innerHTML = `<div class="empty small"><p>登壇授業がまだ登録されていません</p></div>${addBtnHtml('addClass', '＋ 授業を追加')}`;
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead><tr>
+          <th style="width:140px">教員</th>
+          <th style="width:130px">学部・授業名</th>
+          <th style="width:80px">参加者数</th>
+          <th>登壇内容</th>
+          <th>結果 (流入 / 反応)</th>
+          <th style="width:36px"></th>
+        </tr></thead>
+        <tbody>
+          ${data.reach_paid_class.class_speak_list.map((c, i) => `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="prof" value="${escapeHtml(c.prof)}" /></td>
+              <td><input type="text" data-k="faculty" value="${escapeHtml(c.faculty)}" /></td>
+              <td><input type="number" data-k="count" value="${escapeHtml(c.count)}" /></td>
+              <td><textarea data-k="content">${escapeHtml(c.content)}</textarea></td>
+              <td><textarea data-k="result">${escapeHtml(c.result)}</textarea></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      ${addBtnHtml('addClass', '＋ 授業を追加')}
+    `;
+  }
+  document.getElementById('addClass').onclick = () => {
+    data.reach_paid_class.class_speak_list.push({ prof: '', faculty: '', count: '', content: '', result: '' });
+    saveState();
+    renderClassList(data);
+  };
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.reach_paid_class.class_speak_list[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      data.reach_paid_class.class_speak_list.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderClassList(data);
+    };
+  });
+}
+
+/* =========================================================
+   PAGE: LINE / BLISS
+   ========================================================= */
+PAGE_RENDERERS.line_bliss = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('3. Reach / 3.6', 'AJ Official LINE / BLISS', 'AJ公式LINEとBLISSの運用振り返り。タグ付け運用・一斉送信・イベント連動・コンテンツの試行錯誤を残します。', PAGE_REFS.line_bliss)}
+
+    <div class="card">
+      <div class="card-head"><h2>AJ Official LINE</h2><div class="sub">LINE</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>LEAD育成での位置付け / 目的</label>
+          <textarea id="lb_line_purpose"></textarea>
+        </div>
+        <div class="field">
+          <label>Performance</label>
+          <select id="lb_line_perf">
+            <option value="good" ${data.line_bliss.line_performance==='good'?'selected':''}>Good</option>
+            <option value="fair" ${data.line_bliss.line_performance==='fair'?'selected':''}>Fair</option>
+            <option value="bad" ${data.line_bliss.line_performance==='bad'?'selected':''}>Bad</option>
+          </select>
+        </div>
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good Case</div><textarea id="lb_line_good" placeholder="送信日時 / 頻度 / 刺さったコンテンツ"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">Bad Case</div><textarea id="lb_line_bad"></textarea></div>
+        </div>
+        <div class="field mt-12">
+          <label>運用を通した学び / インサイト</label>
+          <textarea id="lb_line_insight"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>BLISS</h2><div class="sub">BLISS</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good Case</div><textarea id="lb_bliss_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">Bad Case</div><textarea id="lb_bliss_bad"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度への申し送り</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('lb')}</div>
+    </div>
+  `;
+
+  bindInput('#lb_line_purpose', () => data.line_bliss.line_purpose, v => data.line_bliss.line_purpose = v);
+  bindInput('#lb_line_perf', () => data.line_bliss.line_performance, v => data.line_bliss.line_performance = v);
+  bindInput('#lb_line_good', () => data.line_bliss.line_good, v => data.line_bliss.line_good = v);
+  bindInput('#lb_line_bad', () => data.line_bliss.line_bad, v => data.line_bliss.line_bad = v);
+  bindInput('#lb_line_insight', () => data.line_bliss.line_insight, v => data.line_bliss.line_insight = v);
+  bindInput('#lb_bliss_good', () => data.line_bliss.bliss_good, v => data.line_bliss.bliss_good = v);
+  bindInput('#lb_bliss_bad', () => data.line_bliss.bliss_bad, v => data.line_bliss.bliss_bad = v);
+  bindInput('#lb_keep', () => data.line_bliss.keep, v => data.line_bliss.keep = v);
+  bindInput('#lb_problem', () => data.line_bliss.stop, v => data.line_bliss.stop = v);
+  bindInput('#lb_try', () => data.line_bliss.try, v => data.line_bliss.try = v);
+};
+
+/* =========================================================
+   PAGE: LDR / IXP EVENT (shared structure)
+   ========================================================= */
+function renderEventPage(root, data, kind) {
+  const isLDR = kind === 'ldr';
+  const src = isLDR ? data.ldr_event : data.ixp_event;
+  const crumb = isLDR ? '4. Lead / 4.1' : '4. Lead / 4.2';
+  const title = isLDR ? 'LC説明会' : 'GV説明会';
+  const desc = isLDR ? 'LC主催の説明会の振り返り。イベント単位の数値と、Online/Offline運営の申し送りを残します。' : 'GV説明会・個別相談会の振り返り。';
+
+  root.innerHTML = `
+    ${pageHead(crumb, title, desc, PAGE_REFS[isLDR ? 'ldr_event' : 'ixp_event'])}
+
+    <div class="card">
+      <div class="card-head"><h2>全体の目的</h2><div class="sub">Purpose</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>このtermの説明会の目的</label>
+          <textarea id="ev_purpose"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>開催イベント一覧</h2>
+        <button class="btn primary sm" id="addEvent">＋ イベント追加</button>
+      </div>
+      <div class="card-body" id="eventList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Online 運営</h2><div class="sub">Online</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">集客 Good</div><textarea id="on_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">集客 Bad</div><textarea id="on_bad"></textarea></div>
+        </div>
+        <div class="field mt-12"><label>運営上の注意点</label><textarea id="on_notes"></textarea></div>
+        <div class="field"><label>次年度への申し送り (準備段階 / 当日)</label><textarea id="on_handover" class="tall"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Offline 運営</h2><div class="sub">Offline</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">運営 Good</div><textarea id="off_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">運営 Bad</div><textarea id="off_bad"></textarea></div>
+        </div>
+        <div class="field mt-12"><label>運営上の注意点</label><textarea id="off_notes"></textarea></div>
+        <div class="field"><label>次年度への申し送り (準備段階 / 当日)</label><textarea id="off_handover" class="tall"></textarea></div>
+      </div>
+    </div>
+  `;
+
+  bindInput('#ev_purpose', () => src.purpose, v => src.purpose = v);
+  bindInput('#on_good', () => src.online_good, v => src.online_good = v);
+  bindInput('#on_bad', () => src.online_bad, v => src.online_bad = v);
+  bindInput('#on_notes', () => src.online_notes, v => src.online_notes = v);
+  bindInput('#on_handover', () => src.online_handover, v => src.online_handover = v);
+  bindInput('#off_good', () => src.offline_good, v => src.offline_good = v);
+  bindInput('#off_bad', () => src.offline_bad, v => src.offline_bad = v);
+  bindInput('#off_notes', () => src.offline_notes, v => src.offline_notes = v);
+  bindInput('#off_handover', () => src.offline_handover, v => src.offline_handover = v);
+
+  document.getElementById('addEvent').onclick = () => {
+    src.events.push({ name: '', date: '', apply: '', attend: '', content: '', good_more: '' });
+    saveState();
+    renderEventList(src);
+  };
+  renderEventList(src);
+}
+
+function renderEventList(src) {
+  const box = document.getElementById('eventList');
+  if (!src.events.length) {
+    box.innerHTML = `<div class="empty small"><p>イベントがまだ登録されていません</p></div>`;
+    return;
+  }
   box.innerHTML = `
     <table class="data">
-      <thead>
-        <tr>
-          <th style="width:120px">LC</th>
-          ${personaNames.map(n => `<th>${escapeHtml(n)}</th>`).join('')}
-          <th style="width:80px">合計</th>
-          <th>備考</th>
-          <th style="width:36px"></th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th style="width:200px">イベント名</th>
+        <th style="width:110px">開催日</th>
+        <th style="width:80px">申込</th>
+        <th style="width:80px">参加</th>
+        <th style="width:80px">CVR</th>
+        <th>コンテンツ / アピールポイント</th>
+        <th>Good / More</th>
+        <th style="width:36px"></th>
+      </tr></thead>
       <tbody>
-        ${data.kgi.lc_breakdown.map((row, i) => `
+        ${src.events.map((e, i) => {
+          const cvr = pct(e.attend, e.apply);
+          return `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="name" value="${escapeHtml(e.name)}" /></td>
+              <td><input type="date" data-k="date" value="${escapeHtml(e.date)}" /></td>
+              <td><input type="number" data-k="apply" value="${escapeHtml(e.apply)}" /></td>
+              <td><input type="number" data-k="attend" value="${escapeHtml(e.attend)}" /></td>
+              <td><span class="kpi-cvr ${cvrClass(cvr)}" style="font-size:11px">${fmtPct(cvr)}</span></td>
+              <td><textarea data-k="content">${escapeHtml(e.content)}</textarea></td>
+              <td><textarea data-k="good_more">${escapeHtml(e.good_more)}</textarea></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      src.events[i][el.dataset.k] = el.value;
+      saveState();
+      if (el.dataset.k === 'apply' || el.dataset.k === 'attend') renderEventList(src);
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      src.events.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderEventList(src);
+    };
+  });
+}
+
+PAGE_RENDERERS.ldr_event = (root, data) => renderEventPage(root, data, 'ldr');
+PAGE_RENDERERS.ixp_event = (root, data) => renderEventPage(root, data, 'ixp');
+
+/* =========================================================
+   PAGE: POST EVENT COM
+   ========================================================= */
+PAGE_RENDERERS.post_event_com = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('4. Lead / 4.3', '説明会後 新入生コミュニケーション', '説明会後の新入生個別comの振り返り。AF配布判断・進捗トラッキング体制を残します。', PAGE_REFS.post_event_com)}
+
+    <div class="card">
+      <div class="card-head"><h2>体制</h2><div class="sub">Structure</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>新入生コミュニケーション体制 <span class="hint">実働主体・媒体・進捗共有方法など</span></label>
+          <textarea id="pe_struct" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>どんな新入生にAFを配布したか / その背景と評価</label>
+          <textarea id="pe_af" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Good / Bad Case</h2><div class="sub">Cases</div></div>
+      <div class="card-body">
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good Case + 成功要因</div><textarea id="pe_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">Bad Case + 失敗要因 (仮説)</div><textarea id="pe_bad"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>次年度への申し送り</h2><div class="sub">Handover</div></div>
+      <div class="card-body">
+        <div class="field"><label>準備段階で気をつけること</label><textarea id="pe_prep"></textarea></div>
+        <div class="field"><label>当日 (新入生comの実働中) で気をつけること</label><textarea id="pe_day"></textarea></div>
+      </div>
+    </div>
+  `;
+
+  bindInput('#pe_struct', () => data.post_event_com.com_structure, v => data.post_event_com.com_structure = v);
+  bindInput('#pe_af', () => data.post_event_com.af_distribute_target, v => data.post_event_com.af_distribute_target = v);
+  bindInput('#pe_good', () => data.post_event_com.good_case, v => data.post_event_com.good_case = v);
+  bindInput('#pe_bad', () => data.post_event_com.bad_case, v => data.post_event_com.bad_case = v);
+  bindInput('#pe_prep', () => data.post_event_com.handover_prep, v => data.post_event_com.handover_prep = v);
+  bindInput('#pe_day', () => data.post_event_com.handover_day, v => data.post_event_com.handover_day = v);
+};
+
+/* =========================================================
+   PAGE: LCmkt → LCmem (NEW)
+   ========================================================= */
+PAGE_RENDERERS.lcmkt_to_lcmem = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('4. Lead / 4.4', 'LCmkt → LCmem 引き継ぎ', 'さんしろうさんのお願い項目: 「LCmkt→LCmemがスムーズ？」を検証するセクション。Markteting側からMember側への引き継ぎが上手くいったかを残します。', PAGE_REFS.lcmkt_to_lcmem)}
+
+    <div class="card">
+      <div class="card-head"><h2>引き継ぎのタイミング・方法</h2><div class="sub">Process</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>引き継ぎを開始したタイミング</label>
+          <input type="text" id="lm_timing" placeholder="例: 5月末のRecruit Call後 / 入金完了から1週間以内 など" />
+        </div>
+        <div class="field">
+          <label>引き継ぎの方法 (媒体・場)</label>
+          <textarea id="lm_method" placeholder="例: 引き継ぎMtg2回 + 個別1on1 + Notionドキュメント"></textarea>
+        </div>
+        <div class="field">
+          <label>どんな情報を渡したか</label>
+          <textarea id="lm_info" class="tall" placeholder="例: 新入生1人ずつのcom履歴、温度感、配置希望、本人の課題感など"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>振り返り</h2><div class="sub">Eval</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>発生した課題・引き継ぎが詰まったポイント</label>
+          <textarea id="lm_issues" class="tall"></textarea>
+        </div>
+        <div class="gm-grid">
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="lm_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="lm_more"></textarea></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindInput('#lm_timing', () => data.lcmkt_to_lcmem.handoff_timing, v => data.lcmkt_to_lcmem.handoff_timing = v);
+  bindInput('#lm_method', () => data.lcmkt_to_lcmem.handoff_method, v => data.lcmkt_to_lcmem.handoff_method = v);
+  bindInput('#lm_info', () => data.lcmkt_to_lcmem.info_transferred, v => data.lcmkt_to_lcmem.info_transferred = v);
+  bindInput('#lm_issues', () => data.lcmkt_to_lcmem.issues, v => data.lcmkt_to_lcmem.issues = v);
+  bindInput('#lm_good', () => data.lcmkt_to_lcmem.good, v => data.lcmkt_to_lcmem.good = v);
+  bindInput('#lm_more', () => data.lcmkt_to_lcmem.more, v => data.lcmkt_to_lcmem.more = v);
+};
+
+/* =========================================================
+   PAGE: SELECTION (LDR入会)
+   ========================================================= */
+PAGE_RENDERERS.selection = (root, data) => {
+  const s = data.selection;
+  const afCVR = pct(s.af_actual, data.funnel.event_attend?.actual);
+
+  root.innerHTML = `
+    ${pageHead('5. 入会 / 5.1', '入会Reporting', 'AF提出・面接・入金までの実績と、AF項目/面接質問のカスタマイズ・離脱理由分析を残します。', PAGE_REFS.selection)}
+
+    <div class="card">
+      <div class="card-head"><h2>実績</h2><div class="sub">Numbers</div></div>
+      <div class="card-body">
+        <table class="data">
+          <thead><tr><th>項目</th><th style="width:120px">目標</th><th style="width:120px">実績</th></tr></thead>
+          <tbody>
+            <tr><td>AF提出者数</td><td><input type="number" id="s_af_t" value="${escapeHtml(s.af_target)}" /></td><td><input type="number" id="s_af_a" value="${escapeHtml(s.af_actual)}" /></td></tr>
+            <tr><td>面接者数</td><td><input type="number" id="s_in_t" value="${escapeHtml(s.interview_target)}" /></td><td><input type="number" id="s_in_a" value="${escapeHtml(s.interview_actual)}" /></td></tr>
+            <tr><td>合格者数</td><td><input type="number" id="s_pa_t" value="${escapeHtml(s.pass_target)}" /></td><td><input type="number" id="s_pa_a" value="${escapeHtml(s.pass_actual)}" /></td></tr>
+            <tr><td>入金者数</td><td><input type="number" id="s_pd_t" value="${escapeHtml(s.paid_target)}" /></td><td><input type="number" id="s_pd_a" value="${escapeHtml(s.paid_actual)}" /></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>AF項目のカスタマイズ</h2><div class="sub">AF</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>統一AFから変更した項目 / 追加した項目とその背景</label>
+          <textarea id="s_af_custom" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>申し送り (Good/More)</label>
+          <textarea id="s_af_handover"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>面接</h2><div class="sub">Interview</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>質問項目の作成で意識したこと</label>
+          <textarea id="s_in_custom" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>申し送り (Good/More)</label>
+          <textarea id="s_in_handover"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>AF提出 / 面接後 離脱理由</h2>
+        <button class="btn primary sm" id="addDrop">＋ 理由を追加</button>
+      </div>
+      <div class="card-body" id="dropBox"></div>
+    </div>
+  `;
+
+  [
+    ['#s_af_t', 'af_target'], ['#s_af_a', 'af_actual'],
+    ['#s_in_t', 'interview_target'], ['#s_in_a', 'interview_actual'],
+    ['#s_pa_t', 'pass_target'], ['#s_pa_a', 'pass_actual'],
+    ['#s_pd_t', 'paid_target'], ['#s_pd_a', 'paid_actual']
+  ].forEach(([sel, k]) => bindInput(sel, () => s[k], v => s[k] = v));
+
+  bindInput('#s_af_custom', () => s.af_custom_questions, v => s.af_custom_questions = v);
+  bindInput('#s_af_handover', () => s.af_handover, v => s.af_handover = v);
+  bindInput('#s_in_custom', () => s.interview_custom, v => s.interview_custom = v);
+  bindInput('#s_in_handover', () => s.interview_handover, v => s.interview_handover = v);
+
+  document.getElementById('addDrop').onclick = () => {
+    s.drop_reasons.push({ reason: '', count: '', note: '' });
+    saveState();
+    renderDropBox(s);
+  };
+  renderDropBox(s);
+};
+
+function renderDropBox(s) {
+  const box = document.getElementById('dropBox');
+  if (!s.drop_reasons.length) {
+    box.innerHTML = `<div class="empty small"><p>離脱理由がまだ登録されていません (例: 体育会と両立できなかった など)</p></div>`;
+    return;
+  }
+  box.innerHTML = `
+    <table class="data">
+      <thead><tr><th style="width:240px">離脱理由</th><th style="width:80px">人数</th><th>申し送り</th><th style="width:36px"></th></tr></thead>
+      <tbody>
+        ${s.drop_reasons.map((d, i) => `
           <tr data-i="${i}">
-            <td><input type="text" data-k="lc" value="${escapeHtml(row.lc || '')}" /></td>
-            ${personaNames.map((_, pi) => `<td><input type="number" data-k="p_${pi}" value="${escapeHtml(row['p_' + pi] || '')}" /></td>`).join('')}
-            <td class="mono small" style="padding:8px 10px;font-weight:700">${(personaNames.reduce((s,_,pi) => s + (parseFloat(row['p_'+pi]) || 0), 0)) || '–'}</td>
-            <td><input type="text" data-k="notes" value="${escapeHtml(row.notes || '')}" /></td>
+            <td><input type="text" data-k="reason" value="${escapeHtml(d.reason)}" /></td>
+            <td><input type="number" data-k="count" value="${escapeHtml(d.count)}" /></td>
+            <td><textarea data-k="note">${escapeHtml(d.note)}</textarea></td>
             <td><button class="row-delete" data-del="${i}">×</button></td>
           </tr>
         `).join('')}
       </tbody>
     </table>
-    ${addBtnHtml('addLC', '＋ LCを追加')}
-    ${!personaNames.length ? '<div class="small muted mt-16">ペルソナを先に登録してください。</div>' : ''}
   `;
-  document.getElementById('addLC').onclick = () => {
-    data.kgi.lc_breakdown.push({ lc: '', notes: '' });
-    saveState(); renderKGIBreakdown(data);
-  };
-  box.querySelectorAll('input').forEach(el => {
-    el.oninput = () => {
-      const i = parseInt(el.closest('tr').dataset.i);
-      data.kgi.lc_breakdown[i][el.dataset.k] = el.value;
-      saveState(); renderKGIBreakdown(data);
-    };
-  });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      data.kgi.lc_breakdown.splice(parseInt(btn.dataset.del), 1);
-      saveState(); renderKGIBreakdown(data);
-    };
-  });
-}
-
-/* ---------- CUSTOMER JOURNEY ---------- */
-function renderJourney(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-1 / 1.4', 'Customer Journey', 'ペルソナをグループに分けて、認知→調査・希望→再認識→決意の各ステージにおける感情変化や接点を設計します。')}
-
-    <div class="card">
-      <div class="card-head">
-        <h2>Journey Groups</h2>
-        <button class="btn primary" id="addGroup">＋ グループ追加</button>
-      </div>
-      <div class="card-body" id="journeyBox"></div>
-    </div>
-  `;
-  document.getElementById('addGroup').onclick = () => {
-    data.journey.groups.push({ name: `グループ${data.journey.groups.length + 1}`, stages: { recognize: '', interest: '', reconfirm: '', decide: '' }, before: '', after: '', goal: '', barrier: '', influence: '' });
-    saveState(); renderJourneyBox(data);
-  };
-  renderJourneyBox(data);
-}
-function renderJourneyBox(data) {
-  const box = document.getElementById('journeyBox');
-  box.innerHTML = data.journey.groups.map((g, gi) => `
-    <div style="margin-bottom:24px">
-      <div class="flex-between mb-12">
-        <input type="text" class="name-input" data-gi="${gi}" data-k="name" value="${escapeHtml(g.name)}" style="border:none; background:transparent; font-size:14px; font-weight:700; padding:4px 6px; flex:1; max-width:300px;" />
-        <button class="btn danger" data-del="${gi}">削除</button>
-      </div>
-      <table class="cj-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>① 認知</th>
-            <th>② 調査・希望</th>
-            <th>③ 再認識</th>
-            <th>④ 決意</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>感情変化（前→後）</td>
-            <td colspan="2"><textarea data-gi="${gi}" data-k="before" placeholder="前">${escapeHtml(g.before)}</textarea></td>
-            <td colspan="2"><textarea data-gi="${gi}" data-k="after" placeholder="後">${escapeHtml(g.after)}</textarea></td>
-          </tr>
-          <tr>
-            <td>各ステージの状態</td>
-            <td><textarea data-gi="${gi}" data-stage="recognize">${escapeHtml(g.stages.recognize)}</textarea></td>
-            <td><textarea data-gi="${gi}" data-stage="interest">${escapeHtml(g.stages.interest)}</textarea></td>
-            <td><textarea data-gi="${gi}" data-stage="reconfirm">${escapeHtml(g.stages.reconfirm)}</textarea></td>
-            <td><textarea data-gi="${gi}" data-stage="decide">${escapeHtml(g.stages.decide)}</textarea></td>
-          </tr>
-          <tr>
-            <td>目的・Barriers・Influences</td>
-            <td colspan="4">
-              <div class="field-row cols-3" style="margin:0">
-                <div><label class="small">目的</label><textarea data-gi="${gi}" data-k="goal">${escapeHtml(g.goal)}</textarea></div>
-                <div><label class="small">Barriers</label><textarea data-gi="${gi}" data-k="barrier">${escapeHtml(g.barrier)}</textarea></div>
-                <div><label class="small">Influences</label><textarea data-gi="${gi}" data-k="influence">${escapeHtml(g.influence)}</textarea></div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  `).join('');
-
-  box.querySelectorAll('[data-stage]').forEach(el => {
-    el.oninput = () => {
-      const gi = parseInt(el.dataset.gi);
-      data.journey.groups[gi].stages[el.dataset.stage] = el.value;
-      saveState();
-    };
-  });
-  box.querySelectorAll('[data-k]').forEach(el => {
-    el.oninput = () => {
-      const gi = parseInt(el.dataset.gi);
-      data.journey.groups[gi][el.dataset.k] = el.value;
-      saveState();
-    };
-  });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      if (!confirm('このグループを削除しますか？')) return;
-      data.journey.groups.splice(parseInt(btn.dataset.del), 1);
-      saveState(); renderJourneyBox(data);
-    };
-  });
-}
-
-/* ---------- MC on LC ---------- */
-function renderMConLC(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-1 / 1.5', 'MC on LC Agenda', '時期ごとのMC on LCで取り上げた論点・アジェンダ・参考資料を残します。')}
-    <div class="card">
-      <div class="card-head"><h2>Agenda Log</h2><div class="sub">${data.mconlc.length} entries</div></div>
-      <div class="card-body" id="mcOnLCBox"></div>
-    </div>
-  `;
-  renderMConLCBox(data);
-}
-function renderMConLCBox(data) {
-  const box = document.getElementById('mcOnLCBox');
-  if (!data.mconlc.length) {
-    box.innerHTML = `<div class="empty"><h3>記録がまだありません</h3><p>下のボタンからアジェンダを追加してください</p></div>` + addBtnHtml('addAgenda', '＋ アジェンダを追加');
-  } else {
-    box.innerHTML = `
-      <table class="data">
-        <thead><tr><th style="width:140px">時期</th><th>大項目・アジェンダ</th><th style="width:160px">参考資料</th><th style="width:36px"></th></tr></thead>
-        <tbody>
-          ${data.mconlc.map((m, i) => `
-            <tr data-i="${i}">
-              <td><input type="text" data-k="period" value="${escapeHtml(m.period)}" placeholder="" /></td>
-              <td><textarea data-k="agenda" placeholder="">${escapeHtml(m.agenda)}</textarea></td>
-              <td><input type="text" data-k="refs" value="${escapeHtml(m.refs)}" /></td>
-              <td><button class="row-delete" data-del="${i}">×</button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    ` + addBtnHtml('addAgenda', '＋ アジェンダを追加');
-  }
-  document.getElementById('addAgenda').onclick = () => {
-    data.mconlc.push({ period: '', agenda: '', refs: '' });
-    saveState(); renderMConLCBox(data);
-  };
   box.querySelectorAll('input,textarea').forEach(el => {
     el.oninput = () => {
       const i = parseInt(el.closest('tr').dataset.i);
-      data.mconlc[i][el.dataset.k] = el.value;
+      s.drop_reasons[i][el.dataset.k] = el.value;
       saveState();
     };
   });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      data.mconlc.splice(parseInt(btn.dataset.del), 1);
-      saveState(); renderMConLCBox(data);
-    };
-  });
-}
-
-/* ---------- EVALUATION ---------- */
-const EVAL_BLOCKS = [
-  { k: 'persona', label: 'ペルソナ設計' },
-  { k: 'lc_planning', label: 'LC planning' },
-  { k: 'mc_support', label: 'LC説明会設計への MC support' },
-  { k: 'crm', label: 'CRM・アンケ周り' },
-  { k: 'ixp', label: 'IXP 採用' },
-  { k: 'kgi_reach', label: '採用 KGI 到達まで' }
-];
-
-function renderEval(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-1 / 1.6', 'Evaluation・申し送り', '各領域でのGOOD（よかったこと）・MORE（もっとできたこと）・申し送り（次年度への提言）を整理します。')}
-    ${EVAL_BLOCKS.map(b => `
-      <div class="eval-block">
-        <div class="eval-head"><span class="accent"></span>${b.label}</div>
-        <div class="eval-grid">
-          <div class="eval-cell">
-            <div class="eval-label good">Good</div>
-            <textarea data-eb="${b.k}" data-k="good" placeholder="よかった点・続けるべき点">${escapeHtml(data.eval[b.k]?.good || '')}</textarea>
-          </div>
-          <div class="eval-cell">
-            <div class="eval-label more">More</div>
-            <textarea data-eb="${b.k}" data-k="more" placeholder="もっとできたこと・課題">${escapeHtml(data.eval[b.k]?.more || '')}</textarea>
-          </div>
-          <div class="eval-cell">
-            <div class="eval-label next">申し送り</div>
-            <textarea data-eb="${b.k}" data-k="next" placeholder="次年度への提言・引き継ぎ">${escapeHtml(data.eval[b.k]?.next || '')}</textarea>
-          </div>
-        </div>
-      </div>
-    `).join('')}
-  `;
-  root.querySelectorAll('[data-eb]').forEach(el => {
-    el.oninput = () => {
-      const block = el.dataset.eb;
-      if (!data.eval[block]) data.eval[block] = { good: '', more: '', next: '' };
-      data.eval[block][el.dataset.k] = el.value;
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      s.drop_reasons.splice(parseInt(b.dataset.del), 1);
       saveState();
-    };
-  });
-}
-
-/* ---------- STRUCTURE ---------- */
-function renderStructure(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-2 / 2.1', `${state.currentTerm} MC Recruit 体制・運営`, 'MC Recruitの体制全体像と、Mtg運用・マネジメント全体に関する申し送りを記録します。')}
-
-    <div class="card">
-      <div class="card-head"><h2>体制図メモ</h2><div class="sub">Diagram note</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>体制図についてのメモ <span class="hint">体制図画像は資料リストにURLで残してください</span></label>
-          <textarea id="s_diagram" class="tall" placeholder="体制図のメモ（領域分担・連携線・主要担当者など）"></textarea>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Mtg / マネジメント</h2><div class="sub">Operations</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>Mtgの頻度とアジェンダ</label>
-          <textarea id="s_freq"></textarea>
-        </div>
-        <div class="field">
-          <label>Mtgに対する申し送り</label>
-          <textarea id="s_mtg"></textarea>
-        </div>
-        <div class="field">
-          <label>マネジメント全体としての申し送り</label>
-          <textarea id="s_mgmt"></textarea>
-        </div>
-        <div class="field">
-          <label>来年度追加した方が良い JD・役職</label>
-          <textarea id="s_next"></textarea>
-        </div>
-      </div>
-    </div>
-  `;
-  bindInput('#s_diagram', () => data.structure.overall_diagram_note, v => data.structure.overall_diagram_note = v);
-  bindInput('#s_freq', () => data.structure.mtg_freq, v => data.structure.mtg_freq = v);
-  bindInput('#s_mtg', () => data.structure.mtg_handover, v => data.structure.mtg_handover = v);
-  bindInput('#s_mgmt', () => data.structure.mgmt_handover, v => data.structure.mgmt_handover = v);
-  bindInput('#s_next', () => data.structure.next_year_jd, v => data.structure.next_year_jd = v);
-}
-
-/* ---------- MEMBERS ---------- */
-function renderMembers(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-2 / 2.2', `${state.currentTerm} MC Recruit メンバー`, 'メンバーそれぞれのアサイン背景・JD・想定外に発生したJD・申し送りを残します。')}
-
-    <div class="card">
-      <div class="card-head">
-        <h2>メンバー</h2>
-        <button class="btn primary" id="addMember">＋ メンバー追加</button>
-      </div>
-      <div class="card-body" id="memberBox"></div>
-    </div>
-  `;
-  document.getElementById('addMember').onclick = () => {
-    data.members.push({ name: '', role: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' });
-    saveState(); renderMemberBox(data);
-  };
-  renderMemberBox(data);
-}
-function renderMemberBox(data) {
-  const box = document.getElementById('memberBox');
-  if (!data.members.length) {
-    box.innerHTML = `<div class="empty"><h3>メンバーがまだいません</h3><p>右上の「メンバー追加」から始めてください</p></div>`;
-    return;
-  }
-  box.innerHTML = data.members.map((m, i) => `
-    <div class="member-card">
-      <div class="member-head">
-        <input type="text" class="role-input" data-i="${i}" data-k="role" value="${escapeHtml(m.role || '')}" placeholder="役職" />
-        <input type="text" class="name-input" data-i="${i}" data-k="name" value="${escapeHtml(m.name)}" placeholder="名前 (例: Kyoka Sasaki)" />
-        <button class="btn danger" data-del="${i}">削除</button>
-      </div>
-      <div class="member-body">
-        <div class="field">
-          <label>アサインの背景</label>
-          <textarea data-i="${i}" data-k="assign_bg">${escapeHtml(m.assign_bg)}</textarea>
-        </div>
-        <div class="field">
-          <label>該当termにおける JD</label>
-          <textarea data-i="${i}" data-k="jd" class="tall">${escapeHtml(m.jd)}</textarea>
-        </div>
-        <div class="field">
-          <label>想定外に発生した JD・要因</label>
-          <textarea data-i="${i}" data-k="unexpected_jd">${escapeHtml(m.unexpected_jd)}</textarea>
-        </div>
-        <div class="field">
-          <label>MC Recruit として意識すべきこと</label>
-          <textarea data-i="${i}" data-k="awareness">${escapeHtml(m.awareness)}</textarea>
-        </div>
-        <div class="field">
-          <label>全体としての申し送り</label>
-          <textarea data-i="${i}" data-k="handover">${escapeHtml(m.handover)}</textarea>
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  box.querySelectorAll('[data-i]').forEach(el => {
-    if (el.matches('[data-del]')) {
-      el.onclick = () => {
-        if (!confirm('このメンバーを削除しますか？')) return;
-        data.members.splice(parseInt(el.dataset.del), 1);
-        saveState(); renderMemberBox(data);
-      };
-    } else {
-      el.oninput = () => {
-        const i = parseInt(el.dataset.i);
-        data.members[i][el.dataset.k] = el.value;
-        saveState();
-      };
-    }
-  });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      if (!confirm('このメンバーを削除しますか？')) return;
-      data.members.splice(parseInt(btn.dataset.del), 1);
-      saveState(); renderMemberBox(data);
-    };
-  });
-}
-
-/* ---------- RESOURCES ---------- */
-function renderResources(root, data) {
-  root.innerHTML = `
-    ${pageHead('1-3 / 3.1', '関連資料リスト', 'この期で使用したslackチャンネル・GSS・ドキュメント等を一覧で残します。')}
-    <div class="card">
-      <div class="card-head"><h2>資料</h2><div class="sub">${data.resources.length} items</div></div>
-      <div class="card-body" id="resBox"></div>
-    </div>
-  `;
-  renderResBox(data);
-}
-function renderResBox(data) {
-  const box = document.getElementById('resBox');
-  if (!data.resources.length) {
-    box.innerHTML = `<div class="empty"><h3>資料がまだありません</h3><p>下のボタンから追加してください</p></div>` + addBtnHtml('addRes', '＋ 資料を追加');
-  } else {
-    box.innerHTML = `
-      <table class="data">
-        <thead><tr><th style="width:240px">資料名</th><th>使用用途</th><th style="width:240px">URL</th><th style="width:36px"></th></tr></thead>
-        <tbody>
-          ${data.resources.map((r, i) => `
-            <tr data-i="${i}">
-              <td><input type="text" data-k="name" value="${escapeHtml(r.name)}" placeholder="" /></td>
-              <td><input type="text" data-k="purpose" value="${escapeHtml(r.purpose)}" placeholder="" /></td>
-              <td><input type="url" data-k="url" value="${escapeHtml(r.url || '')}" placeholder="https://..." /></td>
-              <td><button class="row-delete" data-del="${i}">×</button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    ` + addBtnHtml('addRes', '＋ 資料を追加');
-  }
-  document.getElementById('addRes').onclick = () => {
-    data.resources.push({ name: '', purpose: '', url: '' });
-    saveState(); renderResBox(data);
-  };
-  box.querySelectorAll('input').forEach(el => {
-    el.oninput = () => {
-      const i = parseInt(el.closest('tr').dataset.i);
-      data.resources[i][el.dataset.k] = el.value;
-      saveState();
-    };
-  });
-  box.querySelectorAll('[data-del]').forEach(btn => {
-    btn.onclick = () => {
-      data.resources.splice(parseInt(btn.dataset.del), 1);
-      saveState(); renderResBox(data);
+      renderDropBox(s);
     };
   });
 }
 
 /* =========================================================
-   COMPARE VIEW
+   PAGE: IXP SELECTION
    ========================================================= */
-function openCompareView() {
-  const terms = Object.keys(state.terms).sort();
-  if (terms.length < 2) {
-    showModal('年度比較', `<p>2年度以上のデータが必要です。現在は ${terms.length} 件のtermしかありません。</p>`, [{ label: 'OK', primary: true, onClick: closeModal }]);
-    return;
-  }
+PAGE_RENDERERS.ixp_selection = (root, data) => {
+  const s = data.ixp_selection;
+  root.innerHTML = `
+    ${pageHead('5. 入会 / 5.2', 'IXP採用Reporting', '渡航希望者・スコア保持者・Sign Up数の振り返り。', PAGE_REFS.ixp_selection)}
 
-  const rows = [
-    { label: 'Direction', getter: t => t.basicInfo.direction_text },
-    { label: 'KGI', getter: t => t.basicInfo.overall_kgi },
-    { label: 'ペルソナ数', getter: t => t.personas.length },
-    { label: 'Planning項目数', getter: t => t.planning.length },
-    { label: 'MC Recruit メンバー数', getter: t => t.members.length },
-    { label: 'ペルソナ設計 GOOD', getter: t => t.eval.persona?.good },
-    { label: 'ペルソナ設計 MORE', getter: t => t.eval.persona?.more },
-    { label: 'ペルソナ設計 申し送り', getter: t => t.eval.persona?.next },
-    { label: 'KGI到達 申し送り', getter: t => t.eval.kgi_reach?.next }
-  ];
+    <div class="card">
+      <div class="card-head"><h2>夏渡航希望 / スコア / Sign Up</h2><div class="sub">Numbers</div></div>
+      <div class="card-body">
+        <div class="field-row cols-3">
+          <div class="field"><label>説明会時点での"夏"渡航希望人数</label><input type="number" id="ix_apply" /></div>
+          <div class="field"><label>Sign up数</label><input type="number" id="ix_signup" /></div>
+          <div class="field"><label>入会時点でのスコア保持者数</label><input type="number" id="ix_score" /></div>
+        </div>
+      </div>
+    </div>
 
-  const html = `
-    <div class="compare-grid" style="grid-template-columns: 180px repeat(${terms.length}, minmax(180px, 1fr));">
-      <div class="row-label">　</div>
-      ${terms.map(t => `<div class="col-head">${t}</div>`).join('')}
-      ${rows.map(r => `
-        <div class="row-label">${r.label}</div>
-        ${terms.map(t => `<div style="white-space:pre-wrap; font-size:12px;">${escapeHtml(r.getter(state.terms[t]) ?? '–') || '<span style="color:#CACCD1">–</span>'}</div>`).join('')}
-      `).join('')}
+    <div class="card">
+      <div class="card-head"><h2>評価</h2><div class="sub">Evaluation</div></div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field">
+            <label>入会時点の希望人数に対する評価</label>
+            <select id="ix_summer_eval">
+              <option value="good" ${s.summer_eval_good==='good'?'selected':''}>Good</option>
+              <option value="fair" ${s.summer_eval_good==='fair'?'selected':''}>Fair</option>
+              <option value="bad" ${s.summer_eval_good==='bad'?'selected':''}>Bad</option>
+            </select>
+            <textarea id="ix_summer_reason" placeholder="理由" style="margin-top:6px"></textarea>
+          </div>
+          <div class="field">
+            <label>Sign up数に対する評価</label>
+            <select id="ix_signup_eval">
+              <option value="good" ${s.signup_eval_good==='good'?'selected':''}>Good</option>
+              <option value="fair" ${s.signup_eval_good==='fair'?'selected':''}>Fair</option>
+              <option value="bad" ${s.signup_eval_good==='bad'?'selected':''}>Bad</option>
+            </select>
+            <textarea id="ix_signup_reason" placeholder="理由" style="margin-top:6px"></textarea>
+          </div>
+        </div>
+        <div class="field mt-12">
+          <label>次年度への申し送り</label>
+          <textarea id="ix_handover" class="tall"></textarea>
+        </div>
+      </div>
     </div>
   `;
 
-  const modalBody = `<div style="max-height:60vh; overflow:auto">${html}</div>`;
-  document.getElementById('modalHead').textContent = '年度比較ビュー';
-  document.getElementById('modalBody').innerHTML = modalBody;
-  document.getElementById('modal').style.width = '90vw';
-  document.getElementById('modal').style.maxWidth = '1100px';
-  const foot = document.getElementById('modalFoot');
-  foot.innerHTML = '';
-  const btn = document.createElement('button');
-  btn.className = 'btn primary';
-  btn.textContent = '閉じる';
-  btn.onclick = () => { closeModal(); document.getElementById('modal').style.width = '420px'; };
-  foot.appendChild(btn);
-  document.getElementById('modalBackdrop').classList.add('show');
+  bindInput('#ix_apply', () => s.summer_apply, v => s.summer_apply = v);
+  bindInput('#ix_signup', () => s.summer_signup, v => s.summer_signup = v);
+  bindInput('#ix_score', () => s.summer_score, v => s.summer_score = v);
+  bindInput('#ix_summer_eval', () => s.summer_eval_good, v => s.summer_eval_good = v);
+  bindInput('#ix_summer_reason', () => s.summer_eval_reason, v => s.summer_eval_reason = v);
+  bindInput('#ix_signup_eval', () => s.signup_eval_good, v => s.signup_eval_good = v);
+  bindInput('#ix_signup_reason', () => s.signup_eval_reason, v => s.signup_eval_reason = v);
+  bindInput('#ix_handover', () => s.handover, v => s.handover = v);
+};
+
+/* =========================================================
+   PAGE: MEMBER SURVEY (NEW)
+   ========================================================= */
+PAGE_RENDERERS.member_survey = (root, data) => {
+  const s = data.member_survey;
+  root.innerHTML = `
+    ${pageHead('6. 振り返り / 6.1', 'メンバーアンケート結果', 'さんしろうさんのお願い項目: 「メンバーに向けてアンケートを一律でとりたい」。MC→LCの働きかけFB、LCmkt→LCmemスムーズさのFBを集約します。', PAGE_REFS.member_survey)}
+
+    <div class="card">
+      <div class="card-head"><h2>回答状況</h2><div class="sub">Response</div></div>
+      <div class="card-body">
+        <div class="field-row cols-2">
+          <div class="field"><label>回答数</label><input type="number" id="ms_count" /></div>
+          <div class="field"><label>回答率 (%)</label><input type="number" id="ms_rate" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>主な所見</h2><div class="sub">Findings</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>MC → LC への働きかけに関するFB</label>
+          <textarea id="ms_mc_fb" class="tall" placeholder="MC on LC、Recruit Callなどに対するメンバーからのFB"></textarea>
+        </div>
+        <div class="field">
+          <label>LCmkt → LCmem の引き継ぎに関するFB</label>
+          <textarea id="ms_lcmkt_fb" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>その他の発見・気になった声</label>
+          <textarea id="ms_other" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>次年度に向けた具体的なアクション</label>
+          <textarea id="ms_action" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindInput('#ms_count', () => s.response_count, v => s.response_count = v);
+  bindInput('#ms_rate', () => s.response_rate, v => s.response_rate = v);
+  bindInput('#ms_mc_fb', () => s.mc_to_lc_fb, v => s.mc_to_lc_fb = v);
+  bindInput('#ms_lcmkt_fb', () => s.lcmkt_to_lcmem_fb, v => s.lcmkt_to_lcmem_fb = v);
+  bindInput('#ms_other', () => s.other_findings, v => s.other_findings = v);
+  bindInput('#ms_action', () => s.actions_for_next, v => s.actions_for_next = v);
+};
+
+/* =========================================================
+   PAGE: EVALUATION
+   ========================================================= */
+PAGE_RENDERERS.evaluation = (root, data) => {
+  root.innerHTML = `
+    ${pageHead('6. 振り返り / 6.2', 'Evaluation', '上のタブで拾いきれなかった申し送り、トラブル、金銭、大学対応など、その他何でも残します。', PAGE_REFS.evaluation)}
+
+    <div class="card">
+      <div class="card-head">
+        <h2>申し送り項目</h2>
+        <button class="btn primary sm" id="addEval">＋ 項目を追加</button>
+      </div>
+      <div class="card-body" id="evalBox"></div>
+    </div>
+  `;
+
+  document.getElementById('addEval').onclick = () => {
+    data.evaluation.items.push({ topic: '', summary: '', note: '' });
+    saveState();
+    renderEvalBox(data);
+  };
+  renderEvalBox(data);
+};
+
+function renderEvalBox(data) {
+  const box = document.getElementById('evalBox');
+  if (!data.evaluation.items.length) {
+    box.innerHTML = `<div class="empty"><h3>項目がまだありません</h3><p>例: トラブル / 金銭 / 大学対応 など</p></div>`;
+    return;
+  }
+  box.innerHTML = `
+    <table class="data">
+      <thead><tr><th style="width:200px">内容</th><th>概要</th><th style="width:200px">備考</th><th style="width:36px"></th></tr></thead>
+      <tbody>
+        ${data.evaluation.items.map((e, i) => `
+          <tr data-i="${i}">
+            <td><input type="text" data-k="topic" value="${escapeHtml(e.topic)}" /></td>
+            <td><textarea data-k="summary">${escapeHtml(e.summary)}</textarea></td>
+            <td><input type="text" data-k="note" value="${escapeHtml(e.note)}" /></td>
+            <td><button class="row-delete" data-del="${i}">×</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  box.querySelectorAll('input,textarea').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.evaluation.items[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      data.evaluation.items.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderEvalBox(data);
+    };
+  });
+}
+
+/* =========================================================
+   PAGE: RESOURCES (Reference URL registration)
+   ========================================================= */
+PAGE_RENDERERS.resources = (root, data) => {
+  if (!data.resources.custom) data.resources.custom = [];
+  const catEditable = canEditCatalog();
+  const customEditable = canEditCustom(state.currentLC);
+
+  root.innerHTML = `
+    ${pageHead('資料', '資料集 / Reference URL登録', 'ここで登録したURLが、各タブの上部の参考資料パネルに反映されます。「どの資料を見れば数値や振り返りを埋められるのか」を一目で分かるようにします。', [])}
+
+    <div class="callout">
+      <div class="callout-title">権限について</div>
+      標準カタログ (MC共通の資料) を編集できるのは <strong>MC</strong> のみです (MCアカウントはFirebase側で登録・認証)。カスタム資料 (LC独自) を編集できるのは <strong>その LC のメンバー</strong> (および管理者のMC) のみです。閲覧は全員できます。<br>
+      現在のあなた: <strong>${escapeHtml(identityLabel())}</strong> / 表示中LC: <strong>${escapeHtml(state.currentLC)}</strong>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>標準カタログ</h2>
+        <div class="sub">Catalog ${catEditable ? '· 編集可' : '· 閲覧のみ'}</div>
+      </div>
+      <div class="card-body" id="catalogBox"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>カスタム資料 (${escapeHtml(state.currentLC)} 独自)</h2>
+        ${customEditable ? '<button class="btn primary sm" id="addRes">＋ 資料を追加</button>' : '<div class="sub">閲覧のみ</div>'}
+      </div>
+      <div class="card-body" id="customResBox"></div>
+    </div>
+  `;
+
+  // ===== 標準カタログ (グローバル共有・MCのみ編集) =====
+  const cBox = document.getElementById('catalogBox');
+  if (!catEditable) {
+    cBox.insertAdjacentHTML('afterbegin',
+      `<div class="perm-note">この欄を編集できるのは MC のみです。あなたは「${escapeHtml(identityLabel())}」としてログインしています。閲覧のみ可能です。</div>`);
+  }
+  cBox.insertAdjacentHTML('beforeend', `
+    <table class="data">
+      <thead><tr><th style="width:220px">資料名</th><th style="width:280px">説明</th><th>URL</th></tr></thead>
+      <tbody>
+        ${Object.entries(REF_CATALOG).map(([k, r]) => {
+          const url = state.globalCatalog[k] || r.url || '';
+          return `
+            <tr data-key="${k}">
+              <td><strong>${escapeHtml(r.name)}</strong></td>
+              <td class="small muted">${escapeHtml(r.desc)}</td>
+              <td><input type="url" data-key="${k}" value="${escapeHtml(url)}" placeholder="https://..." ${catEditable ? '' : 'readonly disabled'} /></td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `);
+  if (catEditable) {
+    cBox.querySelectorAll('input[type=url]').forEach(el => {
+      el.oninput = () => {
+        const key = el.dataset.key;
+        if (el.value) state.globalCatalog[key] = el.value;
+        else delete state.globalCatalog[key];
+        saveState();
+      };
+    });
+  }
+
+  // ===== カスタム資料 (LC独自・そのLC本人/MCのみ編集) =====
+  if (customEditable) {
+    document.getElementById('addRes').onclick = () => {
+      data.resources.custom.push({ category: 'LC独自', name: '', url: '', note: '' });
+      saveState();
+      renderCustomRes(data, customEditable);
+    };
+  }
+  renderCustomRes(data, customEditable);
+};
+
+function renderCustomRes(data, editable) {
+  const box = document.getElementById('customResBox');
+  const customs = data.resources.custom.filter(r => !r.catalog_key);
+  let head = '';
+  if (!editable) {
+    head = `<div class="perm-note">この欄を編集できるのは ${escapeHtml(state.currentLC)} のメンバー (またはMC) のみです。閲覧のみ可能です。</div>`;
+  }
+  if (!customs.length) {
+    box.innerHTML = head + `<div class="empty small"><p>${escapeHtml(state.currentLC)} 独自の資料がまだありません</p></div>`;
+    return;
+  }
+  box.innerHTML = head + `
+    <table class="data">
+      <thead><tr><th style="width:140px">カテゴリ</th><th style="width:220px">資料名</th><th>URL</th><th>備考</th>${editable ? '<th style="width:36px"></th>' : ''}</tr></thead>
+      <tbody>
+        ${customs.map((r) => {
+          const realIdx = data.resources.custom.indexOf(r);
+          const ro = editable ? '' : 'readonly disabled';
+          return `
+            <tr data-i="${realIdx}">
+              <td><input type="text" data-k="category" value="${escapeHtml(r.category)}" ${ro} /></td>
+              <td><input type="text" data-k="name" value="${escapeHtml(r.name)}" ${ro} /></td>
+              <td><input type="url" data-k="url" value="${escapeHtml(r.url)}" placeholder="https://..." ${ro} /></td>
+              <td><input type="text" data-k="note" value="${escapeHtml(r.note)}" ${ro} /></td>
+              ${editable ? `<td><button class="row-delete" data-del="${realIdx}">×</button></td>` : ''}
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  if (!editable) return;
+  box.querySelectorAll('input').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      data.resources.custom[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => {
+      data.resources.custom.splice(parseInt(b.dataset.del), 1);
+      saveState();
+      renderCustomRes(data, editable);
+    };
+  });
+}
+
+/* =========================================================
+   NAV HELPER
+   ========================================================= */
+function jumpTo(page) {
+  state.currentPage = page;
+  renderSidebar();
+  renderPage();
 }
 
 /* =========================================================
    IMPORT / EXPORT
    ========================================================= */
 function exportData() {
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
+  const payload = JSON.stringify(state, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `aiesec-recruit-tracker-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `aiesec-recruit-fr-${TERM}-${state.currentLC}-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -1867,11 +3819,12 @@ document.getElementById('importFile').onchange = (e) => {
   reader.onload = () => {
     try {
       const parsed = JSON.parse(reader.result);
-      if (!parsed.terms) throw new Error('Invalid file');
-      if (!confirm('現在のデータを上書きします。続行しますか？')) return;
+      if (!parsed.lcs) throw new Error('Invalid file');
+      if (!confirm('現在のデータをこのファイルで上書きしますか？')) return;
       state = parsed;
       saveState();
-      renderTermSwitcher();
+      renderLCSelector();
+      renderSidebar();
       renderPage();
     } catch (err) {
       alert('インポートに失敗しました: ' + err.message);
@@ -1881,18 +3834,124 @@ document.getElementById('importFile').onchange = (e) => {
 };
 
 /* =========================================================
-   HELPERS
+   MOBILE NAV (Hamburger)
    ========================================================= */
-function addBtnHtml(id, label) {
-  return `<button class="add-row-btn" id="${id}">${label}</button>`;
+const hamburgerBtn = document.getElementById('hamburger');
+const sidebarEl = document.getElementById('sidebar');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+function closeMobileSidebar() {
+  sidebarEl.classList.remove('open');
+  sidebarBackdrop.classList.remove('show');
 }
+function openMobileSidebar() {
+  sidebarEl.classList.add('open');
+  sidebarBackdrop.classList.add('show');
+}
+hamburgerBtn.onclick = () => {
+  if (sidebarEl.classList.contains('open')) closeMobileSidebar();
+  else openMobileSidebar();
+};
+sidebarBackdrop.onclick = closeMobileSidebar;
+
+// 既存のrenderSidebarをラップ: nav-itemクリック時にモバイルでドロワーを閉じる
+const _origRenderSidebar = renderSidebar;
+renderSidebar = function() {
+  _origRenderSidebar();
+  document.querySelectorAll('.nav-item').forEach(el => {
+    const prev = el.onclick;
+    el.onclick = (e) => {
+      if (prev) prev.call(el, e);
+      if (window.innerWidth < 768) closeMobileSidebar();
+    };
+  });
+};
+
+/* =========================================================
+   LOGIN FLOW
+   ========================================================= */
+function buildLoginLcOptions() {
+  const sel = document.getElementById('loginLcSelect');
+  sel.innerHTML = LC_LIST.map(code => `<option value="${code}">${code}</option>`).join('');
+}
+
+function showLoginScreen() {
+  const scr = document.getElementById('loginScreen');
+  // ヘッダーロゴを流用
+  const srcImg = document.querySelector('.brand img');
+  const logoBox = document.getElementById('loginLogo');
+  if (srcImg && !logoBox.querySelector('img')) {
+    const c = srcImg.cloneNode(true);
+    c.removeAttribute('class');
+    logoBox.appendChild(c);
+  }
+  buildLoginLcOptions();
+  if (state.identity && state.identity.lc && LC_LIST.includes(state.identity.lc)) {
+    document.getElementById('loginLcSelect').value = state.identity.lc;
+  }
+  scr.style.display = 'grid';
+
+  document.getElementById('loginConfirmLC').onclick = () => {
+    const lc = document.getElementById('loginLcSelect').value;
+    finishLogin({ role: 'LC', lc });
+  };
+}
+
+function finishLogin(identity) {
+  state.identity = identity;
+  // LCメンバーは自分のLCを初期表示に
+  if (identity.role === 'LC') {
+    state.currentLC = identity.lc;
+    if (!state.lcs[state.currentLC]) {
+      state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+      state.lcs[state.currentLC].meta.lc = state.currentLC;
+    }
+  }
+  saveState();
+  document.getElementById('loginScreen').style.display = 'none';
+  applyIdentity();
+  renderLCSelector();
+  renderSidebar();
+  renderPage();
+}
+
+function applyIdentity() {
+  const txt = document.getElementById('identityBadgeText');
+  if (txt) txt.textContent = identityLabel();
+}
+
+document.getElementById('identityBadge').onclick = () => {
+  if (confirm('ログイン情報を変更しますか？ (入力済みデータは保持されます)')) {
+    showLoginScreen();
+  }
+};
 
 /* =========================================================
    INIT
    ========================================================= */
 loadState();
-renderTermSwitcher();
+applyIdentity();
+renderLCSelector();
+renderSidebar();
 renderPage();
+
+// identity未設定なら最初にログイン画面を表示
+if (!state.identity) {
+  showLoginScreen();
+}
+
+// funnelページ等の部分再描画でcard-headが作り直されても保存ボタンを必ず維持
+const _mainContentEl = document.getElementById('mainContent');
+let _injectScheduled = false;
+const _cardBtnObserver = new MutationObserver(() => {
+  if (_injectScheduled) return;
+  _injectScheduled = true;
+  requestAnimationFrame(() => {
+    _injectScheduled = false;
+    injectCardSaveButtons(_mainContentEl);
+  });
+});
+_cardBtnObserver.observe(_mainContentEl, { childList: true, subtree: true });
 </script>
 </body>
 </html>
