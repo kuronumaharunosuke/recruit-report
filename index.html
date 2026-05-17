@@ -1302,6 +1302,26 @@
     justify-content: space-between;
   }
   .login-actions .btn { flex: 1; }
+  .login-err {
+    margin-top: 14px;
+    background: #fdeaea;
+    border: 1px solid #f0b5b5;
+    color: #b5302b;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .login-foot {
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--aiesec-gray);
+  }
+  .login-foot a {
+    color: var(--aiesec-blue);
+    cursor: pointer;
+    text-decoration: underline;
+  }
 
   .identity-badge {
     display: inline-flex;
@@ -1340,6 +1360,59 @@
     margin-bottom: 14px;
   }
 
+  .ro-banner {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #4a4f57;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .readonly-mode input,
+  .readonly-mode textarea,
+  .readonly-mode select {
+    background: var(--aiesec-gray-bg) !important;
+    cursor: not-allowed;
+  }
+  .readonly-mode .card-save-btn,
+  .readonly-mode .add-row-btn,
+  .readonly-mode .row-delete {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* MC dashboard */
+  .mc-stat-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .mc-stat-row .stat-tile { padding: 12px 14px; }
+  .stat-unit { font-size: 12px; color: var(--aiesec-gray); font-weight: 600; margin-left: 3px; }
+  table.mc-table th, table.mc-table td { white-space: nowrap; text-align: center; }
+  table.mc-table td:first-child, table.mc-table th:first-child { text-align: left; }
+  table.mc-table tr.mc-total td { background: var(--aiesec-blue-light); border-top: 2px solid var(--aiesec-blue); }
+  table.mc-table tr.mc-empty td { background: #fafafa; }
+  .mc-prog { display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .mc-prog-bar {
+    width: 54px; height: 7px;
+    background: var(--aiesec-gray-light);
+    border-radius: 4px; overflow: hidden;
+  }
+  .mc-prog-bar span { display: block; height: 100%; border-radius: 4px; }
+  .mc-prog-bar span.good { background: var(--aiesec-green); }
+  .mc-prog-bar span.warn { background: var(--aiesec-yellow); }
+  .mc-prog-bar span.bad  { background: var(--aiesec-red); }
+  .mc-prog-num { font-size: 10.5px; font-weight: 700; color: var(--aiesec-gray); }
+  @media (max-width: 767px) {
+    .mc-stat-row { grid-template-columns: 1fr 1fr; }
+  }
+
   @media (max-width: 767px) {
     .login-card { padding: 30px 22px; }
     .login-role-grid { grid-template-columns: 1fr; }
@@ -1355,14 +1428,30 @@
   <div class="login-card">
     <div class="login-logo" id="loginLogo"></div>
     <h1 class="login-title">2627term Spring Recruitment FR</h1>
-    <p class="login-sub">あなたの LC を選択してください。<br>カスタム資料は自 LC のメンバーのみ編集できます (閲覧は全員可)。</p>
 
-    <div class="login-step" id="loginStep2">
+    <!-- Step A: Google認証 -->
+    <div class="login-step" id="loginStepAuth">
+      <p class="login-sub">AIESEC の Google アカウント (<strong>@aiesec.jp</strong>) でログインしてください。</p>
+      <div class="login-actions">
+        <button class="btn primary" id="googleLoginBtn" style="flex:1;">Google でログイン</button>
+      </div>
+      <div class="login-err" id="loginErr" style="display:none;"></div>
+    </div>
+
+    <!-- Step B: LC選択 -->
+    <div class="login-step" id="loginStep2" style="display:none;">
+      <p class="login-sub">あなたの LC を選択してください。<br>カスタム資料は自 LC のメンバーのみ編集できます (閲覧は全員可)。</p>
       <div class="login-label">LC を選択</div>
       <select id="loginLcSelect" class="login-select"></select>
       <div class="login-actions">
         <button class="btn primary" id="loginConfirmLC" style="flex:1;">この LC で開始</button>
       </div>
+      <div class="login-foot" id="loginAccountFoot"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="login-step" id="loginStepLoading" style="display:none;">
+      <p class="login-sub">読み込み中…</p>
     </div>
   </div>
 </div>
@@ -1421,6 +1510,47 @@
   </div>
 </div>
 <input type="file" id="importFile" accept=".json" style="display:none;">
+
+<!-- ===================== FIREBASE SDK (compat) ===================== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================
+   FIREBASE CONFIG
+   ---------------------------------------------------------
+   ▼▼▼ ここを Firebase コンソールの値に差し替える ▼▼▼
+   Firebase Console → プロジェクト設定 → マイアプリ → SDK setup
+   ========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey:            "PASTE_API_KEY",
+  authDomain:        "PASTE_PROJECT_ID.firebaseapp.com",
+  projectId:         "PASTE_PROJECT_ID",
+  storageBucket:     "PASTE_PROJECT_ID.appspot.com",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId:             "PASTE_APP_ID"
+};
+// このドメインのメールだけログイン許可
+const ALLOWED_EMAIL_DOMAIN = "aiesec.jp";
+
+let fb = { app: null, auth: null, db: null, ready: false };
+function initFirebase() {
+  if (FIREBASE_CONFIG.apiKey === "PASTE_API_KEY") {
+    console.warn("[Firebase] 未設定: FIREBASE_CONFIG を埋めてください。ローカルモードで起動します。");
+    return false;
+  }
+  try {
+    fb.app  = firebase.initializeApp(FIREBASE_CONFIG);
+    fb.auth = firebase.auth();
+    fb.db   = firebase.firestore();
+    fb.ready = true;
+    return true;
+  } catch (e) {
+    console.error("[Firebase] init失敗", e);
+    return false;
+  }
+}
+</script>
 
 <script>
 /* =========================================================
@@ -1752,12 +1882,16 @@ function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       indicator.classList.remove('saving');
-      indicator.textContent = '自動保存済み';
+      // Firebase接続中はクラウド保存表示、未設定時はローカル表示
+      indicator.textContent = (typeof fb !== 'undefined' && fb.ready && state.identity && state.identity.email)
+        ? 'クラウド同期中…' : 'ローカル保存済み';
     } catch (e) {
       indicator.textContent = '保存エラー';
       console.error(e);
     }
   }, 350);
+  // Firestoreへ反映（権限はクライアント＋Rules両方で制御）
+  if (typeof fbQueueSave === 'function') fbQueueSave();
 }
 
 function currentData() {
@@ -1990,7 +2124,11 @@ const NAV = [
 
 function renderSidebar() {
   const data = currentData();
-  document.getElementById('sidebar').innerHTML = NAV.map(g => `
+  const groups = (isMC()
+    ? [{ group: 'MC', items: [{ page: 'mc_dashboard', num: '★', label: '全LC集約ダッシュボード' }] }]
+    : []
+  ).concat(NAV);
+  document.getElementById('sidebar').innerHTML = groups.map(g => `
     <div class="nav-group">
       <div class="nav-group-title">${g.group}</div>
       ${g.items.map(it => `
@@ -3662,6 +3800,182 @@ function renderEvalBox(data) {
 /* =========================================================
    PAGE: RESOURCES (Reference URL registration)
    ========================================================= */
+/* =========================================================
+   PAGE: MC DASHBOARD (全LC集約・MC専用)
+   ========================================================= */
+let _mcAllLcs = null;       // {LC: data}
+let _mcLoading = false;
+
+async function fbLoadAllLCs() {
+  if (!fb.ready || !state.identity) { _mcAllLcs = null; return; }
+  _mcLoading = true;
+  try {
+    const snap = await fb.db.collection('lcs').get();
+    const out = {};
+    snap.forEach(doc => { if (doc.data() && doc.data().data) out[doc.id] = doc.data().data; });
+    _mcAllLcs = out;
+  } catch (e) {
+    console.error('load all lcs', e);
+    _mcAllLcs = {};
+  }
+  _mcLoading = false;
+}
+
+// 進捗(入力率)を代表フィールドで概算
+function mcProgress(d) {
+  if (!d) return 0;
+  const f = (x) => x !== undefined && x !== null && String(x).trim() !== '';
+  const fa = (p) => d.funnel && d.funnel[p] && f(d.funnel[p].actual);
+  const checks = [
+    f(d.overview && d.overview.target_total),
+    f(d.overview && d.overview.actual_total),
+    f(d.overview && d.overview.handover_summary),
+    f(d.overview && d.overview.top_priority),
+    f(d.direction && d.direction.lc_direction),
+    fa('total_reach'), fa('line_registration'), fa('event_attend'),
+    fa('af_submit'), fa('pass'), fa('paid'),
+    f(d.reach_overall && d.reach_overall.purpose),
+    f(d.funnel_handover && d.funnel_handover.calc_method),
+    f(d.customer_journey && d.customer_journey.design),
+    f(d.oc && d.oc.structure_note)
+  ];
+  const done = checks.filter(Boolean).length;
+  return Math.round(done / checks.length * 100);
+}
+function num(v) { const n = parseFloat(v); return isFinite(n) ? n : null; }
+function aOf(d, key) { return d && d.funnel && d.funnel[key] ? num(d.funnel[key].actual) : null; }
+function pOf(d, key) { return d && d.funnel && d.funnel[key] ? num(d.funnel[key].plan) : null; }
+
+PAGE_RENDERERS.mc_dashboard = (root) => {
+  root.innerHTML = `
+    ${pageHead('MC', '全LC集約ダッシュボード', 'MC専用。全25LCのRecruit進捗とKPIファネルを横断で確認します。データはFirestoreの最新を取得します。', [])}
+    <div class="card">
+      <div class="card-head">
+        <h2>全LCサマリー</h2>
+        <button class="btn primary sm" id="mcRefresh">最新を取得</button>
+      </div>
+      <div class="card-body" id="mcBody"></div>
+    </div>
+  `;
+  const body = document.getElementById('mcBody');
+  document.getElementById('mcRefresh').onclick = async () => {
+    body.innerHTML = `<div class="empty small"><p>読み込み中…</p></div>`;
+    await fbLoadAllLCs();
+    drawMC(body);
+  };
+
+  if (!fb.ready) {
+    body.innerHTML = `<div class="perm-note">Firebase未設定のためローカルモードです。全LC集約はFirebase接続時のみ利用できます。</div>`;
+    return;
+  }
+  if (_mcAllLcs === null) {
+    body.innerHTML = `<div class="empty small"><p>「最新を取得」を押して全LCデータを読み込みます</p></div>`;
+    // 自動で1回ロード
+    fbLoadAllLCs().then(() => { if (state.currentPage === 'mc_dashboard') drawMC(body); });
+    return;
+  }
+  drawMC(body);
+};
+
+function drawMC(body) {
+  const all = _mcAllLcs || {};
+  const rows = LC_LIST.map(code => {
+    const d = all[code];
+    return { code, d, has: !!d };
+  });
+
+  // 集計
+  const sum = (key) => rows.reduce((s, r) => s + (aOf(r.d, key) || 0), 0);
+  const tot = {
+    reach: sum('total_reach'), line: sum('line_registration'),
+    attend: sum('event_attend'), af: sum('af_submit'),
+    pass: sum('pass'), paid: sum('paid')
+  };
+  const filledCount = rows.filter(r => r.has).length;
+
+  const cell = (v) => v == null ? '<span class="muted">–</span>' : Number(v).toLocaleString();
+  const cvrCell = (a, b) => {
+    if (!a || !b) return '<span class="muted">–</span>';
+    const v = b / a * 100;
+    return `<span class="kpi-cvr ${cvrClass(v)}" style="font-size:11px">${v.toFixed(1)}%</span>`;
+  };
+  const prog = (p) => {
+    const cls = p >= 70 ? 'good' : p >= 30 ? 'warn' : 'bad';
+    return `<div class="mc-prog"><div class="mc-prog-bar"><span class="${cls}" style="width:${p}%"></span></div><span class="mc-prog-num">${p}%</span></div>`;
+  };
+
+  body.innerHTML = `
+    <div class="mc-stat-row">
+      <div class="stat-tile"><div class="stat-label">データ提出LC</div><div class="stat-value">${filledCount}<span class="stat-unit">/ ${LC_LIST.length}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">AJ総リーチ</div><div class="stat-value">${tot.reach.toLocaleString()}</div></div>
+      <div class="stat-tile"><div class="stat-label">AJ説明会参加</div><div class="stat-value">${tot.attend.toLocaleString()}</div></div>
+      <div class="stat-tile"><div class="stat-label">AJ入会(pass)</div><div class="stat-value">${tot.pass.toLocaleString()}</div></div>
+      <div class="stat-tile"><div class="stat-label">AJ入金(paid)</div><div class="stat-value">${tot.paid.toLocaleString()}</div></div>
+    </div>
+
+    <div style="overflow-x:auto; margin-top:16px">
+    <table class="data mc-table">
+      <thead><tr>
+        <th>LC</th><th>進捗</th><th>リーチ</th><th>LINE</th><th>説明会参加</th>
+        <th>AF提出</th><th>入会(pass)</th><th>入金(paid)</th>
+        <th>参加→入会</th><th>目標/実績</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => {
+          if (!r.has) {
+            return `<tr class="mc-empty"><td><strong>${r.code}</strong></td><td colspan="9" class="muted small">未提出</td>
+              <td><button class="btn sm" data-go="${r.code}">開く</button></td></tr>`;
+          }
+          const d = r.d;
+          const tgt = num(d.overview && d.overview.target_total);
+          const act = num(d.overview && d.overview.actual_total);
+          const achv = (tgt && act != null) ? ` <span class="kpi-cvr ${cvrClass(act/tgt*100)}" style="font-size:10px">${(act/tgt*100).toFixed(0)}%</span>` : '';
+          return `<tr>
+            <td><strong>${r.code}</strong></td>
+            <td>${prog(mcProgress(d))}</td>
+            <td>${cell(aOf(d,'total_reach'))}</td>
+            <td>${cell(aOf(d,'line_registration'))}</td>
+            <td>${cell(aOf(d,'event_attend'))}</td>
+            <td>${cell(aOf(d,'af_submit'))}</td>
+            <td>${cell(aOf(d,'pass'))}</td>
+            <td>${cell(aOf(d,'paid'))}</td>
+            <td>${cvrCell(aOf(d,'event_attend'), aOf(d,'pass'))}</td>
+            <td class="small">${act!=null?act:'–'} / ${tgt!=null?tgt:'–'}${achv}</td>
+            <td><button class="btn sm" data-go="${r.code}">開く</button></td>
+          </tr>`;
+        }).join('')}
+        <tr class="mc-total">
+          <td><strong>AJ合計</strong></td><td></td>
+          <td><strong>${tot.reach.toLocaleString()}</strong></td>
+          <td><strong>${tot.line.toLocaleString()}</strong></td>
+          <td><strong>${tot.attend.toLocaleString()}</strong></td>
+          <td><strong>${tot.af.toLocaleString()}</strong></td>
+          <td><strong>${tot.pass.toLocaleString()}</strong></td>
+          <td><strong>${tot.paid.toLocaleString()}</strong></td>
+          <td>${cvrCell(tot.attend, tot.pass)}</td>
+          <td colspan="2"></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="ref-panel-hint" style="margin-top:10px">数値は各LCがFRに入力したCustomer Flow(2.1)の実績値の合計です。「開く」でそのLCのFRに移動します(他LCは閲覧モード)。</div>
+  `;
+
+  body.querySelectorAll('[data-go]').forEach(b => {
+    b.onclick = async () => {
+      state.currentLC = b.dataset.go;
+      const sel = document.getElementById('lcSelect');
+      if (sel) sel.value = state.currentLC;
+      if (fb.ready && state.identity && state.identity.email) {
+        await fbLoadLC(state.currentLC, { subscribe: !canEditCurrentLC() });
+      }
+      state.currentPage = 'overview';
+      renderSidebar();
+      renderPage();
+    };
+  });
+}
+
 PAGE_RENDERERS.resources = (root, data) => {
   if (!data.resources.custom) data.resources.custom = [];
   const catEditable = canEditCatalog();
@@ -3868,52 +4182,307 @@ renderSidebar = function() {
 };
 
 /* =========================================================
-   LOGIN FLOW
+   LOGIN FLOW  (Firebase Auth + Firestore)
    ========================================================= */
 function buildLoginLcOptions() {
   const sel = document.getElementById('loginLcSelect');
   sel.innerHTML = LC_LIST.map(code => `<option value="${code}">${code}</option>`).join('');
 }
 
-function showLoginScreen() {
-  const scr = document.getElementById('loginScreen');
-  // ヘッダーロゴを流用
+function loginShowStep(which) {
+  ['loginStepAuth','loginStep2','loginStepLoading'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (id === which) ? '' : 'none';
+  });
+  document.getElementById('loginScreen').style.display = 'grid';
+}
+function hideLoginScreen() {
+  document.getElementById('loginScreen').style.display = 'none';
+}
+function loginError(msg) {
+  const e = document.getElementById('loginErr');
+  if (!e) return;
+  e.textContent = msg;
+  e.style.display = msg ? '' : 'none';
+}
+function ensureLoginLogo() {
   const srcImg = document.querySelector('.brand img');
   const logoBox = document.getElementById('loginLogo');
-  if (srcImg && !logoBox.querySelector('img')) {
+  if (srcImg && logoBox && !logoBox.querySelector('img')) {
     const c = srcImg.cloneNode(true);
     c.removeAttribute('class');
     logoBox.appendChild(c);
   }
-  buildLoginLcOptions();
-  if (state.identity && state.identity.lc && LC_LIST.includes(state.identity.lc)) {
-    document.getElementById('loginLcSelect').value = state.identity.lc;
-  }
-  scr.style.display = 'grid';
-
-  document.getElementById('loginConfirmLC').onclick = () => {
-    const lc = document.getElementById('loginLcSelect').value;
-    finishLogin({ role: 'LC', lc });
-  };
 }
 
-function finishLogin(identity) {
-  state.identity = identity;
-  // LCメンバーは自分のLCを初期表示に
-  if (identity.role === 'LC') {
-    state.currentLC = identity.lc;
-    if (!state.lcs[state.currentLC]) {
-      state.lcs[state.currentLC] = DEFAULT_LC_DATA();
-      state.lcs[state.currentLC].meta.lc = state.currentLC;
+/* ---------- Firestore helpers ---------- */
+const FS = {
+  catalogRef: () => fb.db.collection('config').doc('globalCatalog'),
+  lcRef:      (code) => fb.db.collection('lcs').doc(code),
+  userRef:    (uid) => fb.db.collection('users').doc(uid),
+  adminRef:   (email) => fb.db.collection('admins').doc(email.toLowerCase()),
+};
+
+let _fbUnsub = { catalog: null, viewLc: null };
+let _fbWriteTimer = null;
+let _applyingRemote = false;   // リモート反映中の保存ループ防止
+
+// 現在表示中LCを自分が編集できるか（FRデータ本体の編集可否）
+function canEditCurrentLC() {
+  return isMC() || (state.identity && state.identity.role === 'LC' && state.identity.lc === state.currentLC);
+}
+
+async function fbLoadGlobalCatalog() {
+  try {
+    const snap = await FS.catalogRef().get();
+    if (snap.exists) state.globalCatalog = snap.data().urls || {};
+  } catch (e) { console.error('catalog load', e); }
+  // リアルタイム購読（MCの更新を全員に反映）
+  if (_fbUnsub.catalog) _fbUnsub.catalog();
+  _fbUnsub.catalog = FS.catalogRef().onSnapshot(snap => {
+    if (!snap.exists) return;
+    state.globalCatalog = snap.data().urls || {};
+    if (state.currentPage === 'resources') renderPage();
+    else if (document.querySelector('.ref-panel')) renderPage();
+  });
+}
+
+async function fbLoadLC(code, { subscribe } = {}) {
+  try {
+    const snap = await FS.lcRef(code).get();
+    if (snap.exists && snap.data().data) {
+      state.lcs[code] = snap.data().data;
+      state.lcs[code].meta = state.lcs[code].meta || {};
+      state.lcs[code].meta.lc = code;
+    } else if (!state.lcs[code]) {
+      state.lcs[code] = DEFAULT_LC_DATA();
+      state.lcs[code].meta.lc = code;
     }
+  } catch (e) { console.error('lc load', code, e); }
+
+  // 編集不可LC（閲覧）はライブ購読、編集可LCは購読しない（タイピングのclobber防止）
+  if (_fbUnsub.viewLc) { _fbUnsub.viewLc(); _fbUnsub.viewLc = null; }
+  if (subscribe) {
+    _fbUnsub.viewLc = FS.lcRef(code).onSnapshot(snap => {
+      if (code !== state.currentLC) return;
+      if (snap.exists && snap.data().data) {
+        _applyingRemote = true;
+        state.lcs[code] = snap.data().data;
+        state.lcs[code].meta = state.lcs[code].meta || {};
+        state.lcs[code].meta.lc = code;
+        renderPage();
+        _applyingRemote = false;
+      }
+    });
   }
+}
+
+function fbQueueSave() {
+  if (!fb.ready || !state.identity) return;
+  if (_applyingRemote) return;
+  clearTimeout(_fbWriteTimer);
+  _fbWriteTimer = setTimeout(fbFlushSave, 600);
+}
+async function fbFlushSave() {
+  if (!fb.ready || !state.identity) return;
+  const ind = document.getElementById('saveIndicator');
+  const email = state.identity.email || '';
+  const tasks = [];
+  // 自分の編集権限があるLCのみFRデータを書き込む（Rulesでもサーバー側強制）
+  if (canEditCurrentLC() && state.lcs[state.currentLC]) {
+    tasks.push(FS.lcRef(state.currentLC).set({
+      data: state.lcs[state.currentLC],
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: email
+    }, { merge: true }));
+  }
+  // 標準カタログはMCのみ
+  if (isMC()) {
+    tasks.push(FS.catalogRef().set({
+      urls: state.globalCatalog || {},
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: email
+    }, { merge: true }));
+  }
+  try {
+    await Promise.all(tasks);
+    if (ind) { ind.classList.remove('saving'); ind.textContent = 'クラウド保存済み'; }
+  } catch (e) {
+    console.error('fb save', e);
+    if (ind) ind.textContent = '保存エラー(権限/通信)';
+  }
+}
+
+/* ---------- Auth ---------- */
+function startAuth() {
+  ensureLoginLogo();
+  if (!fb.ready) {
+    // Firebase未設定 → ローカルモード（旧来のLC自己申告）
+    loginShowStep('loginStep2');
+    buildLoginLcOptions();
+    document.getElementById('loginAccountFoot').innerHTML =
+      '<span style="color:var(--aiesec-orange)">Firebase未設定のためローカルモードです（データは共有されません）</span>';
+    document.getElementById('loginConfirmLC').onclick = () => {
+      finishLocalLogin(document.getElementById('loginLcSelect').value);
+    };
+    return;
+  }
+  loginShowStep('loginStepAuth');
+  loginError('');
+  document.getElementById('googleLoginBtn').onclick = doGoogleSignIn;
+  fb.auth.onAuthStateChanged(handleAuthState);
+}
+
+async function doGoogleSignIn() {
+  loginError('');
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ hd: ALLOWED_EMAIL_DOMAIN, prompt: 'select_account' });
+  try {
+    await fb.auth.signInWithPopup(provider);
+  } catch (e) {
+    loginError('ログインに失敗しました: ' + (e.code || e.message));
+  }
+}
+
+async function handleAuthState(user) {
+  if (!user) { loginShowStep('loginStepAuth'); return; }
+  const email = (user.email || '').toLowerCase();
+  if (!email.endsWith('@' + ALLOWED_EMAIL_DOMAIN)) {
+    await fb.auth.signOut();
+    loginShowStep('loginStepAuth');
+    loginError('@' + ALLOWED_EMAIL_DOMAIN + ' のアカウントのみ利用できます（' + email + ' は不可）。');
+    return;
+  }
+  loginShowStep('loginStepLoading');
+  try {
+    // MC判定
+    let role = 'LC';
+    try {
+      const adm = await FS.adminRef(email).get();
+      if (adm.exists) role = 'MC';
+    } catch (e) { console.warn('admin check', e); }
+
+    // ユーザーのLC所属
+    const uref = FS.userRef(user.uid);
+    const usnap = await uref.get();
+    let lc = usnap.exists ? (usnap.data().lc || null) : null;
+
+    if (role !== 'MC' && (!lc || !LC_LIST.includes(lc))) {
+      // LC未設定 → 選択させる
+      state.identity = { role, lc: null, email, uid: user.uid };
+      buildLoginLcOptions();
+      document.getElementById('loginAccountFoot').innerHTML =
+        'ログイン中: ' + escapeHtml(email) + ' ・ <a id="logoutLink">ログアウト</a>';
+      const ll = document.getElementById('logoutLink');
+      if (ll) ll.onclick = () => fb.auth.signOut();
+      document.getElementById('loginConfirmLC').onclick = async () => {
+        const sel = document.getElementById('loginLcSelect').value;
+        await uref.set({ email, lc: sel, role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        state.identity.lc = sel;
+        await enterApp();
+      };
+      loginShowStep('loginStep2');
+      return;
+    }
+
+    // 既にLC確定 or MC
+    if (role === 'MC' && !lc) lc = 'KO';
+    await uref.set({ email, lc: lc || null, role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+    state.identity = { role, lc: (role === 'MC' ? (lc || null) : lc), email, uid: user.uid };
+    await enterApp();
+  } catch (e) {
+    console.error(e);
+    loginError('読み込みに失敗しました: ' + (e.message || e));
+    loginShowStep('loginStepAuth');
+  }
+}
+
+// ローカルモード（Firebase未設定時）のログイン
+function finishLocalLogin(lc) {
+  state.identity = { role: 'LC', lc, email: '', uid: '' };
+  state.currentLC = lc;
+  if (!state.lcs[lc]) { state.lcs[lc] = DEFAULT_LC_DATA(); state.lcs[lc].meta.lc = lc; }
   saveState();
-  document.getElementById('loginScreen').style.display = 'none';
+  hideLoginScreen();
   applyIdentity();
   renderLCSelector();
   renderSidebar();
   renderPage();
 }
+
+async function enterApp() {
+  loginShowStep('loginStepLoading');
+  // 表示開始LC: LCメンバーは自LC、MCは前回 or KO
+  state.currentLC = (state.identity.role === 'LC')
+    ? state.identity.lc
+    : (state.currentLC && LC_LIST.includes(state.currentLC) ? state.currentLC : 'KO');
+
+  await fbLoadGlobalCatalog();
+  await fbLoadLC(state.currentLC, { subscribe: !canEditCurrentLC() });
+
+  hideLoginScreen();
+  applyIdentity();
+  renderLCSelector();
+  renderSidebar();
+  renderPage();
+  applyReadOnlyState();
+}
+
+/* ---------- LC切替時にFirestoreから読み込み ---------- */
+const _origRenderLCSelector2 = renderLCSelector;
+renderLCSelector = function() {
+  _origRenderLCSelector2();
+  const el = document.getElementById('lcSelect');
+  if (!el) return;
+  el.onchange = async () => {
+    state.currentLC = el.value;
+    if (fb.ready && state.identity && state.identity.email) {
+      loginShowStep('loginStepLoading');
+      await fbLoadLC(state.currentLC, { subscribe: !canEditCurrentLC() });
+      hideLoginScreen();
+    } else if (!state.lcs[state.currentLC]) {
+      state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+      state.lcs[state.currentLC].meta.lc = state.currentLC;
+    }
+    saveState();
+    renderPage();
+    applyReadOnlyState();
+  };
+};
+
+/* ---------- 編集不可LCを閲覧時は読み取り専用にする ---------- */
+function applyReadOnlyState() {
+  const root = document.getElementById('mainContent');
+  if (!root) return;
+  let banner = document.getElementById('roBanner');
+  const editable = !fb.ready ? true : canEditCurrentLC();
+  if (editable) {
+    root.classList.remove('readonly-mode');
+    if (banner) banner.remove();
+    return;
+  }
+  root.classList.add('readonly-mode');
+  root.querySelectorAll('input, textarea, select, button').forEach(el => {
+    if (el.closest('#roBanner')) return;
+    el.setAttribute('disabled', 'disabled');
+  });
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'roBanner';
+    banner.className = 'ro-banner';
+    const main = document.querySelector('.main');
+    if (main) main.insertBefore(banner, main.firstChild);
+  }
+  banner.innerHTML = '閲覧モード: ' + escapeHtml(state.currentLC) +
+    ' は他LCのため編集できません。編集は所属LC (' +
+    escapeHtml(state.identity && state.identity.lc || '-') + ') のメンバー、または MC のみ。';
+}
+// renderPage後に読み取り専用を再適用
+const _origRenderPage2 = renderPage;
+renderPage = function() {
+  _origRenderPage2();
+  applyReadOnlyState();
+};
 
 function applyIdentity() {
   const txt = document.getElementById('identityBadgeText');
@@ -3921,24 +4490,24 @@ function applyIdentity() {
 }
 
 document.getElementById('identityBadge').onclick = () => {
-  if (confirm('ログイン情報を変更しますか？ (入力済みデータは保持されます)')) {
-    showLoginScreen();
+  if (fb.ready && fb.auth && fb.auth.currentUser) {
+    if (confirm('ログアウトしますか？')) fb.auth.signOut();
+  } else {
+    if (confirm('ログイン情報を変更しますか？ (入力済みデータは保持されます)')) startAuth();
   }
 };
 
 /* =========================================================
    INIT
    ========================================================= */
-loadState();
+loadState();          // localStorageキャッシュ（オフライン耐性）
 applyIdentity();
 renderLCSelector();
 renderSidebar();
 renderPage();
 
-// identity未設定なら最初にログイン画面を表示
-if (!state.identity) {
-  showLoginScreen();
-}
+const _fbOk = initFirebase();
+startAuth();           // Firebase ready→Google認証 / 未設定→ローカルモード
 
 // funnelページ等の部分再描画でcard-headが作り直されても保存ボタンを必ず維持
 const _mainContentEl = document.getElementById('mainContent');
