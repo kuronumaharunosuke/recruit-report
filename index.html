@@ -2581,7 +2581,7 @@ function renderInvestBox(data) {
    ========================================================= */
 PAGE_RENDERERS.uni_constraints = (root, data) => {
   root.innerHTML = `
-    ${pageHead('1. 採用方針 / 1.2', '大学特有の与件', 'さんしろうさんのお願い: 「いい加減来年『このLCってビラ配れるんだっけ？』みたいなコミュ取りたくない」を解決するセクション。集客における大学固有の制約を、次年度が読めばわかる形で残します。', PAGE_REFS.uni_constraints)}
+    ${pageHead('1. 採用方針 / 1.2', '大学特有の与件', '集客における大学固有の制約（ビラ配布の可否、サークル紹介、大学公認スタンス、教室利用など）を、次年度が読めばそのまま把握できる形で残します。', PAGE_REFS.uni_constraints)}
 
     <div class="card">
       <div class="card-head"><h2>ビラ配り</h2><div class="sub">Flyer distribution</div></div>
@@ -3079,7 +3079,7 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
    ========================================================= */
 PAGE_RENDERERS.reach_paid_class = (root, data) => {
   root.innerHTML = `
-    ${pageHead('3. Reach / 3.5', '有料広告 / 授業登壇', 'さんしろうさんのお願い項目。有料広告・授業登壇など、従来のFRに無かったReach施策をここに集約します。', PAGE_REFS.reach_paid_class)}
+    ${pageHead('3. Reach / 3.5', '有料広告 / 授業登壇', '有料広告・授業登壇など、従来のFRに項目が無かったReach施策をここに集約します。実施しなかった場合も、見送った理由を残すと次年度の判断材料になります。', PAGE_REFS.reach_paid_class)}
 
     <div class="card">
       <div class="card-head"><h2>有料広告</h2><div class="sub">Paid ads</div></div>
@@ -3465,7 +3465,7 @@ PAGE_RENDERERS.post_event_com = (root, data) => {
    ========================================================= */
 PAGE_RENDERERS.lcmkt_to_lcmem = (root, data) => {
   root.innerHTML = `
-    ${pageHead('4. Lead / 4.4', 'LCmkt → LCmem 引き継ぎ', 'さんしろうさんのお願い項目: 「LCmkt→LCmemがスムーズ？」を検証するセクション。Markteting側からMember側への引き継ぎが上手くいったかを残します。', PAGE_REFS.lcmkt_to_lcmem)}
+    ${pageHead('4. Lead / 4.4', 'LCmkt → LCmem 引き継ぎ', 'Marketing側からMember側への引き継ぎがスムーズに行えたかを検証します。採用が終わってから次のLCmemが立ち上がるまでの動線をここで言語化します。', PAGE_REFS.lcmkt_to_lcmem)}
 
     <div class="card">
       <div class="card-head"><h2>引き継ぎのタイミング・方法</h2><div class="sub">Process</div></div>
@@ -3693,7 +3693,7 @@ PAGE_RENDERERS.ixp_selection = (root, data) => {
 PAGE_RENDERERS.member_survey = (root, data) => {
   const s = data.member_survey;
   root.innerHTML = `
-    ${pageHead('6. 振り返り / 6.1', 'メンバーアンケート結果', 'さんしろうさんのお願い項目: 「メンバーに向けてアンケートを一律でとりたい」。MC→LCの働きかけFB、LCmkt→LCmemスムーズさのFBを集約します。', PAGE_REFS.member_survey)}
+    ${pageHead('6. 振り返り / 6.1', 'メンバーアンケート結果', 'メンバーに一律で取ったアンケートの結果を集約します。MC→LCの働きかけへのFB、LCmkt→LCmemのスムーズさへのFBなどをまとめます。', PAGE_REFS.member_survey)}
 
     <div class="card">
       <div class="card-head"><h2>回答状況</h2><div class="sub">Response</div></div>
