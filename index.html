@@ -1472,6 +1472,17 @@
     .handover-item-head { flex-wrap: wrap; }
   }
 
+  .jd-ref-hint {
+    margin-top: 8px;
+    background: var(--aiesec-blue-light);
+    border-left: 3px solid var(--aiesec-blue);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: var(--aiesec-black);
+  }
+
   @media (max-width: 767px) {
     .login-card { padding: 30px 22px; }
     .login-role-grid { grid-template-columns: 1fr; }
@@ -1728,20 +1739,25 @@ const DEFAULT_LC_DATA = () => ({
     investments: [], // {item, item_other, cost, note}
     food_meeting_note: ''
   },
-  uni_constraints: { // NEW
-    distribute_allowed: '',
-    distribute_rules: '',
-    booth_event: '',
-    classroom_speak: '',
-    paid_ad_rule: '',
-    sns_rule: '',
-    others: ''
+  uni_constraints: { // テリ大ごとにテーブル管理
+    flyer: [],          // {uni, available, period, locations, rules}
+    circle_event: [],   // {uni, organizer, annual, summary}
+    class_speak: [],     // {name, reach, condition, note, result}
+    ad_note: '',        // 大学広告枠(立て看板/ポスター/大学情報サイト/他サークル広報誌等)
+    ad_new_media: '',   // 今年開拓・チャレンジしたメディアと申し送り
+    facility: '',       // 施設利用(教室が借りられるか・申請ルール)
+    official_circle_rule: '', // 大学公認サークル特有のルール
+    others: '',
+    // --- 旧フォーマット(移行用に保持) ---
+    distribute_allowed: '', distribute_rules: '', distribute_rules_detail: '',
+    booth_event: '', classroom_speak: '', paid_ad_rule: '', sns_rule: ''
   },
   oc: {
     structure_note: '',
     role_split: '',
     diagram_note: '',
-    members: [] // {role, name, assign_bg, jd, unexpected_jd, awareness, handover}
+    members: [], // {role, name, assign_bg, jd_type, jd, unexpected_jd, awareness, handover}
+    member_engagement: { sessions: [], note: '' } // sessions: {date, content, slide}
   },
   reach_overall: {
     purpose: '',
@@ -2817,70 +2833,87 @@ function renderInvestBox(data) {
    PAGE: UNI CONSTRAINTS (NEW)
    ========================================================= */
 PAGE_RENDERERS.uni_constraints = (root, data) => {
+  const U = data.uni_constraints;
+  // 配列フィールド初期化 + 旧自由記述からの移行
+  ['flyer','circle_event','class_speak'].forEach(k => { if (!Array.isArray(U[k])) U[k] = []; });
+  if (!U.flyer.length && (U.distribute_allowed || U.distribute_rules || U.distribute_rules_detail)) {
+    U.flyer.push({ uni: '', available: U.distribute_allowed || '', period: '', locations: U.distribute_rules || '', rules: U.distribute_rules_detail || '' });
+  }
+  if (!U.circle_event.length && U.booth_event) U.circle_event.push({ uni: '', organizer: '', annual: '', summary: U.booth_event });
+  if (!U.class_speak.length && U.classroom_speak) U.class_speak.push({ name: '', reach: '', condition: '', note: U.classroom_speak, result: '' });
+  if (!U.ad_note && U.paid_ad_rule) U.ad_note = U.paid_ad_rule;
+  if (!U.official_circle_rule && U.sns_rule) U.official_circle_rule = U.sns_rule;
+
   root.innerHTML = `
-    ${pageHead('1. 採用方針 / 1.2', '大学特有の与件', '集客における大学固有の制約（ビラ配布の可否、サークル紹介、大学公認スタンス、教室利用など）を、次年度が読めばそのまま把握できる形で残します。', PAGE_REFS.uni_constraints)}
+    ${pageHead('1. 採用方針 / 1.2', '大学特有の与件', '集客における大学固有の制約を、次年度が読めばそのまま把握できる形で残します。テリ大が複数ある場合は大学ごとに行を追加してください。', PAGE_REFS.uni_constraints)}
 
     <div class="card">
       <div class="card-head"><h2>ビラ配り</h2><div class="sub">Flyer distribution</div></div>
       <div class="card-body">
-        <div class="field-row cols-2">
-          <div class="field">
-            <label>そもそも配布できるか</label>
-            <select id="u_dist_allow">
-              <option value="">未選択</option>
-              <option value="ok">配れる</option>
-              <option value="conditional">条件付きで配れる</option>
-              <option value="no">配れない</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>配布できる場所 / できない場所</label>
-            <input type="text" id="u_dist_loc" placeholder="例: 正門前OK、講義棟内NG" />
-          </div>
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          テリ大が複数ある場合、大学ごとに1行追加してください。①大学 ②有無 ③実施可能期間 ④配布できる/できない場所 ⑤ルール・申請プロセス を横並びで残します。
         </div>
-        <div class="field">
-          <label>配布のルール・申請プロセス・注意点</label>
-          <textarea id="u_dist_rules" class="tall" placeholder="例: 学生部に2週間前申請、団体名スタンプ必須、〇〇日はNG など"></textarea>
-        </div>
+        <div id="uFlyerBox"></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>ブース / サークル紹介イベント</h2><div class="sub">Booth event</div></div>
+      <div class="card-head"><h2>サークル紹介イベント</h2><div class="sub">Circle intro event</div></div>
       <div class="card-body">
-        <div class="field">
-          <label>サークル紹介イベントの有無・概要・参加条件・注意点</label>
-          <textarea id="u_booth" class="tall"></textarea>
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          新歓祭・ブース展示など、大学・サークル連合が主催する新入生向けイベントを大学ごとに記録します。概要には「どこで・どのくらいの規模で・どんな形態で・何をさせてもらえるのか」を書いてください。
         </div>
+        <div id="uCircleBox"></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-head"><h2>授業内発表 / 教員ルート</h2><div class="sub">Class speak</div></div>
       <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          授業・ゼミ単位で記録します。挑戦して「成功した」「許可を得られなかった」も結果として残すと、次年度が同じ打診を繰り返さずに済みます。
+        </div>
+        <div id="uClassBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>大学広告枠</h2><div class="sub">Campus ad space</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">ここでの「広告枠」とは</div>
+          SNS広告（Instagram等）ではなく、<strong>立て看板・ポスター掲示・大学の情報サイト掲載/更新・他の広報サークル等が運営する新入生向け広報誌やメディア</strong>などを指します。掲示できるか・条件（費用/期間）・申請方法を残してください。
+        </div>
         <div class="field">
-          <label>可能な授業・教員ルート、依頼方法、注意点</label>
-          <textarea id="u_class" class="tall" placeholder="例: 〇〇教授(英語I)はAIESEC OBで毎年5分喋らせてくれる、依頼は3月末まで、など"></textarea>
+          <label>使える枠・掲示できるか・料金感・申請ルート <span class="hint">立て看板 / ポスター / 大学情報サイト / 他サークル広報誌 など</span></label>
+          <textarea id="u_ad_note" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>今年開拓・チャレンジしたメディアと申し送り <span class="hint">新規開拓した媒体、成否、次年度への引き継ぎ</span></label>
+          <textarea id="u_ad_new" class="tall"></textarea>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>有料広告 / 大学広告枠</h2><div class="sub">Paid ads</div></div>
+      <div class="card-head"><h2>施設利用</h2><div class="sub">Facility</div></div>
       <div class="card-body">
         <div class="field">
-          <label>使える広告枠、料金感、申請ルート</label>
-          <textarea id="u_paid_ad" class="tall"></textarea>
+          <label>教室・施設が借りられるか / 申請時のルール <span class="hint">説明会や面談で使える教室、予約方法、団体要件、費用など</span></label>
+          <textarea id="u_facility" class="tall"></textarea>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>SNS / その他の制約</h2><div class="sub">Other</div></div>
+      <div class="card-head"><h2>その他の制約</h2><div class="sub">Other</div></div>
       <div class="card-body">
         <div class="field">
-          <label>SNS運用上の制約 / 大学公認サークル特有のルール</label>
-          <textarea id="u_sns" class="tall"></textarea>
+          <label>大学公認サークル特有のルール</label>
+          <textarea id="u_official" class="tall"></textarea>
         </div>
         <div class="field">
           <label>その他、来年度に伝えたい大学固有の与件</label>
@@ -2890,20 +2923,113 @@ PAGE_RENDERERS.uni_constraints = (root, data) => {
     </div>
   `;
 
-  bindInput('#u_dist_allow', () => data.uni_constraints.distribute_allowed, v => data.uni_constraints.distribute_allowed = v);
-  bindInput('#u_dist_loc', () => data.uni_constraints.distribute_rules, v => data.uni_constraints.distribute_rules = v);
-  bindInput('#u_dist_rules', () => data.uni_constraints.distribute_rules_detail || data.uni_constraints.distribute_rules, v => data.uni_constraints.distribute_rules_detail = v);
-  bindInput('#u_booth', () => data.uni_constraints.booth_event, v => data.uni_constraints.booth_event = v);
-  bindInput('#u_class', () => data.uni_constraints.classroom_speak, v => data.uni_constraints.classroom_speak = v);
-  bindInput('#u_paid_ad', () => data.uni_constraints.paid_ad_rule, v => data.uni_constraints.paid_ad_rule = v);
-  bindInput('#u_sns', () => data.uni_constraints.sns_rule, v => data.uni_constraints.sns_rule = v);
-  bindInput('#u_others', () => data.uni_constraints.others, v => data.uni_constraints.others = v);
+  bindInput('#u_ad_note', () => U.ad_note || '', v => U.ad_note = v);
+  bindInput('#u_ad_new', () => U.ad_new_media || '', v => U.ad_new_media = v);
+  bindInput('#u_facility', () => U.facility || '', v => U.facility = v);
+  bindInput('#u_official', () => U.official_circle_rule || '', v => U.official_circle_rule = v);
+  bindInput('#u_others', () => U.others || '', v => U.others = v);
+
+  renderUniTable(U, 'flyer', 'uFlyerBox', {
+    cols: [
+      { k: 'uni', label: '大学名', w: 130, type: 'text', ph: '例: 〇〇大学' },
+      { k: 'available', label: 'ビラ配りの有無', w: 130, type: 'select', opts: ['配れる','条件付きで配れる','配れない'] },
+      { k: 'period', label: '実施可能期間', w: 130, type: 'text', ph: '例: 4月第1〜2週' },
+      { k: 'locations', label: '配布できる/できない場所', w: 180, type: 'textarea', ph: '例: 正門前OK、講義棟内NG' },
+      { k: 'rules', label: 'ルール・申請プロセス・注意点', type: 'textarea', ph: '例: 学生部に2週間前申請、団体名スタンプ必須' }
+    ],
+    addLabel: '＋ 大学を追加', empty: 'まだ大学が登録されていません'
+  });
+  renderUniTable(U, 'circle_event', 'uCircleBox', {
+    cols: [
+      { k: 'uni', label: '大学名', w: 130, type: 'text', ph: '例: 〇〇大学' },
+      { k: 'organizer', label: '主催', w: 140, type: 'select', opts: ['大学主催','サークル連合主催','学生団体主催','その他'] },
+      { k: 'annual', label: '例年実施', w: 120, type: 'select', opts: ['例年あり','不定期','今年のみ','なし'] },
+      { k: 'summary', label: '概要（どこで/規模/形態/何ができるか）', type: 'textarea', ph: '例: 新歓祭でブース1枠、2日間、ビラ配布と団体紹介3分が可能' }
+    ],
+    addLabel: '＋ イベントを追加', empty: 'まだイベントが登録されていません'
+  });
+  renderUniTable(U, 'class_speak', 'uClassBox', {
+    cols: [
+      { k: 'name', label: '名前（〇〇先生の授業/ゼミ）', w: 180, type: 'text', ph: '例: 〇〇教授 英語I' },
+      { k: 'reach', label: '1回あたりリーチ数', w: 120, type: 'number' },
+      { k: 'condition', label: '条件', w: 150, type: 'textarea', ph: '例: OB依頼、3月末まで' },
+      { k: 'note', label: '注意点', type: 'textarea' },
+      { k: 'result', label: '結果', w: 130, type: 'select', opts: ['成功','許可を得られなかった','未挑戦','その他'] }
+    ],
+    addLabel: '＋ ルートを追加', empty: 'まだ登録されていません'
+  });
 };
+
+function renderUniTable(U, key, boxId, cfg) {
+  const box = document.getElementById(boxId);
+  const list = U[key];
+  const render = () => {
+    if (!list.length) {
+      box.innerHTML = `<div class="empty small"><p>${cfg.empty}</p></div>${addBtnHtml('add_'+key, cfg.addLabel)}`;
+    } else {
+      box.innerHTML = `
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr>${cfg.cols.map(c => `<th${c.w?` style="width:${c.w}px"`:''}>${c.label}</th>`).join('')}<th style="width:36px"></th></tr></thead>
+          <tbody>
+            ${list.map((row, i) => `
+              <tr data-i="${i}">
+                ${cfg.cols.map(c => {
+                  const val = row[c.k] || '';
+                  if (c.type === 'select') {
+                    return `<td><select data-k="${c.k}"><option value="">未選択</option>${c.opts.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}</select></td>`;
+                  }
+                  if (c.type === 'textarea') {
+                    return `<td><textarea data-k="${c.k}" placeholder="${c.ph?escapeHtml(c.ph):''}">${escapeHtml(val)}</textarea></td>`;
+                  }
+                  return `<td><input type="${c.type}" data-k="${c.k}" value="${escapeHtml(val)}" placeholder="${c.ph?escapeHtml(c.ph):''}" /></td>`;
+                }).join('')}
+                <td><button class="row-delete" data-del="${i}">×</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+        ${addBtnHtml('add_'+key, cfg.addLabel)}
+      `;
+    }
+    document.getElementById('add_'+key).onclick = () => {
+      const blank = {}; cfg.cols.forEach(c => blank[c.k] = '');
+      list.push(blank); saveState(); render();
+    };
+    box.querySelectorAll('input,textarea,select').forEach(el => {
+      const h = () => {
+        const i = parseInt(el.closest('tr').dataset.i);
+        list[i][el.dataset.k] = el.value;
+        saveState();
+      };
+      el.oninput = h;
+      if (el.tagName === 'SELECT') el.onchange = h;
+    });
+    box.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { list.splice(parseInt(b.dataset.del), 1); saveState(); render(); };
+    });
+  };
+  render();
+}
 
 /* =========================================================
    PAGE: OC
    ========================================================= */
+// 採用に関わる標準JD（参考）
+const STANDARD_JD = [
+  { name: '採用OCP', desc: ['「採用成果を達成すること」に責任を負う', '採用方針の策定と全体の意思決定', '広告・説明会等の進捗の確認とマネジメント', 'タイムライン・予算管理を行う'] },
+  { name: '母集団形成・投稿/数値管理', desc: ['新歓関連のSNS投稿の作成', '新入生のSNSのフォロー', 'SNSの数値に基づいたPDCA及びLINEへのCVR等の数値の確認', 'ビラの発注・ビラ配りのPDCA'] },
+  { name: '説明会設計/運営', desc: ['LC説明会のコンテンツ設計・スライドの作成', 'LC説明会当日の運営', '説明会実施のためのハード準備', '登壇者調整'] },
+  { name: '顧客管理', desc: ['CRMシートの記入', 'CRMシートの記入促進・マネジメント', 'OGX顧客・新歓顧客管理の棲み分け', '個別相談会担当者への連絡'] },
+  { name: 'セレクション・AF設計', desc: ['AF内容の調整・確定', 'セレクションの採用要件の調整・確定', '面接の設計・アサイン', '面接の実行'] },
+  { name: 'インダクション設計', desc: ['インダクションの設計'] }
+];
+const JD_OPTIONS = STANDARD_JD.map(j => j.name).concat(['その他']);
+
 PAGE_RENDERERS.oc = (root, data) => {
+  if (!data.oc.member_engagement) data.oc.member_engagement = { sessions: [], note: '' };
+  if (!Array.isArray(data.oc.member_engagement.sessions)) data.oc.member_engagement.sessions = [];
   root.innerHTML = `
     ${pageHead('1. 採用方針 / 1.3', 'OC体制・組閣・メンバーマネジメント', '採用OCP・説明会OC・広報OCなど、組閣の全体像とJD、申し送りを記録します。', PAGE_REFS.oc)}
 
@@ -2926,25 +3052,102 @@ PAGE_RENDERERS.oc = (root, data) => {
     </div>
 
     <div class="card">
+      <div class="card-head"><h2>標準JD（参考）</h2><div class="sub">Reference JD</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">使い方</div>
+          下の機能区分が採用OCの標準JDです。メンバー一覧では各メンバーのJDをこの中から選択し、標準JDで不足する分は「JD詳細・補足」に追記してください。
+        </div>
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr><th style="width:200px">採用に関わる主な機能</th><th>Job Description</th></tr></thead>
+          <tbody>
+            ${STANDARD_JD.map(j => `
+              <tr>
+                <td><strong>${escapeHtml(j.name)}</strong></td>
+                <td class="small">${j.desc.map(d => '・' + escapeHtml(d)).join('<br>')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="card-head">
         <h2>メンバー一覧</h2>
         <button class="btn primary sm" id="addOC">＋ メンバー追加</button>
       </div>
       <div class="card-body" id="ocMembers"></div>
     </div>
+
+    <div class="card">
+      <div class="card-head"><h2>LC memberへの働きかけ（新歓Ss）</h2><div class="sub">Member engagement</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          OCメンバー・LCメンバーに対して実施した新歓Ss（Study Session）等の働きかけを、回ごとに記録します。スライド欄にはスライドのURLを貼ってください。実施できなかった/変更した点は補足に残します。
+        </div>
+        <div id="ocEngageBox"></div>
+        <div class="field" style="margin-top:14px">
+          <label>補足 <span class="hint">役割分担の実態、カットした内容、キャパ・体調等の事情など</span></label>
+          <textarea id="oc_engage_note" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
   `;
 
   bindInput('#oc_role', () => data.oc.role_split, v => data.oc.role_split = v);
   bindInput('#oc_diagram', () => data.oc.diagram_note, v => data.oc.diagram_note = v);
   bindInput('#oc_handover', () => data.oc.structure_note, v => data.oc.structure_note = v);
+  bindInput('#oc_engage_note', () => data.oc.member_engagement.note || '', v => data.oc.member_engagement.note = v);
 
   document.getElementById('addOC').onclick = () => {
-    data.oc.members.push({ role: '', name: '', assign_bg: '', jd: '', unexpected_jd: '', awareness: '', handover: '' });
+    data.oc.members.push({ role: '', name: '', assign_bg: '', jd_type: '', jd: '', unexpected_jd: '', awareness: '', handover: '' });
     saveState();
     renderOCMembers(data);
   };
   renderOCMembers(data);
+  renderOCEngage(data);
 };
+
+function renderOCEngage(data) {
+  const box = document.getElementById('ocEngageBox');
+  const list = data.oc.member_engagement.sessions;
+  const render = () => {
+    if (!list.length) {
+      box.innerHTML = `<div class="empty small"><p>まだ登録されていません</p></div>${addBtnHtml('addEngage', '＋ 回を追加')}`;
+    } else {
+      box.innerHTML = `
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr><th style="width:110px">日程</th><th>主なコンテンツ</th><th style="width:220px">スライド (URL)</th><th style="width:36px"></th></tr></thead>
+          <tbody>
+            ${list.map((s, i) => `
+              <tr data-i="${i}">
+                <td><input type="text" data-k="date" value="${escapeHtml(s.date||'')}" placeholder="例: 2/28" /></td>
+                <td><textarea data-k="content" placeholder="その回の主なコンテンツ">${escapeHtml(s.content||'')}</textarea></td>
+                <td><input type="url" data-k="slide" value="${escapeHtml(s.slide||'')}" placeholder="https://..." /></td>
+                <td><button class="row-delete" data-del="${i}">×</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+        ${addBtnHtml('addEngage', '＋ 回を追加')}
+      `;
+    }
+    document.getElementById('addEngage').onclick = () => { list.push({ date:'', content:'', slide:'' }); saveState(); render(); };
+    box.querySelectorAll('input,textarea').forEach(el => {
+      el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); list[i][el.dataset.k] = el.value; saveState(); };
+    });
+    box.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { list.splice(parseInt(b.dataset.del), 1); saveState(); render(); };
+    });
+  };
+  render();
+}
 
 function renderOCMembers(data) {
   const box = document.getElementById('ocMembers');
@@ -2961,7 +3164,15 @@ function renderOCMembers(data) {
       </div>
       <div class="oc-body">
         <div class="field"><label>アサインの背景</label><textarea data-i="${i}" data-k="assign_bg">${escapeHtml(m.assign_bg)}</textarea></div>
-        <div class="field"><label>該当termにおけるJD</label><textarea data-i="${i}" data-k="jd" class="tall">${escapeHtml(m.jd)}</textarea></div>
+        <div class="field">
+          <label>該当termにおけるJD <span class="hint">標準JDから選択。不足分は下の補足に追記</span></label>
+          <select class="oc-jd-select" data-i="${i}" data-k="jd_type">
+            <option value="">選択してください</option>
+            ${JD_OPTIONS.map(o => `<option value="${o}" ${(m.jd_type||'')===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+          ${m.jd_type && m.jd_type !== 'その他' ? `<div class="jd-ref-hint">${(STANDARD_JD.find(j=>j.name===m.jd_type)?.desc||[]).map(d=>'・'+escapeHtml(d)).join('<br>')}</div>` : ''}
+        </div>
+        <div class="field"><label>JD詳細・補足 <span class="hint">標準JDで不足する場合・このterm固有の役割を追記</span></label><textarea data-i="${i}" data-k="jd" class="tall">${escapeHtml(m.jd)}</textarea></div>
         <div class="field"><label>想定外に発生したJD / 要因</label><textarea data-i="${i}" data-k="unexpected_jd">${escapeHtml(m.unexpected_jd)}</textarea></div>
         <div class="field"><label>この役職として意識すべきこと</label><textarea data-i="${i}" data-k="awareness">${escapeHtml(m.awareness)}</textarea></div>
         <div class="field"><label>全体としての申し送り</label><textarea data-i="${i}" data-k="handover">${escapeHtml(m.handover)}</textarea></div>
@@ -2974,6 +3185,14 @@ function renderOCMembers(data) {
       const i = parseInt(el.dataset.i);
       data.oc.members[i][el.dataset.k] = el.value;
       saveState();
+    };
+  });
+  box.querySelectorAll('.oc-jd-select').forEach(el => {
+    el.onchange = () => {
+      const i = parseInt(el.dataset.i);
+      data.oc.members[i].jd_type = el.value;
+      saveState();
+      renderOCMembers(data); // 説明ヒントの出し分け
     };
   });
   box.querySelectorAll('[data-del]').forEach(b => {
