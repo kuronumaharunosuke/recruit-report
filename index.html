@@ -295,6 +295,34 @@
     color: #74787e;
     max-width: 760px;
   }
+  .page-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .pnav { display: flex; gap: 6px; }
+  .pnav-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--aiesec-gray-light);
+    background: var(--aiesec-gray-bg);
+    color: var(--aiesec-black);
+    font-size: 16px;
+    line-height: 1;
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .pnav-btn:hover:not(:disabled) {
+    border-color: var(--aiesec-blue);
+    color: var(--aiesec-blue);
+    background: var(--aiesec-blue-light);
+  }
+  .pnav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
   .page-save-btn {
     min-width: 100px;
     transition: all 0.2s;
@@ -1165,7 +1193,9 @@
     }
     .page-head h1 { font-size: 20px; }
     .page-head .desc { font-size: 12px; }
-    .page-save-btn { width: 100%; }
+    .page-head-actions { width: 100%; }
+    .page-head-actions .page-save-btn { flex: 1; min-width: 0; }
+    .page-save-btn { width: auto; }
 
     /* Reference panel */
     .ref-panel {
@@ -2269,6 +2299,10 @@ function renderRefPanel(refKeys) {
 }
 
 function pageHead(crumbs, title, desc, refKeys) {
+  const _ol = orderedPages();
+  const _oi = _ol.indexOf(state.currentPage);
+  const _prevD = _oi <= 0;
+  const _nextD = _oi < 0 || _oi >= _ol.length - 1;
   return `
     <div class="page-head">
       <div class="page-head-content">
@@ -2276,7 +2310,11 @@ function pageHead(crumbs, title, desc, refKeys) {
         <h1>${title}</h1>
         <div class="desc">${desc}</div>
       </div>
-      <div>
+      <div class="page-head-actions">
+        <div class="pnav">
+          <button class="pnav-btn" onclick="navStep(-1)" ${_prevD ? 'disabled' : ''} aria-label="前のセクション" title="前のセクション">&#8592;</button>
+          <button class="pnav-btn" onclick="navStep(1)" ${_nextD ? 'disabled' : ''} aria-label="次のセクション" title="次のセクション">&#8594;</button>
+        </div>
         <button class="btn primary page-save-btn" onclick="savePageNow(this)">保存<span class="kbd">⌘S</span></button>
       </div>
     </div>
@@ -2430,16 +2468,67 @@ function renderSidebar() {
 /* =========================================================
    ROUTER
    ========================================================= */
+const REMOVED_PAGES = ['lcmkt_to_lcmem', 'member_survey', 'evaluation'];
+
+// サイドバーと同じ順序でページキーをフラット化（MCはdashboard先頭）
+function orderedPages() {
+  const groups = (isMC()
+    ? [{ items: [{ page: 'mc_dashboard' }] }]
+    : []
+  ).concat(NAV);
+  return groups.flatMap(g => g.items.map(i => i.page));
+}
+
+function goPage(page) {
+  if (!page) return;
+  state.currentPage = page;
+  renderSidebar();
+  renderPage();
+}
+
+// 前後ナビ (dir: -1 / +1)
+function navStep(dir) {
+  const list = orderedPages();
+  let i = list.indexOf(state.currentPage);
+  if (i < 0) i = 0;
+  const ni = i + dir;
+  if (ni < 0 || ni >= list.length) return;
+  goPage(list[ni]);
+}
+
+// URLハッシュ (#page) を反映（共有リンク・初期表示用）
+function applyHashRoute() {
+  const p = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+  if (p && PAGE_RENDERERS[p] && !REMOVED_PAGES.includes(p)) {
+    state.currentPage = p;
+  }
+}
+
 function renderPage() {
   const data = currentData();
   const root = document.getElementById('mainContent');
-  const REMOVED_PAGES = ['lcmkt_to_lcmem', 'member_survey', 'evaluation'];
   if (REMOVED_PAGES.includes(state.currentPage)) state.currentPage = 'overview';
+  if (!PAGE_RENDERERS[state.currentPage]) state.currentPage = 'overview';
+  // URLを現在ページに同期（replaceStateで履歴を汚さない／hashchange非発火）
+  const want = '#' + encodeURIComponent(state.currentPage);
+  if (location.hash !== want) {
+    try { history.replaceState(null, '', want); } catch (e) { /* file:// 等 */ }
+  }
   const fn = PAGE_RENDERERS[state.currentPage] || PAGE_RENDERERS.overview;
   root.innerHTML = '<div class="page-content"></div>';
   fn(root.querySelector('.page-content'), data);
   injectCardSaveButtons(root);
 }
+
+// 共有URL/ブラウザ操作/ハッシュ手編集に追従
+window.addEventListener('hashchange', () => {
+  const p = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+  if (p && p !== state.currentPage && PAGE_RENDERERS[p] && !REMOVED_PAGES.includes(p)) {
+    state.currentPage = p;
+    renderSidebar();
+    renderPage();
+  }
+});
 
 // 各カードのヘッダーに保存ボタンを必ず付ける
 function injectCardSaveButtons(root) {
@@ -5871,6 +5960,7 @@ function finishLocalLogin(lc) {
   hideLoginScreen();
   applyIdentity();
   renderLCSelector();
+  applyHashRoute();
   renderSidebar();
   renderPage();
 }
@@ -5888,6 +5978,7 @@ async function enterApp() {
   hideLoginScreen();
   applyIdentity();
   renderLCSelector();
+  applyHashRoute();
   renderSidebar();
   renderPage();
   applyReadOnlyState();
@@ -5968,6 +6059,7 @@ document.getElementById('identityBadge').onclick = () => {
 loadState();          // localStorageキャッシュ（オフライン耐性）
 applyIdentity();
 renderLCSelector();
+applyHashRoute();
 renderSidebar();
 renderPage();
 
