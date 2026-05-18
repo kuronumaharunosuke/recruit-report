@@ -1601,6 +1601,7 @@
   .cal-ev.other  { background: var(--aiesec-purple); }
   .cal-ev.circle { background: var(--aiesec-orange); }
   .cal-ev.flyer  { background: var(--aiesec-cyan); }
+  .cal-ev.ms     { background: var(--aiesec-green); }
   .cal-legend {
     display: flex; flex-wrap: wrap; gap: 14px;
     margin: 14px 0 4px; font-size: 11px; color: var(--aiesec-black);
@@ -2031,6 +2032,22 @@ const DEFAULT_LC_DATA = () => ({
   evaluation: {
     items: [] // {topic, summary, note}
   },
+  milestones: {
+    standard: {
+      biz_kgi:        { date: '', note: '' }, // 事業KGI確定
+      recruit_kgi:    { date: '', note: '' }, // 採用KGI確定
+      ocp:            { date: '', note: '' }, // Recruit OCP決定
+      team_structure: { date: '', note: '' }, // Recruit Team構造確定
+      kakaku_start:   { date: '', note: '' }, // Recruit Team組閣開始
+      kakaku_done:    { date: '', note: '' }, // 組閣完了
+      flyer_start:    { date: '', note: '' }, // ビラ配り開始日
+      first_session:  { date: '', note: '' }, // 最初説明会
+      af_dead:        { date: '', note: '' }, // AF提出Dead
+      member_fixed:   { date: '', note: '' }, // 入会者確定日
+      mail_sent:      { date: '', note: '' }  // メール送付日
+    },
+    custom: [] // {name, date, note}
+  },
   resources: {
     custom: [] // {category, name, url, note}
   }
@@ -2334,6 +2351,7 @@ function renderLCSelector() {
 const NAV = [
   { group: 'Overview', items: [
     { page: 'overview', num: '0', label: '概要・申し送りサマリー' },
+    { page: 'milestone', num: 'MS', label: 'マイルストーン' },
     { page: 'calendar', num: 'CAL', label: 'イベントカレンダー' }
   ]},
   { group: '1. 採用方針', items: [
@@ -2615,9 +2633,127 @@ PAGE_RENDERERS.overview = (root, data) => {
 };
 
 /* =========================================================
+   PAGE: MILESTONE (マイルストーン)
+   ========================================================= */
+const STANDARD_MILESTONES = [
+  { key: 'biz_kgi',        label: '事業KGI確定' },
+  { key: 'recruit_kgi',    label: '採用KGI確定' },
+  { key: 'ocp',            label: 'Recruit OCP決定' },
+  { key: 'team_structure', label: 'Recruit Team構造確定' },
+  { key: 'kakaku_start',   label: 'Recruit Team組閣開始' },
+  { key: 'kakaku_done',    label: '組閣完了' },
+  { key: 'flyer_start',    label: 'ビラ配り開始日' },
+  { key: 'first_session',  label: '最初説明会' },
+  { key: 'af_dead',        label: 'AF提出Dead', hint: '計画から遅らせた場合はその旨を補足に書く' },
+  { key: 'member_fixed',   label: '入会者確定日' },
+  { key: 'mail_sent',      label: 'メール送付日' }
+];
+
+function ensureMilestones(data) {
+  if (!data.milestones) data.milestones = { standard: {}, custom: [] };
+  if (!data.milestones.standard) data.milestones.standard = {};
+  if (!Array.isArray(data.milestones.custom)) data.milestones.custom = [];
+  STANDARD_MILESTONES.forEach(s => {
+    if (!data.milestones.standard[s.key]) data.milestones.standard[s.key] = { date: '', note: '' };
+  });
+  return data.milestones;
+}
+
+PAGE_RENDERERS.milestone = (root, data) => {
+  const M = ensureMilestones(data);
+  root.innerHTML = `
+    ${pageHead('Overview', 'マイルストーン', '採用の主要タイムラインを日付で残します。ここで入力した日付は「イベントカレンダー」の特性タグ「マイルストーン」に反映されます。LC固有の節目は下で追加してください。', [])}
+
+    <div class="card">
+      <div class="card-head"><h2>標準マイルストーン</h2><div class="sub">Standard</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          実際にその節目を迎えた日（または設定した締切日）を入れてください。計画から遅らせた場合は補足にその旨と理由を残すと、次年度がタイムライン設計の参考にできます。
+        </div>
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr><th style="width:220px">マイルストーン</th><th style="width:150px">日付</th><th>補足（遅延理由・備考など）</th></tr></thead>
+          <tbody>
+            ${STANDARD_MILESTONES.map(s => {
+              const v = M.standard[s.key];
+              return `<tr data-ms="${s.key}">
+                <td><strong>${escapeHtml(s.label)}</strong>${s.hint ? `<br><span class="muted small">${escapeHtml(s.hint)}</span>` : ''}</td>
+                <td><input type="date" data-k="date" value="${escapeHtml(v.date || '')}" /></td>
+                <td><textarea data-k="note">${escapeHtml(v.note || '')}</textarea></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>LC独自のマイルストーン</h2>
+        <button class="btn primary sm" id="addMs">＋ マイルストーンを追加</button>
+      </div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">例</div>
+          LCによって節目となる日は異なります。外部広報誌への掲載日、特定の大型イベント実施日など、そのLC特有のマイルストーンを追加してください。
+        </div>
+        <div id="msCustomBox"></div>
+      </div>
+    </div>
+  `;
+
+  root.querySelectorAll('tr[data-ms] input, tr[data-ms] textarea').forEach(el => {
+    el.oninput = () => {
+      const key = el.closest('tr').dataset.ms;
+      M.standard[key][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+
+  const cBox = document.getElementById('msCustomBox');
+  const renderMsCustom = () => {
+    if (!M.custom.length) {
+      cBox.innerHTML = `<div class="empty small"><p>LC独自のマイルストーンはまだありません（例: 外部広報誌掲載）</p></div>`;
+    } else {
+      cBox.innerHTML = `
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr><th style="width:240px">名称</th><th style="width:150px">日付</th><th>補足</th><th style="width:36px"></th></tr></thead>
+          <tbody>
+            ${M.custom.map((c, i) => `
+              <tr data-i="${i}">
+                <td><input type="text" data-k="name" value="${escapeHtml(c.name || '')}" placeholder="例: 〇〇大学広報誌 掲載" /></td>
+                <td><input type="date" data-k="date" value="${escapeHtml(c.date || '')}" /></td>
+                <td><textarea data-k="note">${escapeHtml(c.note || '')}</textarea></td>
+                <td><button class="row-delete" data-del="${i}">×</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+      `;
+    }
+    cBox.querySelectorAll('input,textarea').forEach(el => {
+      el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); M.custom[i][el.dataset.k] = el.value; saveState(); };
+    });
+    cBox.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { M.custom.splice(parseInt(b.dataset.del), 1); saveState(); renderMsCustom(); };
+    });
+  };
+  document.getElementById('addMs').onclick = () => { M.custom.push({ name: '', date: '', note: '' }); saveState(); renderMsCustom(); };
+  renderMsCustom();
+};
+
+/* =========================================================
    PAGE: CALENDAR (イベントカレンダー)
    ========================================================= */
 let _calYM = null; // {y, m(0-based)}
+let _calTags = { milestone: true, event: true, ad: true }; // 特性タグフィルタ
+
+// cat → 特性タグ
+const CAL_CAT_TAG = { ms:'milestone', ldr:'event', gv:'event', other:'event', circle:'event', flyer:'ad' };
 
 function collectCalEvents(data) {
   const out = [];
@@ -2625,13 +2761,26 @@ function collectCalEvents(data) {
     if (!date) return;
     const d = new Date(date + 'T00:00:00');
     if (isNaN(d.getTime())) return;
-    out.push({ date, y: d.getFullYear(), m: d.getMonth(), d: d.getDate(), cat, label });
+    out.push({ date, y: d.getFullYear(), m: d.getMonth(), d: d.getDate(), cat, label, tag: CAL_CAT_TAG[cat] || 'event' });
   };
+  // マイルストーン
+  const M = data.milestones;
+  if (M && M.standard) {
+    STANDARD_MILESTONES.forEach(s => {
+      const v = M.standard[s.key];
+      if (v && v.date) push(v.date, 'ms', '◆ ' + s.label + (v.note ? '（' + v.note + '）' : ''));
+    });
+  }
+  if (M && Array.isArray(M.custom)) {
+    M.custom.forEach(c => { if (c.date) push(c.date, 'ms', '◆ ' + (c.name || '(無題)')); });
+  }
+  // イベント日時
   (data.ldr_event && data.ldr_event.events || []).forEach(e => push(e.date, 'ldr', 'LC説明会: ' + (e.name || '(無題)')));
   (data.ldr_event && data.ldr_event.other_events || []).forEach(e => push(e.date, 'other', 'その他: ' + (e.name || '(無題)')));
   (data.ixp_event && data.ixp_event.events || []).forEach(e => push(e.date, 'gv', 'GV説明会: ' + (e.name || '(無題)')));
   (data.ixp_event && data.ixp_event.other_events || []).forEach(e => push(e.date, 'other', 'その他: ' + (e.name || '(無題)')));
   (data.reach_circle && data.reach_circle.events || []).forEach(e => push(e.date, 'circle', 'サークル: ' + (e.title || '(無題)')));
+  // 広告物
   (data.reach_flyer && data.reach_flyer.dist_log || []).forEach(e => push(e.date, 'flyer', 'ビラ配布' + (e.count ? ' ' + e.count + '枚' : '')));
   return out;
 }
@@ -2654,6 +2803,11 @@ PAGE_RENDERERS.calendar = (root, data) => {
     <div class="card">
       <div class="card-head"><h2>月表示</h2><div class="sub">Month view</div></div>
       <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">特性タグで切り替え</div>
+          提出された日付情報は <strong>特性タグ</strong>（マイルストーン / イベント日時 / 広告物）で分類されています。タグをオン/オフするとカレンダーと一覧の表示が切り替わります。
+        </div>
+        <div id="calTagBar" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px"></div>
         <div class="cal-head">
           <div class="cal-title" id="calTitle"></div>
           <div class="cal-nav">
@@ -2664,6 +2818,7 @@ PAGE_RENDERERS.calendar = (root, data) => {
         </div>
         <div id="calGridBox"></div>
         <div class="cal-legend">
+          <span><i style="background:var(--aiesec-green)"></i>マイルストーン</span>
           <span><i style="background:var(--aiesec-blue)"></i>LC説明会</span>
           <span><i style="background:var(--aiesec-red)"></i>GV説明会</span>
           <span><i style="background:var(--aiesec-purple)"></i>その他イベント</span>
@@ -2679,9 +2834,27 @@ PAGE_RENDERERS.calendar = (root, data) => {
     </div>
   `;
 
-  const catClass = { ldr:'ldr', gv:'gv', other:'other', circle:'circle', flyer:'flyer' };
-  const catLabel = { ldr:'LC説明会', gv:'GV説明会', other:'その他', circle:'サークル', flyer:'ビラ' };
-  const catColor = { ldr:'var(--aiesec-blue)', gv:'var(--aiesec-red)', other:'var(--aiesec-purple)', circle:'var(--aiesec-orange)', flyer:'var(--aiesec-cyan)' };
+  const catClass = { ms:'ms', ldr:'ldr', gv:'gv', other:'other', circle:'circle', flyer:'flyer' };
+  const catLabel = { ms:'マイルストーン', ldr:'LC説明会', gv:'GV説明会', other:'その他', circle:'サークル', flyer:'ビラ' };
+  const catColor = { ms:'var(--aiesec-green)', ldr:'var(--aiesec-blue)', gv:'var(--aiesec-red)', other:'var(--aiesec-purple)', circle:'var(--aiesec-orange)', flyer:'var(--aiesec-cyan)' };
+  const TAG_DEFS = [
+    { key:'milestone', label:'マイルストーン' },
+    { key:'event',     label:'イベント日時' },
+    { key:'ad',        label:'広告物' }
+  ];
+  const fEvs = () => evs.filter(e => _calTags[e.tag]);
+
+  const drawTagBar = () => {
+    const bar = document.getElementById('calTagBar');
+    bar.innerHTML = TAG_DEFS.map(t => {
+      const on = _calTags[t.key];
+      const n = evs.filter(e => e.tag === t.key).length;
+      return `<button class="btn sm ${on ? 'primary' : ''}" data-tag="${t.key}">${on ? '● ' : '○ '}${t.label} <span style="opacity:.7">(${n})</span></button>`;
+    }).join('');
+    bar.querySelectorAll('[data-tag]').forEach(b => {
+      b.onclick = () => { _calTags[b.dataset.tag] = !_calTags[b.dataset.tag]; drawTagBar(); drawGrid(); drawList(); };
+    });
+  };
 
   const drawGrid = () => {
     const { y, m } = _calYM;
@@ -2698,7 +2871,7 @@ PAGE_RENDERERS.calendar = (root, data) => {
     while (cells.length % 7 !== 0) cells.push({ day: cells.length - (startDow + daysInMonth) + 1, other: true });
 
     const evByDay = {};
-    evs.filter(e => e.y === y && e.m === m).forEach(e => {
+    fEvs().filter(e => e.y === y && e.m === m).forEach(e => {
       (evByDay[e.d] = evByDay[e.d] || []).push(e);
     });
 
@@ -2719,11 +2892,12 @@ PAGE_RENDERERS.calendar = (root, data) => {
 
   const drawList = () => {
     const box = document.getElementById('calListBox');
-    if (!evs.length) {
-      box.innerHTML = `<div class="empty"><h3>登録された日程がありません</h3><p>LC説明会 / GV説明会 / サークル紹介イベント / ビラ配布ログ に日付付きで追加すると、ここに反映されます</p></div>`;
+    const fe = fEvs();
+    if (!fe.length) {
+      box.innerHTML = `<div class="empty"><h3>表示できる日程がありません</h3><p>特性タグの選択を確認するか、マイルストーン / 各イベントページ / ビラ配布ログ に日付付きで追加してください</p></div>`;
       return;
     }
-    const srt = evs.slice().sort((a,b) => a.date < b.date ? -1 : (a.date > b.date ? 1 : 0));
+    const srt = fe.slice().sort((a,b) => a.date < b.date ? -1 : (a.date > b.date ? 1 : 0));
     box.innerHTML = srt.map(e => `
       <div class="cal-list-row">
         <span class="cal-list-date">${escapeHtml(e.date)}</span>
@@ -2737,6 +2911,7 @@ PAGE_RENDERERS.calendar = (root, data) => {
   document.getElementById('calNext').onclick = () => { _calYM.m++; if (_calYM.m > 11) { _calYM.m = 0; _calYM.y++; } drawGrid(); };
   document.getElementById('calToday').onclick = () => { _calYM = { y: today.getFullYear(), m: today.getMonth() }; drawGrid(); };
 
+  drawTagBar();
   drawGrid();
   drawList();
 };
