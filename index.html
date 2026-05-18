@@ -194,7 +194,7 @@
   /* Sidebar */
   .sidebar {
     grid-area: sidebar;
-    background: #fff;
+    background: var(--aiesec-white);
     border-right: 1px solid var(--aiesec-gray-light);
     overflow-y: auto;
     padding: 12px 0 60px;
@@ -229,9 +229,9 @@
     border-left: 3px solid transparent;
     transition: all 0.1s;
   }
-  .nav-item:hover { background: var(--aiesec-gray-bg); }
+  .nav-item:hover { background: var(--aiesec-gray-light); }
   .nav-item.active {
-    background: var(--aiesec-blue-light);
+    background: #fff;
     border-left-color: var(--aiesec-blue);
     color: var(--aiesec-blue);
     font-weight: 600;
@@ -1413,6 +1413,65 @@
     .mc-stat-row { grid-template-columns: 1fr 1fr; }
   }
 
+  /* Per-area handover items (overview) */
+  .handover-item {
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 7px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--aiesec-gray-bg);
+  }
+  .handover-item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .handover-item-label { font-weight: 700; font-size: 13px; }
+  .handover-jump { flex-shrink: 0; }
+  .handover-ta {
+    width: 100%;
+    min-height: 56px;
+    resize: vertical;
+    font-family: var(--font-jp);
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 5px;
+    background: #fff;
+  }
+  .handover-ta:focus { outline: none; border-color: var(--aiesec-blue); }
+
+  /* AJ total block on overview snapshot */
+  .aj-total {
+    border: 1px dashed var(--aiesec-blue);
+    background: var(--aiesec-blue-light);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .aj-total-head {
+    display: flex; align-items: center;
+    font-weight: 800; font-size: 12px;
+    color: var(--aiesec-blue-dark);
+    margin-bottom: 10px;
+  }
+  .aj-total-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .aj-total-grid > div {
+    display: flex; flex-direction: column; gap: 2px;
+    text-align: center;
+  }
+  .aj-n { font-family: var(--font-en); font-weight: 900; font-size: 19px; color: var(--aiesec-black); }
+  .aj-l { font-size: 10px; color: var(--aiesec-gray); }
+  @media (max-width: 767px) {
+    .aj-total-grid { grid-template-columns: 1fr 1fr; }
+    .handover-item-head { flex-wrap: wrap; }
+  }
+
   @media (max-width: 767px) {
     .login-card { padding: 30px 22px; }
     .login-role-grid { grid-template-columns: 1fr; }
@@ -1636,7 +1695,8 @@ const DEFAULT_LC_DATA = () => ({
     target_total: '',
     actual_total: '',
     handover_summary: '',
-    top_priority: ''
+    top_priority: '',
+    priority_items: {} // { areaKey: text } 項目別の最優先申し送り
   },
   // KGI / KPI funnel (top-line)
   funnel: {
@@ -2215,6 +2275,7 @@ PAGE_RENDERERS.overview = (root, data) => {
             <div class="stat-sub">目標 ${f.af_submit.plan || '–'}</div>
           </div>
         </div>
+        <div id="ajTotalBox" style="margin-top:14px"></div>
       </div>
     </div>
 
@@ -2223,17 +2284,20 @@ PAGE_RENDERERS.overview = (root, data) => {
       <div class="card-body">
         <div class="callout">
           <div class="callout-title">ここに書く内容</div>
-          少なくとも「<strong>次年度の人が最初に読むべき結論</strong>」を3〜5行で書いてください。各タブの詳細は後回しでも、ここだけは丁寧に。
+          項目ごとに「<strong>次年度の人が最初に読むべき結論</strong>」を簡潔に書いてください。各行の「詳細を見る」を押すと、そのページに移動して詳しく書けます。
         </div>
 
         <div class="field">
-          <label>最優先で伝えたいこと <span class="required">*</span></label>
+          <label>最優先で伝えたいこと（総論） <span class="required">*</span></label>
           <textarea id="ov_top" class="tall" placeholder="例: 今termは説明会参加→AF提出のCVRが課題だった。要因は…。次termでは…を優先するべき。"></textarea>
         </div>
 
-        <div class="field">
-          <label>全体総括</label>
-          <textarea id="ov_summary" class="tall" placeholder="採用方針、組織課題への接続、特筆すべきイベント、メンバー体制など、全体を俯瞰した総括"></textarea>
+        <div class="section-divider">項目別の申し送り</div>
+        <div id="priorityItems"></div>
+
+        <div class="field" style="margin-top:18px">
+          <label>執筆担当者の想い</label>
+          <textarea id="ov_summary" class="tall" placeholder="このFRを書いた人として、数値や事実だけでは伝わらない想い・背景・次年度へのメッセージを自由に。"></textarea>
         </div>
       </div>
     </div>
@@ -2246,6 +2310,74 @@ PAGE_RENDERERS.overview = (root, data) => {
 
   bindInput('#ov_top', () => data.overview.top_priority, v => data.overview.top_priority = v);
   bindInput('#ov_summary', () => data.overview.handover_summary, v => data.overview.handover_summary = v);
+
+  // ---- 項目別の申し送り（クリックで該当ページへ） ----
+  if (!data.overview.priority_items) data.overview.priority_items = {};
+  const HANDOVER_AREAS = [
+    { key: 'kgi',     label: '採用KGI / ターゲット',        page: 'funnel' },
+    { key: 'org',     label: '組閣 / メンバーマネジメント',  page: 'oc' },
+    { key: 'lc',      label: 'LC方針 / 巻き込み',           page: 'direction' },
+    { key: 'sns',     label: 'SNS運用 / ビラ配り',          page: 'reach_sns' },
+    { key: 'circle',  label: 'サークル紹介イベント',         page: 'reach_circle' },
+    { key: 'line',    label: 'AJ公式LINE / BLISS',         page: 'line_bliss' },
+    { key: 'ldr',     label: '新歓説明会',                 page: 'ldr_event' },
+    { key: 'ixp',     label: '渡航説明会 / 個別相談',        page: 'ixp_event' },
+    { key: 'crm',     label: 'CRM / 説明会後com',          page: 'post_event_com' },
+    { key: 'sel',     label: 'Selection / 入会',           page: 'selection' }
+  ];
+  const piBox = document.getElementById('priorityItems');
+  piBox.innerHTML = HANDOVER_AREAS.map(a => `
+    <div class="handover-item">
+      <div class="handover-item-head">
+        <span class="handover-item-label">${a.label}</span>
+        <button class="btn sm handover-jump" data-jump="${a.page}">詳細を見る →</button>
+      </div>
+      <textarea class="handover-ta" data-area="${a.key}" placeholder="このエリアで次年度に最も伝えたい1〜2点">${escapeHtml(data.overview.priority_items[a.key] || '')}</textarea>
+    </div>
+  `).join('');
+  piBox.querySelectorAll('.handover-ta').forEach(ta => {
+    ta.oninput = () => {
+      data.overview.priority_items[ta.dataset.area] = ta.value;
+      saveState();
+    };
+  });
+  piBox.querySelectorAll('.handover-jump').forEach(b => {
+    b.onclick = () => { state.currentPage = b.dataset.jump; renderSidebar(); renderPage(); };
+  });
+
+  // ---- AJ合計（全LC集約・任意ロード） ----
+  const ajBox = document.getElementById('ajTotalBox');
+  if (fb.ready && state.identity && state.identity.email) {
+    const renderAJ = () => {
+      const all = _mcAllLcs || {};
+      const codes = Object.keys(all);
+      if (!codes.length) {
+        ajBox.innerHTML = `<button class="btn sm" id="ajLoadBtn">AJ全体の合計値を表示</button>`;
+        document.getElementById('ajLoadBtn').onclick = async () => {
+          ajBox.innerHTML = `<div class="small muted">集計中…</div>`;
+          await fbLoadAllLCs();
+          renderAJ();
+        };
+        return;
+      }
+      const sum = (k) => codes.reduce((s,c) => s + ((all[c].funnel && all[c].funnel[k] && parseFloat(all[c].funnel[k].actual)) || 0), 0);
+      ajBox.innerHTML = `
+        <div class="aj-total">
+          <div class="aj-total-head">AJ合計 <span class="muted">（提出 ${codes.length} / ${LC_LIST.length} LC）</span>
+            <button class="btn sm" id="ajReload" style="margin-left:auto">再取得</button>
+          </div>
+          <div class="aj-total-grid">
+            <div><span class="aj-n">${sum('total_reach').toLocaleString()}</span><span class="aj-l">総リーチ</span></div>
+            <div><span class="aj-n">${sum('event_attend').toLocaleString()}</span><span class="aj-l">説明会参加</span></div>
+            <div><span class="aj-n">${sum('af_submit').toLocaleString()}</span><span class="aj-l">AF提出</span></div>
+            <div><span class="aj-n">${sum('pass').toLocaleString()}</span><span class="aj-l">入会</span></div>
+            <div><span class="aj-n">${sum('paid').toLocaleString()}</span><span class="aj-l">入金</span></div>
+          </div>
+        </div>`;
+      document.getElementById('ajReload').onclick = async () => { ajBox.innerHTML = `<div class="small muted">集計中…</div>`; await fbLoadAllLCs(); renderAJ(); };
+    };
+    renderAJ();
+  }
 
   // Completion progress (heuristic: any text in major fields)
   const checks = [
@@ -2845,7 +2977,7 @@ function snsBlockHtml(prefix, title, badge, src) {
           <select id="${prefix}_perf">
             <option value="good" ${src.performance==='good'?'selected':''}>Good</option>
             <option value="fair" ${src.performance==='fair'?'selected':''}>Fair</option>
-            <option value="bad" ${src.performance==='bad'?'selected':''}>Bad</option>
+            <option value="bad" ${src.performance==='bad'?'selected':''}>More</option>
           </select>
         </div>
         <div class="field-row cols-2">
@@ -2854,7 +2986,7 @@ function snsBlockHtml(prefix, title, badge, src) {
             <textarea id="${prefix}_good">${escapeHtml(src.good_case)}</textarea>
           </div>
           <div class="field">
-            <label>Bad Case <span class="hint">うまくいかなかったこと</span></label>
+            <label>More Case <span class="hint">うまくいかなかったこと</span></label>
             <textarea id="${prefix}_bad">${escapeHtml(src.bad_case)}</textarea>
           </div>
         </div>
@@ -3042,7 +3174,7 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="cr_gather_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">Bad</div><textarea id="cr_gather_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="cr_gather_bad"></textarea></div>
         </div>
       </div>
     </div>
@@ -3052,7 +3184,7 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="cr_booth_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">Bad</div><textarea id="cr_booth_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="cr_booth_bad"></textarea></div>
         </div>
       </div>
     </div>
@@ -3239,12 +3371,12 @@ PAGE_RENDERERS.line_bliss = (root, data) => {
           <select id="lb_line_perf">
             <option value="good" ${data.line_bliss.line_performance==='good'?'selected':''}>Good</option>
             <option value="fair" ${data.line_bliss.line_performance==='fair'?'selected':''}>Fair</option>
-            <option value="bad" ${data.line_bliss.line_performance==='bad'?'selected':''}>Bad</option>
+            <option value="bad" ${data.line_bliss.line_performance==='bad'?'selected':''}>More</option>
           </select>
         </div>
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good Case</div><textarea id="lb_line_good" placeholder="送信日時 / 頻度 / 刺さったコンテンツ"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">Bad Case</div><textarea id="lb_line_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More Case</div><textarea id="lb_line_bad"></textarea></div>
         </div>
         <div class="field mt-12">
           <label>運用を通した学び / インサイト</label>
@@ -3258,7 +3390,7 @@ PAGE_RENDERERS.line_bliss = (root, data) => {
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good Case</div><textarea id="lb_bliss_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">Bad Case</div><textarea id="lb_bliss_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More Case</div><textarea id="lb_bliss_bad"></textarea></div>
         </div>
       </div>
     </div>
@@ -3317,7 +3449,7 @@ function renderEventPage(root, data, kind) {
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">集客 Good</div><textarea id="on_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">集客 Bad</div><textarea id="on_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">集客 More</div><textarea id="on_bad"></textarea></div>
         </div>
         <div class="field mt-12"><label>運営上の注意点</label><textarea id="on_notes"></textarea></div>
         <div class="field"><label>次年度への申し送り (準備段階 / 当日)</label><textarea id="on_handover" class="tall"></textarea></div>
@@ -3329,7 +3461,7 @@ function renderEventPage(root, data, kind) {
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">運営 Good</div><textarea id="off_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">運営 Bad</div><textarea id="off_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">運営 More</div><textarea id="off_bad"></textarea></div>
         </div>
         <div class="field mt-12"><label>運営上の注意点</label><textarea id="off_notes"></textarea></div>
         <div class="field"><label>次年度への申し送り (準備段階 / 当日)</label><textarea id="off_handover" class="tall"></textarea></div>
@@ -3434,11 +3566,11 @@ PAGE_RENDERERS.post_event_com = (root, data) => {
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>Good / Bad Case</h2><div class="sub">Cases</div></div>
+      <div class="card-head"><h2>Good / More Case</h2><div class="sub">Cases</div></div>
       <div class="card-body">
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good Case + 成功要因</div><textarea id="pe_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">Bad Case + 失敗要因 (仮説)</div><textarea id="pe_bad"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More Case + 失敗要因 (仮説)</div><textarea id="pe_bad"></textarea></div>
         </div>
       </div>
     </div>
@@ -3655,7 +3787,7 @@ PAGE_RENDERERS.ixp_selection = (root, data) => {
             <select id="ix_summer_eval">
               <option value="good" ${s.summer_eval_good==='good'?'selected':''}>Good</option>
               <option value="fair" ${s.summer_eval_good==='fair'?'selected':''}>Fair</option>
-              <option value="bad" ${s.summer_eval_good==='bad'?'selected':''}>Bad</option>
+              <option value="bad" ${s.summer_eval_good==='bad'?'selected':''}>More</option>
             </select>
             <textarea id="ix_summer_reason" placeholder="理由" style="margin-top:6px"></textarea>
           </div>
@@ -3664,7 +3796,7 @@ PAGE_RENDERERS.ixp_selection = (root, data) => {
             <select id="ix_signup_eval">
               <option value="good" ${s.signup_eval_good==='good'?'selected':''}>Good</option>
               <option value="fair" ${s.signup_eval_good==='fair'?'selected':''}>Fair</option>
-              <option value="bad" ${s.signup_eval_good==='bad'?'selected':''}>Bad</option>
+              <option value="bad" ${s.signup_eval_good==='bad'?'selected':''}>More</option>
             </select>
             <textarea id="ix_signup_reason" placeholder="理由" style="margin-top:6px"></textarea>
           </div>
