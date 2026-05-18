@@ -1550,6 +1550,74 @@
     color: var(--aiesec-black);
   }
 
+  /* Calendar */
+  .cal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 14px;
+  }
+  .cal-title {
+    font-family: var(--font-en); font-weight: 900; font-size: 18px;
+    color: var(--aiesec-black);
+  }
+  .cal-nav { display: flex; gap: 6px; align-items: center; }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 6px; overflow: hidden;
+  }
+  .cal-dow {
+    background: var(--aiesec-gray-bg);
+    padding: 7px 6px; text-align: center;
+    font-size: 10.5px; font-weight: 800; color: var(--aiesec-gray);
+    font-family: var(--font-en);
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    border-right: 1px solid var(--aiesec-gray-light);
+  }
+  .cal-dow:nth-child(7n) { border-right: none; }
+  .cal-cell {
+    min-height: 96px;
+    border-right: 1px solid var(--aiesec-gray-light);
+    border-bottom: 1px solid var(--aiesec-gray-light);
+    padding: 5px 6px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .cal-cell:nth-child(7n) { border-right: none; }
+  .cal-cell.cal-other { background: var(--aiesec-gray-bg); }
+  .cal-cell.cal-today { background: #f0f8ff; }
+  .cal-daynum {
+    font-size: 11px; font-weight: 700; color: var(--aiesec-black);
+    font-family: var(--font-en); margin-bottom: 3px;
+  }
+  .cal-cell.cal-other .cal-daynum { color: var(--aiesec-gray); }
+  .cal-ev {
+    font-size: 9.5px; line-height: 1.35;
+    padding: 2px 5px; border-radius: 3px; margin-bottom: 3px;
+    color: #fff; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cal-ev.ldr    { background: var(--aiesec-blue); }
+  .cal-ev.gv     { background: var(--aiesec-red); }
+  .cal-ev.other  { background: var(--aiesec-purple); }
+  .cal-ev.circle { background: var(--aiesec-orange); }
+  .cal-ev.flyer  { background: var(--aiesec-cyan); }
+  .cal-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    margin: 14px 0 4px; font-size: 11px; color: var(--aiesec-black);
+  }
+  .cal-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .cal-legend i {
+    width: 11px; height: 11px; border-radius: 3px; display: inline-block;
+  }
+  .cal-list-row { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--aiesec-gray-light); }
+  .cal-list-date { font-family: var(--font-mono); font-size: 12px; font-weight: 700; min-width: 92px; color: var(--aiesec-black); }
+  .cal-list-tag { font-size: 9.5px; font-weight: 800; color: #fff; padding: 1px 6px; border-radius: 3px; }
+  @media (max-width: 767px) {
+    .cal-cell { min-height: 64px; padding: 3px 3px; }
+    .cal-ev { font-size: 8.5px; padding: 1px 3px; }
+    .cal-daynum { font-size: 10px; }
+  }
+
   @media (max-width: 767px) {
     .login-card { padding: 30px 22px; }
     .login-role-grid { grid-template-columns: 1fr; }
@@ -1837,10 +1905,19 @@ const DEFAULT_LC_DATA = () => ({
     member_engagement: { sessions: [], note: '' } // sessions: {date, content, slide}
   },
   reach_overall: {
-    purpose: '',
-    direction: '',
+    purpose: '',                 // legacy(UI廃止・データ保持)
+    direction: '',               // legacy → direction_ops へ自動移行
+    direction_ops: '',           // Brand Direction (運営人材向け)
+    direction_ixp: '',           // Brand Direction (IXP人材: GV説明会集客 / GV広告 向け)
+    overall_perf: '',            // Overall Performance
     why: '',
     how_implemented: '',
+    board: {                     // 説明会参加後アンケートからのチャネル別流入
+      ig:     { visit: '', inflow: '' },
+      x:      { visit: '', inflow: '' },
+      flyer:  { visit: '', inflow: '' },
+      circle: { visit: '', inflow: '' }
+    },
     keep: '', stop: '', try: ''
   },
   reach_sns_ig: {
@@ -1855,9 +1932,12 @@ const DEFAULT_LC_DATA = () => ({
     top_posts: [],
     keep: '', stop: '', try: ''
   },
+  reach_sns_meta: { used: { ig: true, x: false } }, // 利用SNS媒体
   reach_flyer: {
     role: '',
     note: '',
+    dist_log: [],          // {date, count, place} いつ何枚配ったか
+    dist_total: '',        // 配布総数(必須回収)
     samples: [], // {img_note, reason, effect}
     keep: '', stop: '', try: ''
   },
@@ -1866,6 +1946,7 @@ const DEFAULT_LC_DATA = () => ({
     gather_good: '', gather_bad: '',
     booth_good: '', booth_bad: '',
     note: '',
+    events: [], // {title, date, summary, attendance, handover}
     keep: '', stop: '', try: ''
   },
   reach_paid_class: { // NEW per Sanshiro
@@ -1873,6 +1954,9 @@ const DEFAULT_LC_DATA = () => ({
     paid_ad_platform: '',
     paid_ad_spend: '',
     paid_ad_result: '',
+    paid_ad_bg: '',        // LC記入: 実施した背景・目的
+    paid_ad_qual: '',      // LC記入: IG/LINE運用で何が変わったか・効果を感じたタイミング
+    paid_ad_handover: '',  // LC記入: 申し送り(意思決定リードタイム・投資額の妥当性)
     paid_ad_good: '',
     paid_ad_more: '',
     class_speak_used: 'no',
@@ -1891,18 +1975,23 @@ const DEFAULT_LC_DATA = () => ({
   },
   ldr_event: {
     purpose: '',
+    plan_handover: '',   // 実施計画・集客目標の申し送り(時期/オンオフ/時間帯)
     events: [], // {name, date, apply, attend, content, good_more}
+    other_events: [], // その他イベント(履修登録会/AF執筆会等) {name, date, attend, note}
     online_good: '', online_bad: '', online_notes: '', online_handover: '',
     offline_good: '', offline_bad: '', offline_notes: '', offline_handover: ''
   },
   ixp_event: {
     purpose: '',
+    plan_handover: '',
     events: [],
+    other_events: [],
     online_good: '', online_bad: '', online_notes: '', online_handover: '',
     offline_good: '', offline_bad: '', offline_notes: '', offline_handover: ''
   },
   post_event_com: {
     com_structure: '',
+    com_screenshots: [], // {label, url} Slackコミュの様子(Drive/画像URL)
     af_distribute_target: '',
     good_case: '', bad_case: '',
     handover_prep: '', handover_day: ''
@@ -2244,7 +2333,8 @@ function renderLCSelector() {
    ========================================================= */
 const NAV = [
   { group: 'Overview', items: [
-    { page: 'overview', num: '0', label: '概要・申し送りサマリー' }
+    { page: 'overview', num: '0', label: '概要・申し送りサマリー' },
+    { page: 'calendar', num: 'CAL', label: 'イベントカレンダー' }
   ]},
   { group: '1. 採用方針', items: [
     { page: 'direction', num: '1.1', label: 'Direction Reporting' },
@@ -2266,16 +2356,11 @@ const NAV = [
   { group: '4. Lead', items: [
     { page: 'ldr_event', num: '4.1', label: 'LC説明会' },
     { page: 'ixp_event', num: '4.2', label: 'GV説明会' },
-    { page: 'post_event_com', num: '4.3', label: '説明会後新入生com' },
-    { page: 'lcmkt_to_lcmem', num: '4.4', label: 'LCmkt → LCmem 引き継ぎ', newTag: true }
+    { page: 'post_event_com', num: '4.3', label: '説明会後新入生com' }
   ]},
   { group: '5. 入会 / Selection', items: [
     { page: 'selection', num: '5.1', label: '入会Reporting' },
     { page: 'ixp_selection', num: '5.2', label: 'IXP採用Reporting' }
-  ]},
-  { group: '6. 振り返り', items: [
-    { page: 'member_survey', num: '6.1', label: 'メンバーアンケート', newTag: true },
-    { page: 'evaluation', num: '6.2', label: 'Evaluation' }
   ]},
   { group: '資料', items: [
     { page: 'resources', num: '*', label: '資料集 / Reference URL' }
@@ -2315,6 +2400,8 @@ function renderSidebar() {
 function renderPage() {
   const data = currentData();
   const root = document.getElementById('mainContent');
+  const REMOVED_PAGES = ['lcmkt_to_lcmem', 'member_survey', 'evaluation'];
+  if (REMOVED_PAGES.includes(state.currentPage)) state.currentPage = 'overview';
   const fn = PAGE_RENDERERS[state.currentPage] || PAGE_RENDERERS.overview;
   root.innerHTML = '<div class="page-content"></div>';
   fn(root.querySelector('.page-content'), data);
@@ -2486,7 +2573,7 @@ PAGE_RENDERERS.overview = (root, data) => {
     { page: 'oc', label: 'OC体制', test: () => data.oc.members.length > 0 },
     { page: 'funnel', label: 'KPI実測', test: () => data.funnel.paid.actual },
     { page: 'journey', label: 'Journey', test: () => data.customer_journey.design },
-    { page: 'reach_overall', label: 'Reach Overall', test: () => data.reach_overall.purpose },
+    { page: 'reach_overall', label: 'Reach Overall', test: () => data.reach_overall.overall_perf || data.reach_overall.direction_ops || data.reach_overall.why },
     { page: 'reach_sns', label: 'SNS', test: () => data.reach_sns_ig.role || data.reach_sns_x.role },
     { page: 'reach_flyer', label: 'ビラ', test: () => data.reach_flyer.role },
     { page: 'reach_circle', label: 'サークル紹介', test: () => data.reach_circle.role },
@@ -2495,11 +2582,8 @@ PAGE_RENDERERS.overview = (root, data) => {
     { page: 'ldr_event', label: 'LC説明会', test: () => data.ldr_event.events.length > 0 },
     { page: 'ixp_event', label: 'GV説明会', test: () => data.ixp_event.events.length > 0 },
     { page: 'post_event_com', label: '新入生com', test: () => data.post_event_com.com_structure },
-    { page: 'lcmkt_to_lcmem', label: 'LCmkt→mem', test: () => data.lcmkt_to_lcmem.handoff_timing },
     { page: 'selection', label: '入会Reporting', test: () => data.selection.af_actual },
-    { page: 'ixp_selection', label: 'IXP採用', test: () => data.ixp_selection.summer_signup },
-    { page: 'member_survey', label: 'メンバー調査', test: () => data.member_survey.response_count },
-    { page: 'evaluation', label: 'Evaluation', test: () => data.evaluation.items.length > 0 }
+    { page: 'ixp_selection', label: 'IXP採用', test: () => data.ixp_selection.summer_signup }
   ];
   const done = checks.filter(c => c.test()).length;
   const completionBox = document.getElementById('completionBox');
@@ -2528,6 +2612,133 @@ PAGE_RENDERERS.overview = (root, data) => {
       renderSidebar(); renderPage();
     };
   });
+};
+
+/* =========================================================
+   PAGE: CALENDAR (イベントカレンダー)
+   ========================================================= */
+let _calYM = null; // {y, m(0-based)}
+
+function collectCalEvents(data) {
+  const out = [];
+  const push = (date, cat, label) => {
+    if (!date) return;
+    const d = new Date(date + 'T00:00:00');
+    if (isNaN(d.getTime())) return;
+    out.push({ date, y: d.getFullYear(), m: d.getMonth(), d: d.getDate(), cat, label });
+  };
+  (data.ldr_event && data.ldr_event.events || []).forEach(e => push(e.date, 'ldr', 'LC説明会: ' + (e.name || '(無題)')));
+  (data.ldr_event && data.ldr_event.other_events || []).forEach(e => push(e.date, 'other', 'その他: ' + (e.name || '(無題)')));
+  (data.ixp_event && data.ixp_event.events || []).forEach(e => push(e.date, 'gv', 'GV説明会: ' + (e.name || '(無題)')));
+  (data.ixp_event && data.ixp_event.other_events || []).forEach(e => push(e.date, 'other', 'その他: ' + (e.name || '(無題)')));
+  (data.reach_circle && data.reach_circle.events || []).forEach(e => push(e.date, 'circle', 'サークル: ' + (e.title || '(無題)')));
+  (data.reach_flyer && data.reach_flyer.dist_log || []).forEach(e => push(e.date, 'flyer', 'ビラ配布' + (e.count ? ' ' + e.count + '枚' : '')));
+  return out;
+}
+
+PAGE_RENDERERS.calendar = (root, data) => {
+  const evs = collectCalEvents(data);
+  const today = new Date();
+  if (!_calYM) {
+    if (evs.length) {
+      const srt = evs.slice().sort((a,b) => a.date < b.date ? -1 : 1);
+      _calYM = { y: srt[0].y, m: srt[0].m };
+    } else {
+      _calYM = { y: today.getFullYear(), m: today.getMonth() };
+    }
+  }
+
+  root.innerHTML = `
+    ${pageHead('Overview', 'イベントカレンダー', 'LC説明会・GV説明会・その他イベント（履修登録会/AF執筆会等）・サークル紹介イベント・ビラ配布の日程を1つのカレンダーで確認します。BLISS登録外で独自に置いた日程もここで可視化されます。各イベントは元のページで追加してください。', [])}
+
+    <div class="card">
+      <div class="card-head"><h2>月表示</h2><div class="sub">Month view</div></div>
+      <div class="card-body">
+        <div class="cal-head">
+          <div class="cal-title" id="calTitle"></div>
+          <div class="cal-nav">
+            <button class="btn sm" id="calPrev">← 前月</button>
+            <button class="btn sm" id="calToday">今月</button>
+            <button class="btn sm" id="calNext">翌月 →</button>
+          </div>
+        </div>
+        <div id="calGridBox"></div>
+        <div class="cal-legend">
+          <span><i style="background:var(--aiesec-blue)"></i>LC説明会</span>
+          <span><i style="background:var(--aiesec-red)"></i>GV説明会</span>
+          <span><i style="background:var(--aiesec-purple)"></i>その他イベント</span>
+          <span><i style="background:var(--aiesec-orange)"></i>サークル紹介</span>
+          <span><i style="background:var(--aiesec-cyan)"></i>ビラ配布</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>日程一覧</h2><div class="sub">All dated items</div></div>
+      <div class="card-body" id="calListBox"></div>
+    </div>
+  `;
+
+  const catClass = { ldr:'ldr', gv:'gv', other:'other', circle:'circle', flyer:'flyer' };
+  const catLabel = { ldr:'LC説明会', gv:'GV説明会', other:'その他', circle:'サークル', flyer:'ビラ' };
+  const catColor = { ldr:'var(--aiesec-blue)', gv:'var(--aiesec-red)', other:'var(--aiesec-purple)', circle:'var(--aiesec-orange)', flyer:'var(--aiesec-cyan)' };
+
+  const drawGrid = () => {
+    const { y, m } = _calYM;
+    document.getElementById('calTitle').textContent = `${y}年 ${m + 1}月`;
+    const first = new Date(y, m, 1);
+    const startDow = first.getDay(); // 0=Sun
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const prevDays = new Date(y, m, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < startDow; i++) {
+      cells.push({ day: prevDays - startDow + 1 + i, other: true });
+    }
+    for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, other: false });
+    while (cells.length % 7 !== 0) cells.push({ day: cells.length - (startDow + daysInMonth) + 1, other: true });
+
+    const evByDay = {};
+    evs.filter(e => e.y === y && e.m === m).forEach(e => {
+      (evByDay[e.d] = evByDay[e.d] || []).push(e);
+    });
+
+    const dow = ['日','月','火','水','木','金','土'];
+    let html = '<div class="cal-grid">';
+    dow.forEach(w => html += `<div class="cal-dow">${w}</div>`);
+    cells.forEach(c => {
+      const isToday = !c.other && y === today.getFullYear() && m === today.getMonth() && c.day === today.getDate();
+      const list = (!c.other && evByDay[c.day]) ? evByDay[c.day] : [];
+      html += `<div class="cal-cell ${c.other ? 'cal-other' : ''} ${isToday ? 'cal-today' : ''}">
+        <div class="cal-daynum">${c.day}</div>
+        ${list.map(e => `<div class="cal-ev ${catClass[e.cat]}" title="${escapeHtml(e.label)}">${escapeHtml(e.label)}</div>`).join('')}
+      </div>`;
+    });
+    html += '</div>';
+    document.getElementById('calGridBox').innerHTML = html;
+  };
+
+  const drawList = () => {
+    const box = document.getElementById('calListBox');
+    if (!evs.length) {
+      box.innerHTML = `<div class="empty"><h3>登録された日程がありません</h3><p>LC説明会 / GV説明会 / サークル紹介イベント / ビラ配布ログ に日付付きで追加すると、ここに反映されます</p></div>`;
+      return;
+    }
+    const srt = evs.slice().sort((a,b) => a.date < b.date ? -1 : (a.date > b.date ? 1 : 0));
+    box.innerHTML = srt.map(e => `
+      <div class="cal-list-row">
+        <span class="cal-list-date">${escapeHtml(e.date)}</span>
+        <span class="cal-list-tag" style="background:${catColor[e.cat]}">${catLabel[e.cat]}</span>
+        <span>${escapeHtml(e.label)}</span>
+      </div>
+    `).join('');
+  };
+
+  document.getElementById('calPrev').onclick = () => { _calYM.m--; if (_calYM.m < 0) { _calYM.m = 11; _calYM.y--; } drawGrid(); };
+  document.getElementById('calNext').onclick = () => { _calYM.m++; if (_calYM.m > 11) { _calYM.m = 0; _calYM.y++; } drawGrid(); };
+  document.getElementById('calToday').onclick = () => { _calYM = { y: today.getFullYear(), m: today.getMonth() }; drawGrid(); };
+
+  drawGrid();
+  drawList();
 };
 
 /* =========================================================
@@ -3445,60 +3656,183 @@ function renderOCMembers(data) {
    PAGE: REACH OVERALL
    ========================================================= */
 PAGE_RENDERERS.reach_overall = (root, data) => {
+  const R = data.reach_overall;
+  // 後方互換: 新フィールド初期化 & 旧 direction → direction_ops 移行
+  if (R.direction_ops === undefined) R.direction_ops = '';
+  if (R.direction_ixp === undefined) R.direction_ixp = '';
+  if (R.overall_perf === undefined) R.overall_perf = '';
+  if (!R.board) R.board = { ig:{visit:'',inflow:''}, x:{visit:'',inflow:''}, flyer:{visit:'',inflow:''}, circle:{visit:'',inflow:''} };
+  ['ig','x','flyer','circle'].forEach(k => { if (!R.board[k]) R.board[k] = { visit:'', inflow:'' }; });
+  if (!R.direction_ops && R.direction) R.direction_ops = R.direction;
+
   const f = data.funnel;
-  // Compute Reach -> 説明会CVR from sub-data
+  const totalReach   = parseFloat(f.total_reach && f.total_reach.actual) || 0;
+  const eventAttend  = parseFloat(f.event_attend && f.event_attend.actual) || 0;
+  const reachCvr     = pct(eventAttend, totalReach);
+
+  const CH = [
+    { k:'ig',     label:'Instagram',        sub:'profile visit' },
+    { k:'x',      label:'X',                sub:'profile visit' },
+    { k:'flyer',  label:'ビラ配り',          sub:'配布数' },
+    { k:'circle', label:'サークル紹介イベント', sub:'ブース説明数' }
+  ];
+
   root.innerHTML = `
-    ${pageHead('3. Reach / 3.1', 'Reach Overall', '全体のReach戦略 (SNS/ビラ/サークル紹介/有料広告/授業登壇) を俯瞰し、Brand Direction・市場/組織課題からの根拠と振り返りを残します。', PAGE_REFS.reach_overall)}
+    ${pageHead('3. Reach / 3.1', 'Reach Overall', '全体のReach戦略 (SNS/ビラ/サークル紹介/有料広告/授業登壇) の全体観を数値で俯瞰し、Brand Direction・市場/組織課題からの根拠と振り返りを残します。', PAGE_REFS.reach_overall)}
 
     <div class="card">
-      <div class="card-head"><h2>Reachの目的と全体方針</h2><div class="sub">Purpose</div></div>
+      <div class="card-head"><h2>Result（全体観ボード）</h2><div class="sub">Overall board</div></div>
+      <div class="card-body">
+        <div class="callout">
+          <div class="callout-title">数値の入り方</div>
+          Total Reach・説明会参加者は <a href="#" onclick="event.preventDefault(); jumpTo('funnel')">Customer Flow (2.1)</a> の実測値が自動反映されます。各チャネルの接触数と「説明会参加後アンケートからの流入数」はここで回収します（CVRは自動計算）。
+        </div>
+        <div class="stat-grid" style="margin-bottom:16px">
+          <div class="stat-tile">
+            <div class="stat-label">Total Reach</div>
+            <div class="stat-value">${totalReach ? totalReach.toLocaleString() : '–'}</div>
+            <div class="stat-sub">Customer Flowより</div>
+          </div>
+          <div class="stat-tile green">
+            <div class="stat-label">説明会参加者</div>
+            <div class="stat-value">${eventAttend ? eventAttend.toLocaleString() : '–'}</div>
+            <div class="stat-sub">Customer Flowより</div>
+          </div>
+          <div class="stat-tile ${reachCvr!=null ? cvrClass(reachCvr)||'' : ''}">
+            <div class="stat-label">%Reach &gt; 説明会 CVR</div>
+            <div class="stat-value">${fmtPct(reachCvr)}</div>
+            <div class="stat-sub">説明会参加 / Total Reach</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr>
+            <th>チャネル</th>
+            <th style="width:130px">接触数（profile visit / 配布 / 説明）</th>
+            <th style="width:150px">説明会参加後アンケートからの流入数</th>
+            <th style="width:90px">CVR</th>
+          </tr></thead>
+          <tbody>
+            ${CH.map(c => {
+              const b = R.board[c.k];
+              const cv = pct(b.inflow, b.visit);
+              return `<tr data-ch="${c.k}">
+                <td><strong>${c.label}</strong> <span class="muted small">${c.sub}</span></td>
+                <td><input type="number" data-bk="visit" value="${escapeHtml(b.visit)}" /></td>
+                <td><input type="number" data-bk="inflow" value="${escapeHtml(b.inflow)}" /></td>
+                <td><span class="kpi-cvr ${cvrClass(cv)}" style="font-size:11px">${fmtPct(cv)}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Overall Performance</h2><div class="sub">Performance</div></div>
       <div class="card-body">
         <div class="field">
-          <label>Reachの目的</label>
-          <textarea id="ro_purpose"></textarea>
+          <label>全体的な成果は？ <span class="hint">数値ボードを踏まえた総括</span></label>
+          <textarea id="ro_perf" class="tall"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Brand Direction</h2><div class="sub">Direction</div></div>
+      <div class="card-body">
+        <div class="callout">
+          <div class="callout-title">記入のしかた</div>
+          見せ方は対象人材で異なるため、<strong>運営人材向け</strong>と<strong>IXP人材向け（GV説明会集客・GV広告）</strong>で分けて記載してください。
         </div>
         <div class="field">
-          <label>Brand Direction <span class="hint">どのような見せ方をしたか (VM強め / 事業強め / グローバル強め など)</span></label>
-          <textarea id="ro_direction"></textarea>
+          <label>Brand Direction（運営人材向け） <span class="hint">VM強め / 事業強め / グローバル強め など</span></label>
+          <textarea id="ro_dir_ops" class="tall"></textarea>
         </div>
         <div class="field">
-          <label>Why? <span class="hint">それはなぜ (市場傾向 / 組織課題)</span></label>
+          <label>Brand Direction（IXP人材向け：GV説明会集客 / GV広告） <span class="hint">渡航人材にどう見せたか</span></label>
+          <textarea id="ro_dir_ixp" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>Why? <span class="hint">それはなぜ（Recruit Framework の 2-1 Segmentation / 2-3 Targeting / 2-4 Positioning / 2-5 ターゲット像策定 / 2-6 CJ策定 から得られた市場・顧客への仮説を元に）</span></label>
           <textarea id="ro_why" class="tall"></textarea>
         </div>
         <div class="field">
-          <label>How? <span class="hint">実働にどう反映したか</span></label>
+          <label>How? <span class="hint">実働にどう反映したか（広告物、媒体選択、顧客コミュなど）</span></label>
           <textarea id="ro_how" class="tall"></textarea>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>次年度へのReach申し送り</h2><div class="sub">KPT</div></div>
+      <div class="card-head"><h2>次年度へのReach申し送りまとめ</h2><div class="sub">KPT</div></div>
       <div class="card-body">${kptHtml('ro')}</div>
     </div>
   `;
 
-  bindInput('#ro_purpose', () => data.reach_overall.purpose, v => data.reach_overall.purpose = v);
-  bindInput('#ro_direction', () => data.reach_overall.direction, v => data.reach_overall.direction = v);
-  bindInput('#ro_why', () => data.reach_overall.why, v => data.reach_overall.why = v);
-  bindInput('#ro_how', () => data.reach_overall.how_implemented, v => data.reach_overall.how_implemented = v);
-  bindInput('#ro_keep', () => data.reach_overall.keep, v => data.reach_overall.keep = v);
-  bindInput('#ro_problem', () => data.reach_overall.stop, v => data.reach_overall.stop = v);
-  bindInput('#ro_try', () => data.reach_overall.try, v => data.reach_overall.try = v);
+  // channel board inputs
+  root.querySelectorAll('tr[data-ch] input').forEach(el => {
+    el.oninput = () => {
+      const ch = el.closest('tr').dataset.ch;
+      R.board[ch][el.dataset.bk] = el.value;
+      saveState();
+      // CVR再計算のため当該行のみ更新
+      const tr = el.closest('tr');
+      const b = R.board[ch];
+      const cv = pct(b.inflow, b.visit);
+      const span = tr.querySelector('.kpi-cvr');
+      if (span) { span.className = 'kpi-cvr ' + cvrClass(cv); span.style.fontSize = '11px'; span.textContent = fmtPct(cv); }
+    };
+  });
+
+  bindInput('#ro_perf', () => R.overall_perf, v => R.overall_perf = v);
+  bindInput('#ro_dir_ops', () => R.direction_ops, v => R.direction_ops = v);
+  bindInput('#ro_dir_ixp', () => R.direction_ixp, v => R.direction_ixp = v);
+  bindInput('#ro_why', () => R.why, v => R.why = v);
+  bindInput('#ro_how', () => R.how_implemented, v => R.how_implemented = v);
+  bindInput('#ro_keep', () => R.keep, v => R.keep = v);
+  bindInput('#ro_problem', () => R.stop, v => R.stop = v);
+  bindInput('#ro_try', () => R.try, v => R.try = v);
 };
 
 /* =========================================================
    PAGE: REACH SNS
    ========================================================= */
 PAGE_RENDERERS.reach_sns = (root, data) => {
+  if (!data.reach_sns_meta) data.reach_sns_meta = { used: { ig: true, x: false } };
+  if (!data.reach_sns_meta.used) data.reach_sns_meta.used = { ig: true, x: false };
+  const used = data.reach_sns_meta.used;
+
   root.innerHTML = `
     ${pageHead('3. Reach / 3.2', 'SNS (Instagram / X)', 'Instagram (優先度高) と Xそれぞれの運用振り返り。Top Engagement投稿・成功/失敗パターン・学び・申し送りを残します。', PAGE_REFS.reach_sns)}
 
-    ${snsBlockHtml('ig', 'Instagram Analysis', '優先度: 高', data.reach_sns_ig)}
-    ${snsBlockHtml('x', 'X Analysis', '', data.reach_sns_x)}
+    <div class="card">
+      <div class="card-head"><h2>利用したSNS媒体</h2><div class="sub">Platforms</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">使い方</div>
+          このtermで運用したSNS媒体だけにチェックを入れてください。チェックしていない媒体の記入欄は表示されません（Xを使っていないLC向け）。
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:24px;font-weight:600">
+          <input type="checkbox" id="sns_use_ig" ${used.ig?'checked':''} style="width:auto"> Instagram
+        </label>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-weight:600">
+          <input type="checkbox" id="sns_use_x" ${used.x?'checked':''} style="width:auto"> X (旧Twitter)
+        </label>
+      </div>
+    </div>
+
+    ${used.ig ? snsBlockHtml('ig', 'Instagram Analysis', '優先度: 高', data.reach_sns_ig) : ''}
+    ${used.x  ? snsBlockHtml('x',  'X Analysis', '', data.reach_sns_x) : ''}
+    ${(!used.ig && !used.x) ? '<div class="empty"><h3>媒体が選択されていません</h3><p>上で利用したSNS媒体にチェックを入れてください</p></div>' : ''}
   `;
 
+  document.getElementById('sns_use_ig').onchange = (e) => { used.ig = e.target.checked; saveState(); renderPage(); };
+  document.getElementById('sns_use_x').onchange  = (e) => { used.x  = e.target.checked; saveState(); renderPage(); };
+
   ['ig', 'x'].forEach(p => {
+    if (!used[p]) return;
     const src = p === 'ig' ? data.reach_sns_ig : data.reach_sns_x;
     bindInput(`#${p}_role`, () => src.role, v => src.role = v);
     bindInput(`#${p}_purpose`, () => src.purpose, v => src.purpose = v);
@@ -3645,10 +3979,35 @@ PAGE_RENDERERS.reach_flyer = (root, data) => {
 
     <div class="card">
       <div class="card-head">
+        <h2>配布ログ</h2>
+        <button class="btn primary sm" id="addDist">＋ 配布記録を追加</button>
+      </div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          可能な範囲で「いつ・何枚・どこで」配ったかを記録します。詳細が取れなくても、<strong>配布総数は必ず回収</strong>してください。
+        </div>
+        <div class="field" style="max-width:260px">
+          <label>配布総数（必須） <span class="required">*</span></label>
+          <input type="number" id="fl_total" placeholder="例: 3200" />
+        </div>
+        <div class="section-divider">日別の配布記録（任意）</div>
+        <div id="flDistBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
         <h2>配ったビラ サンプル</h2>
         <button class="btn primary sm" id="addFlyer">＋ サンプル追加</button>
       </div>
-      <div class="card-body" id="flyerSamples"></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">提出形式</div>
+          サンプルは <strong>PNG または PDF</strong> で揃えてください（Drive等にアップしURLを貼る形式）。
+        </div>
+        <div id="flyerSamples"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -3662,6 +4021,43 @@ PAGE_RENDERERS.reach_flyer = (root, data) => {
   bindInput('#fl_keep', () => data.reach_flyer.keep, v => data.reach_flyer.keep = v);
   bindInput('#fl_problem', () => data.reach_flyer.stop, v => data.reach_flyer.stop = v);
   bindInput('#fl_try', () => data.reach_flyer.try, v => data.reach_flyer.try = v);
+
+  const F = data.reach_flyer;
+  if (!Array.isArray(F.dist_log)) F.dist_log = [];
+  if (F.dist_total === undefined) F.dist_total = '';
+  bindInput('#fl_total', () => F.dist_total, v => F.dist_total = v);
+  const distBox = document.getElementById('flDistBox');
+  const renderDist = () => {
+    if (!F.dist_log.length) {
+      distBox.innerHTML = `<div class="empty small"><p>日別記録はまだありません（任意）</p></div>`;
+    } else {
+      distBox.innerHTML = `
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr><th style="width:130px">日付</th><th style="width:110px">枚数</th><th>配布場所</th><th style="width:36px"></th></tr></thead>
+          <tbody>
+            ${F.dist_log.map((r,i) => `
+              <tr data-i="${i}">
+                <td><input type="date" data-k="date" value="${escapeHtml(r.date||'')}" /></td>
+                <td><input type="number" data-k="count" value="${escapeHtml(r.count||'')}" /></td>
+                <td><input type="text" data-k="place" value="${escapeHtml(r.place||'')}" placeholder="例: 正門前 / 〇〇キャンパス" /></td>
+                <td><button class="row-delete" data-del="${i}">×</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+      `;
+    }
+    distBox.querySelectorAll('input').forEach(el => {
+      el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); F.dist_log[i][el.dataset.k] = el.value; saveState(); };
+    });
+    distBox.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { F.dist_log.splice(parseInt(b.dataset.del),1); saveState(); renderDist(); };
+    });
+  };
+  document.getElementById('addDist').onclick = () => { F.dist_log.push({ date:'', count:'', place:'' }); saveState(); renderDist(); };
+  renderDist();
 
   document.getElementById('addFlyer').onclick = () => {
     data.reach_flyer.samples.push({ img_note: '', reason: '', effect: '' });
@@ -3730,6 +4126,20 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
     </div>
 
     <div class="card">
+      <div class="card-head">
+        <h2>ブースイベント一覧</h2>
+        <button class="btn primary sm" id="addCircleEv">＋ イベントを追加</button>
+      </div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          実施したブースイベントを、タイトル・実施日・概要・来場数（数えていれば）・申し送りで残します。次年度がそのまま判断材料にできるようダッシュボード化しています。
+        </div>
+        <div id="circleEvBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="card-head"><h2>参加者集め</h2><div class="sub">Acquisition</div></div>
       <div class="card-body">
         <div class="gm-grid">
@@ -3764,6 +4174,50 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
   bindInput('#cr_keep', () => data.reach_circle.keep, v => data.reach_circle.keep = v);
   bindInput('#cr_problem', () => data.reach_circle.stop, v => data.reach_circle.stop = v);
   bindInput('#cr_try', () => data.reach_circle.try, v => data.reach_circle.try = v);
+
+  const C = data.reach_circle;
+  if (!Array.isArray(C.events)) C.events = [];
+  const evBox = document.getElementById('circleEvBox');
+  const renderCircleEv = () => {
+    if (!C.events.length) {
+      evBox.innerHTML = `<div class="empty small"><p>イベントがまだ登録されていません</p></div>`;
+    } else {
+      evBox.innerHTML = `
+        <div style="overflow-x:auto">
+        <table class="data">
+          <thead><tr>
+            <th style="width:170px">タイトル</th>
+            <th style="width:120px">実施日</th>
+            <th>概要</th>
+            <th style="width:90px">来場数</th>
+            <th>申し送り</th>
+            <th style="width:36px"></th>
+          </tr></thead>
+          <tbody>
+            ${C.events.map((e,i) => `
+              <tr data-i="${i}">
+                <td><input type="text" data-k="title" value="${escapeHtml(e.title||'')}" /></td>
+                <td><input type="date" data-k="date" value="${escapeHtml(e.date||'')}" /></td>
+                <td><textarea data-k="summary">${escapeHtml(e.summary||'')}</textarea></td>
+                <td><input type="number" data-k="attendance" value="${escapeHtml(e.attendance||'')}" /></td>
+                <td><textarea data-k="handover">${escapeHtml(e.handover||'')}</textarea></td>
+                <td><button class="row-delete" data-del="${i}">×</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+      `;
+    }
+    evBox.querySelectorAll('input,textarea').forEach(el => {
+      el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); C.events[i][el.dataset.k] = el.value; saveState(); };
+    });
+    evBox.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { C.events.splice(parseInt(b.dataset.del),1); saveState(); renderCircleEv(); };
+    });
+  };
+  document.getElementById('addCircleEv').onclick = () => { C.events.push({ title:'', date:'', summary:'', attendance:'', handover:'' }); saveState(); renderCircleEv(); };
+  renderCircleEv();
 };
 
 /* =========================================================
@@ -3776,6 +4230,10 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
     <div class="card">
       <div class="card-head"><h2>有料広告</h2><div class="sub">Paid ads</div></div>
       <div class="card-body">
+        <div class="perm-note" id="paUNMcNote" style="display:none">
+          有料広告に関する<strong>数値データ（実施有無 / プラットフォーム / 支出 / 結果サマリ）はMCが記入</strong>します。LCの皆さんは下の「実施した背景」「運用で何が変わったか」「申し送り」を記入してください。
+        </div>
+        <div class="section-divider">数値データ（MC記入）</div>
         <div class="field-row cols-2">
           <div class="field">
             <label>実施したか</label>
@@ -3800,6 +4258,19 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
             <label>結果サマリ <span class="hint">Reach / 流入 / CVR</span></label>
             <input type="text" id="p_result" />
           </div>
+        </div>
+        <div class="section-divider">LC記入欄</div>
+        <div class="field">
+          <label>実施した背景（目的）</label>
+          <textarea id="p_bg" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>運用してみて何が変わったか <span class="hint">（どうしても体感ベースになるが）インスタやLINEを管理していて何が変わったか、効果を感じたタイミング</span></label>
+          <textarea id="p_qual" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>申し送り <span class="hint">意思決定までに時間がかかる点、投資額に関する妥当性など</span></label>
+          <textarea id="p_handover" class="tall"></textarea>
         </div>
         <div class="gm-grid">
           <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="p_good"></textarea></div>
@@ -3848,6 +4319,9 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
   bindInput('#p_platform', () => data.reach_paid_class.paid_ad_platform, v => data.reach_paid_class.paid_ad_platform = v);
   bindInput('#p_spend', () => data.reach_paid_class.paid_ad_spend, v => data.reach_paid_class.paid_ad_spend = v);
   bindInput('#p_result', () => data.reach_paid_class.paid_ad_result, v => data.reach_paid_class.paid_ad_result = v);
+  bindInput('#p_bg', () => data.reach_paid_class.paid_ad_bg || '', v => data.reach_paid_class.paid_ad_bg = v);
+  bindInput('#p_qual', () => data.reach_paid_class.paid_ad_qual || '', v => data.reach_paid_class.paid_ad_qual = v);
+  bindInput('#p_handover', () => data.reach_paid_class.paid_ad_handover || '', v => data.reach_paid_class.paid_ad_handover = v);
   bindInput('#p_good', () => data.reach_paid_class.paid_ad_good, v => data.reach_paid_class.paid_ad_good = v);
   bindInput('#p_more', () => data.reach_paid_class.paid_ad_more, v => data.reach_paid_class.paid_ad_more = v);
   bindInput('#c_used', () => data.reach_paid_class.class_speak_used, v => data.reach_paid_class.class_speak_used = v);
@@ -3856,6 +4330,16 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
   bindInput('#pc_keep', () => data.reach_paid_class.keep, v => data.reach_paid_class.keep = v);
   bindInput('#pc_problem', () => data.reach_paid_class.stop, v => data.reach_paid_class.stop = v);
   bindInput('#pc_try', () => data.reach_paid_class.try, v => data.reach_paid_class.try = v);
+
+  // 数値データはMCのみ編集可（LCは閲覧）。閲覧モード(他LC)は既存のapplyReadOnlyStateが上書き。
+  if (!isMC()) {
+    const note = document.getElementById('paUNMcNote');
+    if (note) note.style.display = '';
+    ['p_used','p_platform','p_spend','p_result'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.setAttribute('readonly','readonly'); el.setAttribute('disabled','disabled'); }
+    });
+  }
 
   renderClassList(data);
 };
@@ -3993,6 +4477,10 @@ function renderEventPage(root, data, kind) {
           <label>このtermの説明会の目的</label>
           <textarea id="ev_purpose"></textarea>
         </div>
+        <div class="field">
+          <label>実施計画・集客目標の申し送り <span class="hint">去年の説明会から得た示唆を元に：時期ごとにどのくらいイベントを置くべきか / オンライン・オフラインどちらが適切か / どの時間帯が適切か</span></label>
+          <textarea id="ev_plan" class="tall"></textarea>
+        </div>
       </div>
     </div>
 
@@ -4003,6 +4491,20 @@ function renderEventPage(root, data, kind) {
       </div>
       <div class="card-body" id="eventList"></div>
     </div>
+${isLDR ? `
+    <div class="card">
+      <div class="card-head">
+        <h2>その他イベント</h2>
+        <button class="btn primary sm" id="addOtherEv">＋ イベントを追加</button>
+      </div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          LC説明会以外で実施したイベント（履修登録会・AF執筆会など）を記録します。BLISS登録外で独自に置いた日程もここで回収します。
+        </div>
+        <div id="otherEvBox"></div>
+      </div>
+    </div>` : ''}
 
     <div class="card">
       <div class="card-head"><h2>Online 運営</h2><div class="sub">Online</div></div>
@@ -4030,6 +4532,7 @@ function renderEventPage(root, data, kind) {
   `;
 
   bindInput('#ev_purpose', () => src.purpose, v => src.purpose = v);
+  bindInput('#ev_plan', () => src.plan_handover || '', v => src.plan_handover = v);
   bindInput('#on_good', () => src.online_good, v => src.online_good = v);
   bindInput('#on_bad', () => src.online_bad, v => src.online_bad = v);
   bindInput('#on_notes', () => src.online_notes, v => src.online_notes = v);
@@ -4038,6 +4541,44 @@ function renderEventPage(root, data, kind) {
   bindInput('#off_bad', () => src.offline_bad, v => src.offline_bad = v);
   bindInput('#off_notes', () => src.offline_notes, v => src.offline_notes = v);
   bindInput('#off_handover', () => src.offline_handover, v => src.offline_handover = v);
+
+  if (isLDR) {
+    if (!Array.isArray(src.other_events)) src.other_events = [];
+    const oBox = document.getElementById('otherEvBox');
+    const renderOther = () => {
+      if (!src.other_events.length) {
+        oBox.innerHTML = `<div class="empty small"><p>その他イベントはまだ登録されていません</p></div>`;
+      } else {
+        oBox.innerHTML = `
+          <div style="overflow-x:auto">
+          <table class="data">
+            <thead><tr><th style="width:200px">イベント名</th><th style="width:120px">実施日</th><th style="width:90px">参加数</th><th>概要・申し送り</th><th style="width:36px"></th></tr></thead>
+            <tbody>
+              ${src.other_events.map((e,i) => `
+                <tr data-i="${i}">
+                  <td><input type="text" data-k="name" value="${escapeHtml(e.name||'')}" placeholder="例: 履修登録会 / AF執筆会" /></td>
+                  <td><input type="date" data-k="date" value="${escapeHtml(e.date||'')}" /></td>
+                  <td><input type="number" data-k="attend" value="${escapeHtml(e.attend||'')}" /></td>
+                  <td><textarea data-k="note">${escapeHtml(e.note||'')}</textarea></td>
+                  <td><button class="row-delete" data-del="${i}">×</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          </div>
+        `;
+      }
+      oBox.querySelectorAll('input,textarea').forEach(el => {
+        el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); src.other_events[i][el.dataset.k] = el.value; saveState(); };
+      });
+      oBox.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = () => { src.other_events.splice(parseInt(b.dataset.del),1); saveState(); renderOther(); };
+      });
+    };
+    const addOther = document.getElementById('addOtherEv');
+    if (addOther) addOther.onclick = () => { src.other_events.push({ name:'', date:'', attend:'', note:'' }); saveState(); renderOther(); };
+    renderOther();
+  }
 
   document.getElementById('addEvent').onclick = () => {
     src.events.push({ name: '', date: '', apply: '', attend: '', content: '', good_more: '' });
@@ -4122,6 +4663,13 @@ PAGE_RENDERERS.post_event_com = (root, data) => {
           <label>どんな新入生にAFを配布したか / その背景と評価</label>
           <textarea id="pe_af" class="tall"></textarea>
         </div>
+        <div class="section-divider">コミュの様子（スクショ）</div>
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">貼り方</div>
+          Slack等でどんなコミュを取っていたかをスクショで残せます。画像は直接貼り付けできない（保存容量の制約）ため、<strong>Drive等にアップしてURLを貼る</strong>形式です。プレビューが表示されます。
+        </div>
+        <div id="peShotBox"></div>
+        <button class="add-row-btn" id="addShot" style="max-width:260px">＋ スクショURLを追加</button>
       </div>
     </div>
 
@@ -4150,6 +4698,41 @@ PAGE_RENDERERS.post_event_com = (root, data) => {
   bindInput('#pe_bad', () => data.post_event_com.bad_case, v => data.post_event_com.bad_case = v);
   bindInput('#pe_prep', () => data.post_event_com.handover_prep, v => data.post_event_com.handover_prep = v);
   bindInput('#pe_day', () => data.post_event_com.handover_day, v => data.post_event_com.handover_day = v);
+
+  const PE = data.post_event_com;
+  if (!Array.isArray(PE.com_screenshots)) PE.com_screenshots = [];
+  const shotBox = document.getElementById('peShotBox');
+  const renderShots = () => {
+    if (!PE.com_screenshots.length) {
+      shotBox.innerHTML = `<div class="empty small"><p>スクショはまだ登録されていません</p></div>`;
+    } else {
+      shotBox.innerHTML = `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px">` +
+        PE.com_screenshots.map((s,i) => `
+          <div style="border:1px solid var(--aiesec-gray-light); border-radius:5px; padding:12px; background:var(--aiesec-gray-bg)">
+            <div class="flex-between mb-12">
+              <span class="pill blue">スクショ ${i+1}</span>
+              <button class="row-delete" data-del="${i}">×</button>
+            </div>
+            <div class="field"><label>ラベル</label><input type="text" data-i="${i}" data-k="label" value="${escapeHtml(s.label||'')}" placeholder="例: 新入生Aとの初回com" /></div>
+            <div class="field"><label>画像URL（Drive等）</label><input type="url" data-i="${i}" data-k="url" value="${escapeHtml(s.url||'')}" placeholder="https://..." /></div>
+            ${s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener"><img src="${escapeHtml(s.url)}" alt="" style="max-width:100%; border-radius:4px; border:1px solid var(--aiesec-gray-light)" onerror="this.style.display='none'"></a>` : ''}
+          </div>
+        `).join('') + `</div>`;
+    }
+    shotBox.querySelectorAll('input').forEach(el => {
+      el.oninput = () => {
+        const i = parseInt(el.dataset.i);
+        PE.com_screenshots[i][el.dataset.k] = el.value;
+        saveState();
+        if (el.dataset.k === 'url') renderShots();
+      };
+    });
+    shotBox.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { PE.com_screenshots.splice(parseInt(b.dataset.del),1); saveState(); renderShots(); };
+    });
+  };
+  document.getElementById('addShot').onclick = () => { PE.com_screenshots.push({ label:'', url:'' }); saveState(); renderShots(); };
+  renderShots();
 };
 
 /* =========================================================
@@ -4526,7 +5109,7 @@ function mcProgress(d) {
     f(d.direction && d.direction.lc_direction),
     fa('total_reach'), fa('line_registration'), fa('event_attend'),
     fa('af_submit'), fa('pass'), fa('paid'),
-    f(d.reach_overall && d.reach_overall.purpose),
+    f(d.reach_overall && (d.reach_overall.overall_perf || d.reach_overall.direction_ops || d.reach_overall.purpose)),
     f(d.funnel_handover && d.funnel_handover.calc_method),
     f(d.customer_journey && d.customer_journey.design),
     f(d.oc && d.oc.structure_note)
