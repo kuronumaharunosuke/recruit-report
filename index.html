@@ -604,6 +604,73 @@
   .kpi-cvr.warn { color: var(--aiesec-orange); background: #feebd9; }
   .kpi-cvr.bad { color: var(--aiesec-red); background: #fee4e0; }
 
+  /* Compact funnel (Framework-aligned, one-screen) */
+  .fn-scroll { overflow-x: auto; margin: -2px; padding: 2px; }
+  .fn-chain, .fn-supp { display: flex; align-items: stretch; gap: 0; }
+  .fn-supp { gap: 12px; flex-wrap: wrap; }
+  .fn-node {
+    background: #fff;
+    border: 1px solid var(--aiesec-gray-light);
+    border-radius: 5px;
+    padding: 7px 6px;
+    width: 104px;
+    flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .fn-node.recruit { border-top: 3px solid var(--aiesec-blue); }
+  .fn-node.gv { border-top: 3px solid var(--aiesec-red); }
+  .fn-node.supp { width: 150px; border-top: 3px solid var(--aiesec-gray); }
+  .fn-node-label {
+    font-size: 10px; font-weight: 800; line-height: 1.25;
+    text-align: center; min-height: 26px; color: var(--aiesec-black);
+  }
+  .fn-row { display: flex; align-items: center; gap: 3px; }
+  .fn-tag {
+    font-size: 8.5px; font-weight: 800; color: #fff;
+    background: var(--aiesec-blue); border-radius: 2px;
+    width: 14px; height: 16px; display: grid; place-items: center; flex-shrink: 0;
+  }
+  .fn-tag.plan { background: var(--aiesec-gray); }
+  .fn-tag.ly { background: #b8bcc4; }
+  .fn-row input {
+    width: 100%; padding: 2px 3px; font-size: 11px; font-weight: 700;
+    font-family: var(--font-mono); text-align: center;
+    border: 1px solid var(--aiesec-gray-light); border-radius: 3px;
+  }
+  .fn-row input:focus { outline: none; border-color: var(--aiesec-blue); }
+  .fn-est {
+    font-size: 9px; color: var(--aiesec-gray); text-align: center;
+    font-family: var(--font-mono); margin-top: 1px;
+  }
+  .fn-arrow {
+    align-self: center; display: flex; flex-direction: column;
+    align-items: center; gap: 1px; min-width: 56px; padding: 0 2px;
+  }
+  .fn-ar { color: var(--aiesec-gray); font-size: 12px; }
+  .fn-cvr {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 800;
+    color: var(--aiesec-blue); background: var(--aiesec-blue-light);
+    padding: 1px 4px; border-radius: 3px;
+  }
+  .fn-cvr.good { color: var(--aiesec-green); background: #e0f7ec; }
+  .fn-cvr.warn { color: var(--aiesec-orange); background: #feebd9; }
+  .fn-cvr.bad  { color: var(--aiesec-red); background: #fee4e0; }
+  .fn-cvr-sub { font-size: 8.5px; color: var(--aiesec-gray); font-family: var(--font-mono); }
+  .fn-cvr-sub.ly { color: #b0b4bc; }
+  .fn-legend {
+    font-size: 10px; color: var(--aiesec-gray); margin-top: 10px; line-height: 1.6;
+  }
+  .focus-item {
+    border: 1px solid var(--aiesec-gray-light); border-radius: 7px;
+    padding: 14px; margin-bottom: 12px; background: var(--aiesec-gray-bg);
+  }
+  .focus-head { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .focus-head select { flex: 1; }
+  @media (max-width: 1100px) {
+    .fn-node { width: 92px; }
+    .fn-node-label { font-size: 9px; }
+  }
+
   /* Tables */
   table.data {
     width: 100%;
@@ -1711,17 +1778,27 @@ const DEFAULT_LC_DATA = () => ({
   },
   // KGI / KPI funnel (top-line)
   funnel: {
-    total_reach:       { plan: '', actual: '' },
-    line_registration: { plan: '', actual: '' },
+    // --- Recruit CF メインチェーン (Framework準拠) ---
+    ig_profile:        { plan: '', actual: '', last_year: '', note: '' }, // Instagram Profile visit
+    line_registration: { plan: '', actual: '', last_year: '', note: '' }, // LINE流入数
+    event_apply:       { plan: '', actual: '', last_year: '', note: '' }, // 説明会全参加申込数
+    event_attend:      { plan: '', actual: '', last_year: '', note: '' }, // 説明会全参加者数
+    af_distribute:     { plan: '', actual: '', last_year: '', note: '' }, // AF配布数
+    af_submit:         { plan: '', actual: '', last_year: '', note: '' }, // AF提出者数
+    paid:              { plan: '', actual: '', last_year: '', note: '' }, // 採用KGI(入会者数)
+    // --- 補助インプット ---
+    total_reach:       { plan: '', actual: '', last_year: '', note: '' }, // Total Reach
+    flyer_dist:        { plan: '', actual: '', last_year: '', note: '' }, // ビラ配布数
+    // --- GV CF ---
+    gv_apply:          { plan: '', actual: '', last_year: '', note: '' }, // GV説明会申込者数
+    gv_attend:         { plan: '', actual: '', last_year: '', note: '' }, // GV説明会参加者数
+    gv_consult:        { plan: '', actual: '', last_year: '', note: '' }, // GV個別相談会実施数
+    gv_su:             { plan: '', actual: '', last_year: '', note: '' }, // GV SU数
+    // --- legacy(移行用) ---
     tagged:            { plan: '', actual: '' },
-    event_apply:       { plan: '', actual: '' },
-    event_attend:      { plan: '', actual: '' },
-    af_distribute:     { plan: '', actual: '' },
-    af_submit:         { plan: '', actual: '' },
-    pass:              { plan: '', actual: '' },
-    paid:              { plan: '', actual: '' }
+    pass:              { plan: '', actual: '' }
   },
-  funnel_handover: { calc_method: '', good: '', more: '' },
+  funnel_handover: { calc_method: '', good: '', more: '', focus: [] }, // focus:{stage,reason,background,handover}
   customer_journey: { design: '', good: '', more: '', cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
   direction: {
     lc_direction: '',       // LCの経営目標
@@ -2456,101 +2533,260 @@ PAGE_RENDERERS.overview = (root, data) => {
 /* =========================================================
    PAGE: FUNNEL (KGI / KPI)
    ========================================================= */
+// Recruit Framework準拠のファネル定義
+const RECRUIT_CF = [
+  { key: 'ig_profile',        label: 'Instagram\nProfile visit' },
+  { key: 'line_registration', label: 'LINE流入数' },
+  { key: 'event_apply',       label: '説明会全\n参加申込数' },
+  { key: 'event_attend',      label: '説明会全\n参加者数' },
+  { key: 'af_distribute',     label: 'AF配布数' },
+  { key: 'af_submit',         label: 'AF提出者数' },
+  { key: 'paid',              label: '採用KGI\n(入会者数)' }
+];
+const GV_CF = [
+  { key: 'gv_apply',   label: 'GV説明会\n申込者数' },
+  { key: 'gv_attend',  label: 'GV説明会\n参加者数' },
+  { key: 'gv_consult', label: 'GV個別\n相談会実施数' },
+  { key: 'gv_su',      label: 'GV SU数' }
+];
+const ALL_FUNNEL_STAGES = [
+  { key: 'total_reach', label: 'Total Reach' },
+  ...RECRUIT_CF.map(s => ({ key: s.key, label: s.label.replace('\n','') })),
+  { key: 'flyer_dist', label: 'ビラ配布数' },
+  ...GV_CF.map(s => ({ key: s.key, label: s.label.replace('\n','') }))
+];
+const FOCUS_REASONS = [
+  '前年度と比べて数値を意図して上げるため',
+  '前年度と比べて数値を意図して下げるため',
+  '数値は同じだが、別ファネルの数値変動により注力するため',
+  'その他'
+];
+
+function fNode(data, key) {
+  if (!data.funnel[key]) data.funnel[key] = { plan:'', actual:'', last_year:'', note:'' };
+  const n = data.funnel[key];
+  if (n.last_year === undefined) n.last_year = '';
+  if (n.note === undefined) n.note = '';
+  return n;
+}
+// 推測値 = 昨年値 × (今年度KGI目標 / 昨年度入会者数)
+function estimate(data, key) {
+  const n = fNode(data, key);
+  const ly = parseFloat(n.last_year);
+  const kgiT = parseFloat(data.funnel.paid.plan);
+  const kgiLy = parseFloat(data.funnel.paid.last_year);
+  if (!isFinite(ly) || !isFinite(kgiT) || !isFinite(kgiLy) || kgiLy === 0) return null;
+  return Math.round(ly * (kgiT / kgiLy));
+}
+
 PAGE_RENDERERS.funnel = (root, data) => {
+  if (!data.funnel_handover.focus) data.funnel_handover.focus = [];
   root.innerHTML = `
-    ${pageHead('2. KGI / KPI / 2.1', 'Customer Flow (採用KGI / KPI)', '採用ファネルの各ステージごとに、Planで立てたKPIと実測値を記入します。CVRは自動計算されます。', PAGE_REFS.funnel)}
+    ${pageHead('2. KGI / KPI / 2.1', 'Customer Flow (採用KGI / KPI)', 'Recruit Framework準拠の採用ファネル。各ステージの目標・実測・昨年値を記入します。CVRと推測値は自動計算されます。', PAGE_REFS.funnel)}
 
     <div class="callout">
       <div class="callout-title">数値の入力について</div>
-      実測値はKintone/EXPA/CRMシートから取得できる場合が多いです。<a href="#" onclick="event.preventDefault(); jumpTo('resources')">資料集</a>でデータソースのURLを登録すると、ここから直接飛べます。
+      実測値はKintone/EXPA/CRMシートから取得できる場合が多いです。<a href="#" onclick="event.preventDefault(); jumpTo('resources')">資料集</a>でデータソースのURLを登録すると、ここから直接飛べます。表現はRecruit Frameworkに準拠しています。
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>採用ファネル</h2><div class="sub">Plan vs Actual</div></div>
+      <div class="card-head"><h2>補助インプット</h2><div class="sub">Reach / Flyer</div></div>
       <div class="card-body">
-        <div class="kpi-flow">
-          <div class="kpi-flow-inner" id="funnelBox"></div>
-        </div>
+        <div id="fnSuppBox" class="fn-supp"></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><h2>KGI / KPI 算出ロジック</h2><div class="sub">Calculation</div></div>
+      <div class="card-head"><h2>Recruit CF</h2><div class="sub">新歓全体ファネル</div></div>
       <div class="card-body">
+        <div class="fn-scroll"><div id="fnRecruitBox" class="fn-chain"></div></div>
+        <div class="fn-legend">実 = 実測 / 目 = 目標(KPI) / 昨 = 昨年値 ・ 矢印上 = 実際CVR / 目標CVR / 昨年CVR ・ 推 = 推測値(昨年値×今年度KGI/昨年度入会)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>GV CF</h2><div class="sub">oGV ファネル</div></div>
+      <div class="card-body">
+        <div class="fn-scroll"><div id="fnGvBox" class="fn-chain"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>注力数値目標</h2>
+        <button class="btn primary sm" id="addFocus">＋ 注力項目を追加</button>
+      </div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">記入のしかた</div>
+          このtermで注力したファネルを選び、なぜ注力するのか（記載理由）・策定背景・申し送りを残します。複数ある場合は追加してください。
+        </div>
+        <div id="fnFocusBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>各ステージの算出方法・補足</h2><div class="sub">Calculation note</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">なぜ必要か</div>
+          毎年定義がぶれやすい項目（Total Reach / 説明会参加 など）について、「どの数値をどう積み上げたか」を残します。例: 説明会はGV説明会・非本質説明会を含むか / リーチはビラ枚数＋インスタリーチか・どの期間で記録したか。
+        </div>
+        <div id="fnNoteBox"></div>
+        <div class="section-divider">全体の算出ロジック</div>
         <div class="field">
-          <label>採用KGI / KPI / CVRの出し方</label>
+          <label>採用KGI / KPI / CVRの出し方（全体）</label>
           <textarea id="f_calc" class="tall" placeholder="どのデータをどう積み上げてKGIを設定したか / CVRをどう算出したか"></textarea>
         </div>
         <div class="section-divider">申し送り</div>
         <div class="gm-grid">
-          <div class="gm-cell good">
-            <div class="gm-label">Good</div>
-            <textarea id="f_good"></textarea>
-          </div>
-          <div class="gm-cell more">
-            <div class="gm-label">More</div>
-            <textarea id="f_more"></textarea>
-          </div>
+          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="f_good"></textarea></div>
+          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="f_more"></textarea></div>
         </div>
       </div>
     </div>
   `;
 
-  const stages = [
-    { key: 'total_reach', label: 'Total Reach' },
-    { key: 'line_registration', label: 'LINE登録 (追加経路)' },
-    { key: 'tagged', label: 'タグ付け数' },
-    { key: 'event_apply', label: '説明会申込' },
-    { key: 'event_attend', label: '説明会参加' },
-    { key: 'af_distribute', label: 'AF配布' },
-    { key: 'af_submit', label: 'AF提出' },
-    { key: 'pass', label: '合格者' },
-    { key: 'paid', label: '入金者' }
-  ];
-
-  const fb = document.getElementById('funnelBox');
-  fb.innerHTML = stages.map((s, i) => {
-    const cur = data.funnel[s.key] || { plan: '', actual: '' };
-    let arrowHtml = '';
-    if (i < stages.length - 1) {
-      const next = stages[i + 1].key;
-      const cvr = pct(data.funnel[next]?.actual, cur.actual);
-      const cvrPlan = pct(data.funnel[next]?.plan, cur.plan);
-      arrowHtml = `
-        <div class="kpi-arrow">
-          <span>→</span>
-          <span class="kpi-cvr ${cvrClass(cvr)}">${fmtPct(cvr)}</span>
-          ${cvrPlan != null ? `<span class="small mono muted">plan ${cvrPlan.toFixed(1)}%</span>` : ''}
-        </div>
-      `;
-    }
-    return `
-      <div class="kpi-step">
-        <div class="kpi-step-label">${s.label}</div>
-        <input type="number" data-stage="${s.key}" data-k="actual" value="${escapeHtml(cur.actual)}" placeholder="実測" />
-        <div class="kpi-target">
-          <input type="number" data-stage="${s.key}" data-k="plan" value="${escapeHtml(cur.plan)}" placeholder="目標" style="font-size:11px; padding:3px 4px" />
-        </div>
-      </div>
-      ${arrowHtml}
-    `;
-  }).join('');
-
-  fb.querySelectorAll('input').forEach(el => {
-    el.oninput = () => {
-      const s = el.dataset.stage, k = el.dataset.k;
-      if (!data.funnel[s]) data.funnel[s] = { plan: '', actual: '' };
-      data.funnel[s][k] = el.value;
-      saveState();
-      // re-render funnel only (cheap)
-      PAGE_RENDERERS.funnel(root, data);
-    };
-  });
+  renderFnSupp(root, data);
+  renderFnChain(root, data, 'fnRecruitBox', RECRUIT_CF, 'recruit');
+  renderFnChain(root, data, 'fnGvBox', GV_CF, 'gv');
+  renderFnFocus(root, data);
+  renderFnNotes(root, data);
 
   bindInput('#f_calc', () => data.funnel_handover.calc_method, v => data.funnel_handover.calc_method = v);
   bindInput('#f_good', () => data.funnel_handover.good, v => data.funnel_handover.good = v);
   bindInput('#f_more', () => data.funnel_handover.more, v => data.funnel_handover.more = v);
 };
+
+function fnNodeInputs(data, key) {
+  const n = fNode(data, key);
+  const est = estimate(data, key);
+  return `
+    <div class="fn-row"><span class="fn-tag">実</span><input type="number" data-st="${key}" data-k="actual" value="${escapeHtml(n.actual)}" /></div>
+    <div class="fn-row"><span class="fn-tag plan">目</span><input type="number" data-st="${key}" data-k="plan" value="${escapeHtml(n.plan)}" /></div>
+    <div class="fn-row"><span class="fn-tag ly">昨</span><input type="number" data-st="${key}" data-k="last_year" value="${escapeHtml(n.last_year)}" /></div>
+    <div class="fn-est">${est != null ? '推 ' + est.toLocaleString() : '推 –'}</div>
+  `;
+}
+
+function renderFnSupp(root, data) {
+  const box = root.querySelector('#fnSuppBox');
+  box.innerHTML = [{key:'total_reach',label:'Total Reach'},{key:'flyer_dist',label:'ビラ配布数'}].map(s => `
+    <div class="fn-node supp">
+      <div class="fn-node-label">${s.label}</div>
+      ${fnNodeInputs(data, s.key)}
+    </div>
+  `).join('');
+  bindFnInputs(root, data);
+}
+
+function renderFnChain(root, data, boxId, stages, kind) {
+  const box = root.querySelector('#'+boxId);
+  box.innerHTML = stages.map((s, i) => {
+    const cur = fNode(data, s.key);
+    let arrow = '';
+    if (i < stages.length - 1) {
+      const nx = fNode(data, stages[i+1].key);
+      const cvrA = pct(nx.actual, cur.actual);
+      const cvrP = pct(nx.plan, cur.plan);
+      const cvrL = pct(nx.last_year, cur.last_year);
+      arrow = `
+        <div class="fn-arrow">
+          <span class="fn-ar">▶</span>
+          <span class="fn-cvr ${cvrClass(cvrA)}">${fmtPct(cvrA)}</span>
+          <span class="fn-cvr-sub">目 ${cvrP!=null?cvrP.toFixed(0)+'%':'–'}</span>
+          <span class="fn-cvr-sub ly">昨 ${cvrL!=null?cvrL.toFixed(0)+'%':'–'}</span>
+        </div>`;
+    }
+    return `
+      <div class="fn-node ${kind}">
+        <div class="fn-node-label">${s.label.replace(/\n/g,'<br>')}</div>
+        ${fnNodeInputs(data, s.key)}
+      </div>
+      ${arrow}`;
+  }).join('');
+  bindFnInputs(root, data);
+}
+
+function bindFnInputs(root, data) {
+  root.querySelectorAll('.fn-node input').forEach(el => {
+    if (el._bound) return; el._bound = true;
+    el.oninput = () => {
+      const st = el.dataset.st, k = el.dataset.k;
+      fNode(data, st)[k] = el.value;
+      saveState();
+      // CVR/推測値は他ノードに波及するのでチェーン再描画（フォーカス維持）
+      const active = document.activeElement;
+      const sig = active ? `${active.dataset.st}|${active.dataset.k}` : null;
+      renderFnSupp(root, data);
+      renderFnChain(root, data, 'fnRecruitBox', RECRUIT_CF, 'recruit');
+      renderFnChain(root, data, 'fnGvBox', GV_CF, 'gv');
+      if (sig) {
+        const re = root.querySelector(`.fn-node input[data-st="${sig.split('|')[0]}"][data-k="${sig.split('|')[1]}"]`);
+        if (re) { re.focus(); const v = re.value; re.value=''; re.value=v; }
+      }
+    };
+  });
+}
+
+function renderFnFocus(root, data) {
+  const box = root.querySelector('#fnFocusBox');
+  const list = data.funnel_handover.focus;
+  const render = () => {
+    if (!list.length) {
+      box.innerHTML = `<div class="empty small"><p>注力項目がまだありません</p></div>${addBtnHtml('addFocus2','＋ 注力項目を追加')}`;
+    } else {
+      box.innerHTML = list.map((f, i) => `
+        <div class="focus-item">
+          <div class="focus-head">
+            <select data-i="${i}" data-k="stage">
+              <option value="">注力ファネルを選択</option>
+              ${ALL_FUNNEL_STAGES.map(s => `<option value="${s.key}" ${f.stage===s.key?'selected':''}>${s.label}</option>`).join('')}
+            </select>
+            <button class="row-delete" data-del="${i}">×</button>
+          </div>
+          <div class="field"><label>記載理由</label>
+            <select data-i="${i}" data-k="reason">
+              <option value="">選択してください</option>
+              ${FOCUS_REASONS.map(r => `<option value="${r}" ${f.reason===r?'selected':''}>${r}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>策定背景</label><textarea data-i="${i}" data-k="background">${escapeHtml(f.background||'')}</textarea></div>
+          <div class="field"><label>策定における申し送り</label><textarea data-i="${i}" data-k="handover">${escapeHtml(f.handover||'')}</textarea></div>
+        </div>
+      `).join('') + addBtnHtml('addFocus2','＋ 注力項目を追加');
+    }
+    const add = () => { list.push({ stage:'', reason:'', background:'', handover:'' }); saveState(); render(); };
+    const a1 = document.getElementById('addFocus'); if (a1) a1.onclick = add;
+    const a2 = document.getElementById('addFocus2'); if (a2) a2.onclick = add;
+    box.querySelectorAll('input,textarea,select').forEach(el => {
+      const h = () => { list[parseInt(el.dataset.i)][el.dataset.k] = el.value; saveState(); };
+      el.oninput = h; if (el.tagName==='SELECT') el.onchange = h;
+    });
+    box.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = () => { list.splice(parseInt(b.dataset.del),1); saveState(); render(); };
+    });
+  };
+  render();
+}
+
+function renderFnNotes(root, data) {
+  const box = root.querySelector('#fnNoteBox');
+  // 定義がぶれやすい重点項目
+  const noteStages = [
+    { key: 'total_reach', label: 'Total Reach' },
+    { key: 'event_attend', label: '説明会全参加者数' },
+    { key: 'ig_profile', label: 'Instagram Profile visit' },
+    { key: 'paid', label: '採用KGI (入会者数)' }
+  ];
+  box.innerHTML = noteStages.map(s => {
+    const n = fNode(data, s.key);
+    return `<div class="field"><label>${s.label} の算出方法・定義 <span class="hint">何を含む/含まない・どの期間・どう積み上げたか</span></label><textarea data-note="${s.key}">${escapeHtml(n.note||'')}</textarea></div>`;
+  }).join('');
+  box.querySelectorAll('[data-note]').forEach(el => {
+    el.oninput = () => { fNode(data, el.dataset.note).note = el.value; saveState(); };
+  });
+}
 
 /* =========================================================
    PAGE: JOURNEY
