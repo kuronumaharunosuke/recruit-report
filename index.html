@@ -1713,12 +1713,19 @@ const DEFAULT_LC_DATA = () => ({
   funnel_handover: { calc_method: '', good: '', more: '' },
   customer_journey: { design: '', good: '', more: '', cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
   direction: {
-    lc_direction: '',
-    lc_issue: '',
-    long_term_issue: '',
+    lc_direction: '',       // LCの経営目標
+    lc_issue: '',           // 経営課題
+    long_term_issue: '',    // 採用によって解決したい課題
+    recruit_policy: '',     // 採用方針 (NEW)
     ixp_direction: '',
     direction_handover: '',
-    investments: [], // {item, cost, note}
+    kgi: {                  // 事業KGI (NEW)
+      icx_fruit: '', icx_fish: '',
+      ogx_fruit_ixp: '', ogx_fruit_exp: '',
+      ogx_fish_ixp: '', ogx_fish_exp: '',
+      custom: []            // {name, value}
+    },
+    investments: [], // {item, item_other, cost, note}
     food_meeting_note: ''
   },
   uni_constraints: { // NEW
@@ -2602,32 +2609,64 @@ function kptHtml(prefix) {
    PAGE: DIRECTION REPORTING
    ========================================================= */
 PAGE_RENDERERS.direction = (root, data) => {
+  if (!data.direction.kgi) data.direction.kgi = { icx_fruit:'', icx_fish:'', ogx_fruit_ixp:'', ogx_fruit_exp:'', ogx_fish_ixp:'', ogx_fish_exp:'', custom:[] };
+  if (!data.direction.kgi.custom) data.direction.kgi.custom = [];
   root.innerHTML = `
-    ${pageHead('1. 採用方針 / 1.1', 'Direction Reporting', '今termの採用方針・経営課題・投資判断を振り返ります。', PAGE_REFS.direction)}
+    ${pageHead('1. 採用方針 / 1.1', 'Direction Reporting', '今termの経営目標・経営課題・採用方針・投資判断を振り返ります。', PAGE_REFS.direction)}
 
     <div class="card">
       <div class="card-head"><h2>LCの方針・課題</h2><div class="sub">Strategy</div></div>
       <div class="card-body">
         <div class="field">
-          <label>LCの経営方針</label>
+          <label>LCの経営目標 <span class="hint">委員会が今年一年で成し遂げることを書いてください</span></label>
           <textarea id="d_direction" class="tall"></textarea>
         </div>
         <div class="field">
-          <label>LC独自の経営課題</label>
+          <label>経営課題 <span class="hint">経営目標を達成するために課題と捉えていることを書いてください</span></label>
           <textarea id="d_issue" class="tall"></textarea>
         </div>
         <div class="field">
-          <label>採用によって解決したい中長期の課題 <span class="hint">退会者アンケート、EB/アルムナイヒアリングなど参考データを元に</span></label>
-          <textarea id="d_long_issue" class="tall"></textarea>
+          <label>採用によって解決したい課題 <span class="hint">①採用によって解決したい経営課題 ②採用によって解決したい中長期的な課題</span></label>
+          <textarea id="d_long_issue" class="tall" placeholder="退会者アンケート、EB/アルムナイヒアリングなど参考データを元に"></textarea>
         </div>
         <div class="field">
-          <label>IXP採用方針 <span class="hint">採用段階でoGVとどうシナジーを生むか</span></label>
+          <label>採用方針 <span class="hint">経営課題を解決するために本年度採用で取り組むこと</span></label>
+          <div class="callout" style="margin:6px 0 8px">
+            <div class="callout-title">Tips</div>
+            「今年の採用を端的に表すと？」という問いです。「〇〇を行う」「〇〇に経営資源（カネ・人・モノからどれか）を投下する」のように、端的かつ具体的に書きましょう。
+          </div>
+          <textarea id="d_policy" class="tall"></textarea>
+        </div>
+        <div class="field">
+          <label>IXP採用方針 <span class="hint">oGVとどのようにシナジーを生むか？についても記載しましょう</span></label>
           <textarea id="d_ixp" class="tall"></textarea>
         </div>
         <div class="field">
-          <label>採用方針に対する申し送り <span class="hint">プランニング段階と異なる示唆が得られた場合</span></label>
+          <label>採用方針に対する申し送り <span class="hint">採用方針の策定背景や妥当性、プランニング時から異なる示唆を得られたことについて</span></label>
           <textarea id="d_handover" class="tall"></textarea>
         </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>事業KGI</h2><div class="sub">Business KGI</div></div>
+      <div class="card-body">
+        <div class="section-divider">ICX</div>
+        <div class="field-row cols-2">
+          <div class="field"><label>Fruit</label><input type="number" id="k_icx_fruit" placeholder="件数" /></div>
+          <div class="field"><label>Fish</label><input type="number" id="k_icx_fish" placeholder="件数" /></div>
+        </div>
+        <div class="section-divider">OGX</div>
+        <div class="field-row cols-2">
+          <div class="field"><label>Fruit ― IXP#</label><input type="number" id="k_ogx_fruit_ixp" /></div>
+          <div class="field"><label>Fruit ― EXP#</label><input type="number" id="k_ogx_fruit_exp" /></div>
+        </div>
+        <div class="field-row cols-2">
+          <div class="field"><label>Fish ― IXP#</label><input type="number" id="k_ogx_fish_ixp" /></div>
+          <div class="field"><label>Fish ― EXP#</label><input type="number" id="k_ogx_fish_exp" /></div>
+        </div>
+        <div class="section-divider">独自で設定しているKGI</div>
+        <div id="kgiCustomBox"></div>
       </div>
     </div>
 
@@ -2636,7 +2675,13 @@ PAGE_RENDERERS.direction = (root, data) => {
         <h2>投資項目とその振り返り</h2>
         <div class="sub">Investments</div>
       </div>
-      <div class="card-body" id="investBox"></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:14px">
+          <div class="callout-title">投資の考え方</div>
+          経営資源の投下先を「人（体制は <a href="#" onclick="event.preventDefault(); jumpTo('oc')">OC体制・JDタブ</a>を参照）」と「カネ」で捉えます。ここには「カネ」の投資項目とその振り返りを追加してください。
+        </div>
+        <div id="investBox"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -2653,22 +2698,73 @@ PAGE_RENDERERS.direction = (root, data) => {
   bindInput('#d_direction', () => data.direction.lc_direction, v => data.direction.lc_direction = v);
   bindInput('#d_issue', () => data.direction.lc_issue, v => data.direction.lc_issue = v);
   bindInput('#d_long_issue', () => data.direction.long_term_issue, v => data.direction.long_term_issue = v);
+  bindInput('#d_policy', () => data.direction.recruit_policy || '', v => data.direction.recruit_policy = v);
   bindInput('#d_ixp', () => data.direction.ixp_direction, v => data.direction.ixp_direction = v);
   bindInput('#d_handover', () => data.direction.direction_handover, v => data.direction.direction_handover = v);
   bindInput('#d_food', () => data.direction.food_meeting_note, v => data.direction.food_meeting_note = v);
 
+  const K = data.direction.kgi;
+  bindInput('#k_icx_fruit', () => K.icx_fruit, v => K.icx_fruit = v);
+  bindInput('#k_icx_fish', () => K.icx_fish, v => K.icx_fish = v);
+  bindInput('#k_ogx_fruit_ixp', () => K.ogx_fruit_ixp, v => K.ogx_fruit_ixp = v);
+  bindInput('#k_ogx_fruit_exp', () => K.ogx_fruit_exp, v => K.ogx_fruit_exp = v);
+  bindInput('#k_ogx_fish_ixp', () => K.ogx_fish_ixp, v => K.ogx_fish_ixp = v);
+  bindInput('#k_ogx_fish_exp', () => K.ogx_fish_exp, v => K.ogx_fish_exp = v);
+
+  renderKgiCustom(data);
   renderInvestBox(data);
 };
+
+function renderKgiCustom(data) {
+  const box = document.getElementById('kgiCustomBox');
+  const list = data.direction.kgi.custom;
+  if (!list.length) {
+    box.innerHTML = `<div class="empty small"><p>独自KGIがまだありません</p></div>${addBtnHtml('addKgi', '＋ 独自KGIを追加')}`;
+  } else {
+    box.innerHTML = `
+      <table class="data">
+        <thead><tr><th>KGI名</th><th style="width:140px">数値</th><th style="width:36px"></th></tr></thead>
+        <tbody>
+          ${list.map((it, i) => `
+            <tr data-i="${i}">
+              <td><input type="text" data-k="name" value="${escapeHtml(it.name||'')}" placeholder="例: 〇〇イベント動員数" /></td>
+              <td><input type="number" data-k="value" value="${escapeHtml(it.value||'')}" /></td>
+              <td><button class="row-delete" data-del="${i}">×</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      ${addBtnHtml('addKgi', '＋ 独自KGIを追加')}
+    `;
+  }
+  document.getElementById('addKgi').onclick = () => {
+    list.push({ name: '', value: '' });
+    saveState();
+    renderKgiCustom(data);
+  };
+  box.querySelectorAll('input').forEach(el => {
+    el.oninput = () => {
+      const i = parseInt(el.closest('tr').dataset.i);
+      list[i][el.dataset.k] = el.value;
+      saveState();
+    };
+  });
+  box.querySelectorAll('[data-del]').forEach(b => {
+    b.onclick = () => { list.splice(parseInt(b.dataset.del), 1); saveState(); renderKgiCustom(data); };
+  });
+}
+
+const INVEST_OPTIONS = ['ビラ発注', 'SNS有料広告', '会場費', '登壇者交通費補助', 'その他（記述）'];
 
 function renderInvestBox(data) {
   const box = document.getElementById('investBox');
   if (!data.direction.investments.length) {
-    box.innerHTML = `<div class="empty"><h3>投資項目がまだありません</h3><p>ハード、ビラ印刷、有料広告などの費用感を残します</p></div>${addBtnHtml('addInvest', '＋ 投資項目を追加')}`;
+    box.innerHTML = `<div class="empty"><h3>投資項目がまだありません</h3><p>ビラ発注・SNS有料広告・会場費などの費用感と振り返りを残します</p></div>${addBtnHtml('addInvest', '＋ 投資項目を追加')}`;
   } else {
     box.innerHTML = `
       <table class="data">
         <thead><tr>
-          <th style="width:220px">投資した項目</th>
+          <th style="width:200px">投資した項目</th>
           <th style="width:120px">費用</th>
           <th>申し送り</th>
           <th style="width:36px"></th>
@@ -2676,7 +2772,13 @@ function renderInvestBox(data) {
         <tbody>
           ${data.direction.investments.map((it, i) => `
             <tr data-i="${i}">
-              <td><input type="text" data-k="item" value="${escapeHtml(it.item)}" /></td>
+              <td>
+                <select data-k="item">
+                  <option value="">選択してください</option>
+                  ${INVEST_OPTIONS.map(o => `<option value="${o}" ${it.item===o?'selected':''}>${o}</option>`).join('')}
+                </select>
+                ${it.item === 'その他（記述）' ? `<input type="text" data-k="item_other" value="${escapeHtml(it.item_other||'')}" placeholder="項目名を記述" style="margin-top:6px" />` : ''}
+              </td>
               <td><input type="text" data-k="cost" value="${escapeHtml(it.cost)}" placeholder="¥" /></td>
               <td><textarea data-k="note">${escapeHtml(it.note)}</textarea></td>
               <td><button class="row-delete" data-del="${i}">×</button></td>
@@ -2688,16 +2790,19 @@ function renderInvestBox(data) {
     `;
   }
   document.getElementById('addInvest').onclick = () => {
-    data.direction.investments.push({ item: '', cost: '', note: '' });
+    data.direction.investments.push({ item: '', item_other: '', cost: '', note: '' });
     saveState();
     renderInvestBox(data);
   };
-  box.querySelectorAll('input,textarea').forEach(el => {
-    el.oninput = () => {
+  box.querySelectorAll('select,input,textarea').forEach(el => {
+    const handler = () => {
       const i = parseInt(el.closest('tr').dataset.i);
       data.direction.investments[i][el.dataset.k] = el.value;
       saveState();
+      if (el.dataset.k === 'item') renderInvestBox(data); // その他欄の出し入れ
     };
+    el.oninput = handler;
+    if (el.tagName === 'SELECT') el.onchange = handler;
   });
   box.querySelectorAll('[data-del]').forEach(b => {
     b.onclick = () => {
