@@ -2469,6 +2469,7 @@ function renderSidebar() {
    ROUTER
    ========================================================= */
 const REMOVED_PAGES = ['lcmkt_to_lcmem', 'member_survey', 'evaluation'];
+let _routeInitialized = false; // 初回はreplace、以降はpush
 
 // サイドバーと同じ順序でページキーをフラット化（MCはdashboard先頭）
 function orderedPages() {
@@ -2509,11 +2510,16 @@ function renderPage() {
   const root = document.getElementById('mainContent');
   if (REMOVED_PAGES.includes(state.currentPage)) state.currentPage = 'overview';
   if (!PAGE_RENDERERS[state.currentPage]) state.currentPage = 'overview';
-  // URLを現在ページに同期（replaceStateで履歴を汚さない／hashchange非発火）
+  // URL同期: 初回はreplace（履歴を増やさない）、以降の遷移はpush
+  // → ブラウザの戻る/進むボタンでセクションを行き来できる
   const want = '#' + encodeURIComponent(state.currentPage);
   if (location.hash !== want) {
-    try { history.replaceState(null, '', want); } catch (e) { /* file:// 等 */ }
+    try {
+      if (_routeInitialized) history.pushState(null, '', want);
+      else history.replaceState(null, '', want);
+    } catch (e) { /* file:// 等 */ }
   }
+  _routeInitialized = true;
   const fn = PAGE_RENDERERS[state.currentPage] || PAGE_RENDERERS.overview;
   root.innerHTML = '<div class="page-content"></div>';
   fn(root.querySelector('.page-content'), data);
