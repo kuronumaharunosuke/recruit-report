@@ -2012,6 +2012,8 @@ const DEFAULT_LC_DATA = () => ({
     keep: '', stop: '', try: ''
   },
   reach_paid_class: { // NEW per Sanshiro
+    paid_ad_on: true,      // 有料広告を実施したか（SNS式チェック）
+    class_speak_on: true,  // 授業登壇を実施したか
     paid_ad_used: 'no',
     paid_ad_platform: '',
     paid_ad_spend: '',
@@ -3453,7 +3455,7 @@ PAGE_RENDERERS.journey = (root, data) => {
       <div class="card-body">${kptHtml('cvr3')}</div>
     </div>
 
-    <div class="section-divider">GV（海外プログラム）</div>
+    <div class="section-divider">GV</div>
 
     <div class="card">
       <div class="card-head"><h2>認知数向上</h2><div class="sub">KPT</div></div>
@@ -4566,12 +4568,20 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
     </div>
 
     <div class="card">
-      <div class="card-head">
-        <h2>ブースイベント一覧</h2>
-        <label style="display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px">
+      <div class="card-head"><h2>ブースイベント一覧</h2><div class="sub">Booth events</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">使い方</div>
+          このtermでサークル紹介イベントを実施した場合だけチェックを入れてください。チェックしていない場合、一覧の記入欄は表示されません。
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-weight:600">
           <input type="checkbox" id="circleUsed" ${data.reach_circle.event_used !== false ? 'checked' : ''} style="width:auto"> サークル紹介イベントを実施した
         </label>
       </div>
+    </div>
+
+    <div class="card" id="circleEvCard">
+      <div class="card-head"><h2>イベント記録</h2><div class="sub">Events</div></div>
       <div class="card-body" id="circleCardBody"></div>
     </div>
 
@@ -4615,10 +4625,12 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
   if (!Array.isArray(C.events)) C.events = [];
   const circleUsed = C.event_used !== false;
   const cardBody = document.getElementById('circleCardBody');
+  const evCard = document.getElementById('circleEvCard');
 
   if (!circleUsed) {
-    cardBody.innerHTML = `<div class="empty"><h3>未実施</h3><p>サークル紹介イベントを実施した場合は、上のチェックを入れてください</p></div>`;
+    if (evCard) evCard.style.display = 'none';
   } else {
+    if (evCard) evCard.style.display = '';
     cardBody.innerHTML = `
       <div class="callout" style="margin-bottom:12px">
         <div class="callout-title">記入のしかた</div>
@@ -4675,9 +4687,29 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
    PAGE: REACH PAID / CLASS (NEW)
    ========================================================= */
 PAGE_RENDERERS.reach_paid_class = (root, data) => {
+  const PC = data.reach_paid_class;
+  const adOn = PC.paid_ad_on !== false;
+  const classOn = PC.class_speak_on !== false;
   root.innerHTML = `
-    ${pageHead('3. Reach / 3.5', '有料広告 / 授業登壇', '有料広告・授業登壇など、従来のFRに項目が無かったReach施策をここに集約します。実施しなかった場合も、見送った理由を残すと次年度の判断材料になります。', PAGE_REFS.reach_paid_class)}
+    ${pageHead('3. Reach / 3.5', '有料広告 / 授業登壇', '有料広告・授業登壇など、従来のFRに項目が無かったReach施策をここに集約します。', PAGE_REFS.reach_paid_class)}
 
+    <div class="card">
+      <div class="card-head"><h2>実施した施策</h2><div class="sub">Used</div></div>
+      <div class="card-body">
+        <div class="callout" style="margin-bottom:12px">
+          <div class="callout-title">使い方</div>
+          このtermで実施した施策だけにチェックを入れてください。チェックしていない施策の記入欄は表示されません。
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:24px;font-weight:600">
+          <input type="checkbox" id="pc_use_ad" ${adOn?'checked':''} style="width:auto"> 有料広告
+        </label>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-weight:600">
+          <input type="checkbox" id="pc_use_class" ${classOn?'checked':''} style="width:auto"> 授業登壇
+        </label>
+      </div>
+    </div>
+
+    ${adOn ? `
     <div class="card">
       <div class="card-head"><h2>有料広告</h2><div class="sub">Paid ads</div></div>
       <div class="card-body">
@@ -4729,7 +4761,9 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
         </div>
       </div>
     </div>
+    ` : ''}
 
+    ${classOn ? `
     <div class="card">
       <div class="card-head">
         <h2>授業登壇</h2>
@@ -4749,7 +4783,6 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
           <div class="field"></div>
         </div>
 
-        ${data.reach_paid_class.class_speak_used === 'yes' ? `
         <div class="section-divider">登壇授業一覧</div>
         <div id="classList"></div>
 
@@ -4758,14 +4791,18 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
           <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="c_good"></textarea></div>
           <div class="gm-cell more"><div class="gm-label">More</div><textarea id="c_more"></textarea></div>
         </div>
-        ` : `<div class="empty"><h3>${data.reach_paid_class.class_speak_used ? '未実施' : '未選択'}</h3><p>「実施した」を選ぶと、登壇授業一覧と申し送りの記入欄が表示されます</p></div>`}
       </div>
     </div>
+    ` : ''}
 
+    ${(!adOn && !classOn) ? `<div class="empty"><h3>施策が選択されていません</h3><p>上で実施した施策にチェックを入れてください</p></div>` : ''}
+
+    ${(adOn || classOn) ? `
     <div class="card">
       <div class="card-head"><h2>次年度への申し送り (有料広告 / 授業登壇 共通)</h2><div class="sub">KPT</div></div>
       <div class="card-body">${kptHtml('pc')}</div>
     </div>
+    ` : ''}
   `;
 
   bindInput('#p_used', () => data.reach_paid_class.paid_ad_used, v => data.reach_paid_class.paid_ad_used = v);
@@ -4778,8 +4815,10 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
   bindInput('#p_good', () => data.reach_paid_class.paid_ad_good, v => data.reach_paid_class.paid_ad_good = v);
   bindInput('#p_more', () => data.reach_paid_class.paid_ad_more, v => data.reach_paid_class.paid_ad_more = v);
   bindInput('#c_used', () => data.reach_paid_class.class_speak_used, v => data.reach_paid_class.class_speak_used = v);
-  const cUsedEl = document.getElementById('c_used');
-  if (cUsedEl) cUsedEl.addEventListener('change', () => { saveState(); renderPage(); });
+  const adCb = document.getElementById('pc_use_ad');
+  if (adCb) adCb.onchange = (e) => { PC.paid_ad_on = e.target.checked; saveState(); renderPage(); };
+  const clsCb = document.getElementById('pc_use_class');
+  if (clsCb) clsCb.onchange = (e) => { PC.class_speak_on = e.target.checked; saveState(); renderPage(); };
   bindInput('#c_good', () => data.reach_paid_class.class_speak_good, v => data.reach_paid_class.class_speak_good = v);
   bindInput('#c_more', () => data.reach_paid_class.class_speak_more, v => data.reach_paid_class.class_speak_more = v);
   bindInput('#pc_keep', () => data.reach_paid_class.keep, v => data.reach_paid_class.keep = v);
@@ -4796,7 +4835,7 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
     });
   }
 
-  if (data.reach_paid_class.class_speak_used === 'yes' && document.getElementById('classList')) renderClassList(data);
+  if (classOn && document.getElementById('classList')) renderClassList(data);
 };
 
 function renderClassList(data) {
