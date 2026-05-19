@@ -5632,9 +5632,9 @@ PAGE_RENDERERS.admin = (root) => {
     const meta = _mcAllMeta || {};
     const filled = LC_LIST.filter(c => all[c]).length;
     lBox.innerHTML = `
-      <div class="small muted" style="margin-bottom:8px">入力済み ${filled} / ${LC_LIST.length} LC</div>
+      <div class="small muted" style="margin-bottom:8px">データ有 ${filled} / ${LC_LIST.length} LC ・「データ有」はFRが保存され始めている状態。記入度は進捗%を参照</div>
       <div style="overflow-x:auto">
-      <table class="data"><thead><tr><th>LC</th><th>地域</th><th>状態</th><th>進捗</th><th>最終更新者</th><th>最終更新</th></tr></thead><tbody>
+      <table class="data"><thead><tr><th>LC</th><th>地域</th><th>データ</th><th>進捗</th><th>最終更新者</th><th>最終更新</th></tr></thead><tbody>
       ${LC_LIST.map(code => {
         const d = all[code]; const m = meta[code] || {};
         const has = !!d;
@@ -5642,7 +5642,7 @@ PAGE_RENDERERS.admin = (root) => {
         return `<tr>
           <td><strong>${code}</strong></td>
           <td><span class="muted">${LC_REGION[code] || '–'}</span></td>
-          <td>${has ? '<span class="kpi-cvr good" style="font-size:11px">入力済</span>' : '<span class="muted">未</span>'}</td>
+          <td>${has ? '<span class="kpi-cvr" style="font-size:11px;background:#e8eef6;color:#2b4a7a">データ有</span>' : '<span class="muted">データ無</span>'}</td>
           <td>${has ? p + '%' : '<span class="muted">–</span>'}</td>
           <td>${m.updatedBy ? escapeHtml(m.updatedBy) : '<span class="muted">–</span>'}</td>
           <td>${fmtTs(m.updatedAt)}</td>
@@ -6256,14 +6256,13 @@ async function handleAuthState(user) {
       return;
     }
 
-    // 既にLC確定 or MC
-    if (role === 'MC' && !lc) lc = 'KO';
-    await uref.set({ email, lc: lc || null, role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-    state.identity = { role, lc: (role === 'MC' ? (lc || null) : lc), email, uid: user.uid };
+    // 既にLC確定 or MC（MCは特定LCを持たない＝全LCアクセス）
+    await uref.set({ email, lc: (role === 'MC' ? null : (lc || null)), role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+    state.identity = { role, lc: (role === 'MC' ? null : lc), email, uid: user.uid };
     if (state.identity.lc) state.currentLC = state.identity.lc;
     showTermStep(term => { switchTerm(term); enterApp(); }, {
       hideBack: true,
-      foot: 'ログイン中: ' + escapeHtml(email) + ' ・ <a id="logoutLink2">ログアウト</a>'
+      foot: 'ログイン中: ' + escapeHtml(email) + (role === 'MC' ? '（MC・全LC閲覧可）' : '') + ' ・ <a id="logoutLink2">ログアウト</a>'
     });
     const ll2 = document.getElementById('logoutLink2');
     if (ll2) ll2.onclick = () => fb.auth.signOut();
