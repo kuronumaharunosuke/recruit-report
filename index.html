@@ -1886,7 +1886,6 @@ const REF_CATALOG = {
   'bluebook': { name: 'BlueBook', desc: 'AIESECブランドガイドライン', url: '' },
   'ad_standard': { name: '広告物精査基準', desc: '公開前チェック用', url: '' },
   'dashboard': { name: 'Recruit数値管理Dashboard', desc: 'リアルタイムKPIダッシュボード', url: '' },
-  'mkt_research': { name: 'AJ Mkt Research', desc: '市場調査データ', url: '' },
   'event_check': { name: '説明会スライド・Eventチェック', desc: '5. 説明会フォルダ', url: '' },
   'selection': { name: 'Selection資料', desc: '面接・選考', url: '' },
   'survey_form': { name: '一律メンバーアンケート', desc: 'MC→LCの働きかけFB', url: '' },
@@ -1931,7 +1930,7 @@ const DEFAULT_LC_DATA = () => ({
     pass:              { plan: '', actual: '' }
   },
   funnel_handover: { calc_method: '', good: '', more: '', focus: [] }, // focus:{stage,reason,background,handover}
-  customer_journey: { cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
+  customer_journey: { cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '', gv_keep1: '', gv_problem1: '', gv_try1: '', gv_keep2: '', gv_problem2: '', gv_try2: '', gv_keep3: '', gv_problem3: '', gv_try3: '', gv_keep4: '', gv_problem4: '', gv_try4: '' },
   direction: {
     lc_direction: '',       // LCの経営目標
     lc_issue: '',           // 経営課題
@@ -2009,6 +2008,7 @@ const DEFAULT_LC_DATA = () => ({
     booth_good: '', booth_bad: '',
     note: '',
     events: [], // {title, date, summary, attendance, handover}
+    event_used: true, // サークル紹介イベントを実施したか（未チェックで一覧を非表示）
     keep: '', stop: '', try: ''
   },
   reach_paid_class: { // NEW per Sanshiro
@@ -2118,8 +2118,8 @@ const DEFAULT_LC_DATA = () => ({
 const PAGE_REFS = {
   'overview': ['framework', 'dashboard', 'kintone_ep'],
   'funnel': ['framework', 'dashboard', 'kintone_ep', 'crm_sheet'],
-  'journey': ['framework', 'mkt_research', 'crm_sheet'],
-  'direction': ['lc_share', 'recruit_call', 'mkt_research'],
+  'journey': ['framework', 'crm_sheet'],
+  'direction': ['lc_share', 'recruit_call'],
   'uni_constraints': ['lc_share'],
   'oc': ['lc_share', 'recruit_call'],
   'reach_overall': ['ad_template', 'bluebook', 'ad_standard', 'dashboard'],
@@ -3434,10 +3434,12 @@ function renderFnNotes(root, data) {
    ========================================================= */
 PAGE_RENDERERS.journey = (root, data) => {
   root.innerHTML = `
-    ${pageHead('2. KGI / KPI / 2.2', '施策評価', '各ファネルのCVR向上施策について、KeepしたいことProblemと感じたことを振り返り、次年度へのTryを残します。', PAGE_REFS.journey)}
+    ${pageHead('2. KGI / KPI / 2.2', '施策評価', '各ファネルの施策について、Keepしたいこと・Problemと感じたことを振り返り、次年度へのTryを残します。', PAGE_REFS.journey)}
+
+    <div class="section-divider">Recruit（国内採用）</div>
 
     <div class="card">
-      <div class="card-head"><h2>CVR向上施策 — 認知 → 説明会参加申込</h2><div class="sub">KPT</div></div>
+      <div class="card-head"><h2>施策 — 認知 → 説明会参加申込</h2><div class="sub">KPT</div></div>
       <div class="card-body">${kptHtml('cvr1')}</div>
     </div>
 
@@ -3450,12 +3452,39 @@ PAGE_RENDERERS.journey = (root, data) => {
       <div class="card-head"><h2>CVR向上施策 — 参加 → AF提出</h2><div class="sub">KPT</div></div>
       <div class="card-body">${kptHtml('cvr3')}</div>
     </div>
+
+    <div class="section-divider">GV（海外プログラム）</div>
+
+    <div class="card">
+      <div class="card-head"><h2>認知数向上</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('gv1')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>認知 → GV説明会申し込み</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('gv2')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>GV説明会参加 → 個別相談会参加</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('gv3')}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>個別相談会 → SU</h2><div class="sub">KPT</div></div>
+      <div class="card-body">${kptHtml('gv4')}</div>
+    </div>
   `;
 
   ['cvr1', 'cvr2', 'cvr3'].forEach(prefix => {
     bindInput(`#${prefix}_keep`, () => data.customer_journey[`${prefix}_keep`] || data.customer_journey[`${prefix.replace('cvr','cvr_keep')}`], v => data.customer_journey[`cvr_keep${prefix.slice(-1)}`] = v);
     bindInput(`#${prefix}_problem`, () => data.customer_journey[`cvr_problem${prefix.slice(-1)}`], v => data.customer_journey[`cvr_problem${prefix.slice(-1)}`] = v);
     bindInput(`#${prefix}_try`, () => data.customer_journey[`cvr_try${prefix.slice(-1)}`], v => data.customer_journey[`cvr_try${prefix.slice(-1)}`] = v);
+  });
+  ['1', '2', '3', '4'].forEach(n => {
+    bindInput(`#gv${n}_keep`, () => data.customer_journey[`gv_keep${n}`] || '', v => data.customer_journey[`gv_keep${n}`] = v);
+    bindInput(`#gv${n}_problem`, () => data.customer_journey[`gv_problem${n}`] || '', v => data.customer_journey[`gv_problem${n}`] = v);
+    bindInput(`#gv${n}_try`, () => data.customer_journey[`gv_try${n}`] || '', v => data.customer_journey[`gv_try${n}`] = v);
   });
 };
 
@@ -4539,15 +4568,11 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
     <div class="card">
       <div class="card-head">
         <h2>ブースイベント一覧</h2>
-        <button class="btn primary sm" id="addCircleEv">＋ イベントを追加</button>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px">
+          <input type="checkbox" id="circleUsed" ${data.reach_circle.event_used !== false ? 'checked' : ''} style="width:auto"> サークル紹介イベントを実施した
+        </label>
       </div>
-      <div class="card-body">
-        <div class="callout" style="margin-bottom:12px">
-          <div class="callout-title">記入のしかた</div>
-          実施したブースイベントを、タイトル・実施日・概要・来場数（数えていれば）・申し送りで残します。次年度がそのまま判断材料にできるようダッシュボード化しています。
-        </div>
-        <div id="circleEvBox"></div>
-      </div>
+      <div class="card-body" id="circleCardBody"></div>
     </div>
 
     <div class="card">
@@ -4588,47 +4613,62 @@ PAGE_RENDERERS.reach_circle = (root, data) => {
 
   const C = data.reach_circle;
   if (!Array.isArray(C.events)) C.events = [];
-  const evBox = document.getElementById('circleEvBox');
-  const renderCircleEv = () => {
-    if (!C.events.length) {
-      evBox.innerHTML = `<div class="empty small"><p>イベントがまだ登録されていません</p></div>`;
-    } else {
-      evBox.innerHTML = `
-        <div style="overflow-x:auto">
-        <table class="data">
-          <thead><tr>
-            <th style="width:170px">タイトル</th>
-            <th style="width:120px">実施日</th>
-            <th>概要</th>
-            <th style="width:90px">来場数</th>
-            <th>申し送り</th>
-            <th style="width:36px"></th>
-          </tr></thead>
-          <tbody>
-            ${C.events.map((e,i) => `
-              <tr data-i="${i}">
-                <td><input type="text" data-k="title" value="${escapeHtml(e.title||'')}" /></td>
-                <td><input type="date" data-k="date" value="${escapeHtml(e.date||'')}" /></td>
-                <td><textarea data-k="summary">${escapeHtml(e.summary||'')}</textarea></td>
-                <td><input type="number" data-k="attendance" value="${escapeHtml(e.attendance||'')}" /></td>
-                <td><textarea data-k="handover">${escapeHtml(e.handover||'')}</textarea></td>
-                <td><button class="row-delete" data-del="${i}">×</button></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        </div>
-      `;
-    }
-    evBox.querySelectorAll('input,textarea').forEach(el => {
-      el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); C.events[i][el.dataset.k] = el.value; saveState(); };
-    });
-    evBox.querySelectorAll('[data-del]').forEach(b => {
-      b.onclick = () => { C.events.splice(parseInt(b.dataset.del),1); saveState(); renderCircleEv(); };
-    });
-  };
-  document.getElementById('addCircleEv').onclick = () => { C.events.push({ title:'', date:'', summary:'', attendance:'', handover:'' }); saveState(); renderCircleEv(); };
-  renderCircleEv();
+  const circleUsed = C.event_used !== false;
+  const cardBody = document.getElementById('circleCardBody');
+
+  if (!circleUsed) {
+    cardBody.innerHTML = `<div class="empty"><h3>未実施</h3><p>サークル紹介イベントを実施した場合は、上のチェックを入れてください</p></div>`;
+  } else {
+    cardBody.innerHTML = `
+      <div class="callout" style="margin-bottom:12px">
+        <div class="callout-title">記入のしかた</div>
+        実施したブースイベントを、タイトル・実施日・概要・来場数（数えていれば）・申し送りで残します。次年度がそのまま判断材料にできるようダッシュボード化しています。
+      </div>
+      <div style="margin-bottom:12px"><button class="btn primary sm" id="addCircleEv">＋ イベントを追加</button></div>
+      <div id="circleEvBox"></div>`;
+    const evBox = document.getElementById('circleEvBox');
+    const renderCircleEv = () => {
+      if (!C.events.length) {
+        evBox.innerHTML = `<div class="empty small"><p>イベントがまだ登録されていません</p></div>`;
+      } else {
+        evBox.innerHTML = `
+          <div style="overflow-x:auto">
+          <table class="data">
+            <thead><tr>
+              <th style="width:170px">タイトル</th>
+              <th style="width:120px">実施日</th>
+              <th>概要</th>
+              <th style="width:90px">来場数</th>
+              <th>申し送り</th>
+              <th style="width:36px"></th>
+            </tr></thead>
+            <tbody>
+              ${C.events.map((e,i) => `
+                <tr data-i="${i}">
+                  <td><input type="text" data-k="title" value="${escapeHtml(e.title||'')}" /></td>
+                  <td><input type="date" data-k="date" value="${escapeHtml(e.date||'')}" /></td>
+                  <td><textarea data-k="summary">${escapeHtml(e.summary||'')}</textarea></td>
+                  <td><input type="number" data-k="attendance" value="${escapeHtml(e.attendance||'')}" /></td>
+                  <td><textarea data-k="handover">${escapeHtml(e.handover||'')}</textarea></td>
+                  <td><button class="row-delete" data-del="${i}">×</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          </div>
+        `;
+      }
+      evBox.querySelectorAll('input,textarea').forEach(el => {
+        el.oninput = () => { const i = parseInt(el.closest('tr').dataset.i); C.events[i][el.dataset.k] = el.value; saveState(); };
+      });
+      evBox.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = () => { C.events.splice(parseInt(b.dataset.del),1); saveState(); renderCircleEv(); };
+      });
+    };
+    document.getElementById('addCircleEv').onclick = () => { C.events.push({ title:'', date:'', summary:'', attendance:'', handover:'' }); saveState(); renderCircleEv(); };
+    renderCircleEv();
+  }
+  document.getElementById('circleUsed').onchange = (e) => { C.event_used = e.target.checked; saveState(); renderPage(); };
 };
 
 /* =========================================================
@@ -4709,6 +4749,7 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
           <div class="field"></div>
         </div>
 
+        ${data.reach_paid_class.class_speak_used === 'yes' ? `
         <div class="section-divider">登壇授業一覧</div>
         <div id="classList"></div>
 
@@ -4717,6 +4758,7 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
           <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="c_good"></textarea></div>
           <div class="gm-cell more"><div class="gm-label">More</div><textarea id="c_more"></textarea></div>
         </div>
+        ` : `<div class="empty"><h3>${data.reach_paid_class.class_speak_used ? '未実施' : '未選択'}</h3><p>「実施した」を選ぶと、登壇授業一覧と申し送りの記入欄が表示されます</p></div>`}
       </div>
     </div>
 
@@ -4736,6 +4778,8 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
   bindInput('#p_good', () => data.reach_paid_class.paid_ad_good, v => data.reach_paid_class.paid_ad_good = v);
   bindInput('#p_more', () => data.reach_paid_class.paid_ad_more, v => data.reach_paid_class.paid_ad_more = v);
   bindInput('#c_used', () => data.reach_paid_class.class_speak_used, v => data.reach_paid_class.class_speak_used = v);
+  const cUsedEl = document.getElementById('c_used');
+  if (cUsedEl) cUsedEl.addEventListener('change', () => { saveState(); renderPage(); });
   bindInput('#c_good', () => data.reach_paid_class.class_speak_good, v => data.reach_paid_class.class_speak_good = v);
   bindInput('#c_more', () => data.reach_paid_class.class_speak_more, v => data.reach_paid_class.class_speak_more = v);
   bindInput('#pc_keep', () => data.reach_paid_class.keep, v => data.reach_paid_class.keep = v);
@@ -4752,7 +4796,7 @@ PAGE_RENDERERS.reach_paid_class = (root, data) => {
     });
   }
 
-  renderClassList(data);
+  if (data.reach_paid_class.class_speak_used === 'yes' && document.getElementById('classList')) renderClassList(data);
 };
 
 function renderClassList(data) {
