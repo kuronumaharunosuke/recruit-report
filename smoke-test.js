@@ -83,7 +83,7 @@ const container = win.document.createElement('div');
 container.id = '__smoke_root__';
 body.appendChild(container);
 
-const targets = Array.from(new Set([...navPages, 'mc_dashboard', 'overview']));
+const targets = Array.from(new Set([...navPages, 'mc_dashboard', 'admin', 'overview']));
 // mc_dashboard が集約データを参照しても落ちないよう空集計をセット
 try { ev('typeof _mcAllLcs !== "undefined"') && win.eval('_mcAllLcs = {};'); } catch (e) {}
 

@@ -2583,7 +2583,10 @@ const NAV = [
 function renderSidebar() {
   const data = currentData();
   const groups = (isMC()
-    ? [{ group: 'MC', items: [{ page: 'mc_dashboard', num: '★', label: '全LC集約ダッシュボード' }] }]
+    ? [{ group: 'MC', items: [
+        { page: 'mc_dashboard', num: '★', label: '全LC集約ダッシュボード' },
+        { page: 'admin', num: '⚙', label: '管理 / ログ' }
+      ] }]
     : []
   ).concat(NAV);
   document.getElementById('sidebar').innerHTML = groups.map(g => `
@@ -2616,7 +2619,7 @@ let _routeInitialized = false; // 初回はreplace、以降はpush
 // サイドバーと同じ順序でページキーをフラット化（MCはdashboard先頭）
 function orderedPages() {
   const groups = (isMC()
-    ? [{ items: [{ page: 'mc_dashboard' }] }]
+    ? [{ items: [{ page: 'mc_dashboard' }, { page: 'admin' }] }]
     : []
   ).concat(NAV);
   return groups.flatMap(g => g.items.map(i => i.page));
@@ -5487,7 +5490,39 @@ function renderEvalBox(data) {
    PAGE: MC DASHBOARD (全LC集約・MC専用)
    ========================================================= */
 let _mcAllLcs = null;       // {LC: data}
+let _mcAllMeta = {};        // {LC: {updatedAt, updatedBy}}
+let _mcUsers = null;        // [{uid,email,lc,role,updatedAt}]
 let _mcLoading = false;
+
+// Firestore Timestamp / Date / 文字列 を「YYYY/MM/DD HH:mm」(JST) に
+function fmtTs(ts) {
+  if (!ts) return '–';
+  try {
+    let d;
+    if (typeof ts.toDate === 'function') d = ts.toDate();
+    else if (ts.seconds != null) d = new Date(ts.seconds * 1000);
+    else d = new Date(ts);
+    if (isNaN(d.getTime())) return '–';
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  } catch (e) { return '–'; }
+}
+
+async function fbLoadUsers() {
+  if (!fb.ready || !state.identity) { _mcUsers = null; return; }
+  try {
+    const snap = await fb.db.collection('users').get();
+    const out = [];
+    snap.forEach(doc => {
+      const u = doc.data() || {};
+      out.push({ uid: doc.id, email: u.email || '', lc: u.lc || null, role: u.role || 'LC', updatedAt: u.updatedAt || null });
+    });
+    _mcUsers = out;
+  } catch (e) {
+    console.error('load users', e);
+    _mcUsers = [];
+  }
+}
 
 async function fbLoadAllLCs() {
   if (!fb.ready || !state.identity) { _mcAllLcs = null; return; }
@@ -5495,6 +5530,7 @@ async function fbLoadAllLCs() {
   try {
     const snap = await fb.db.collection('lcs').get();
     const out = {};
+    const meta = {};
     const pfx = state.currentTerm + '__';
     snap.forEach(doc => {
       const d = doc.data();
@@ -5506,12 +5542,17 @@ async function fbLoadAllLCs() {
       } else if (doc.id.startsWith(pfx)) {
         code = doc.id.slice(pfx.length);
       }
-      if (code) out[code] = migrateLcData(d.data);
+      if (code) {
+        out[code] = migrateLcData(d.data);
+        meta[code] = { updatedAt: d.updatedAt || null, updatedBy: d.updatedBy || '' };
+      }
     });
     _mcAllLcs = out;
+    _mcAllMeta = meta;
   } catch (e) {
     console.error('load all lcs', e);
     _mcAllLcs = {};
+    _mcAllMeta = {};
   }
   _mcLoading = false;
 }
@@ -5540,6 +5581,86 @@ function mcProgress(d) {
 function num(v) { const n = parseFloat(v); return isFinite(n) ? n : null; }
 function aOf(d, key) { return d && d.funnel && d.funnel[key] ? num(d.funnel[key].actual) : null; }
 function pOf(d, key) { return d && d.funnel && d.funnel[key] ? num(d.funnel[key].plan) : null; }
+
+PAGE_RENDERERS.admin = (root) => {
+  root.innerHTML = `
+    ${pageHead('MC', '管理 / ログ', '誰がログインし、各LCのデータを誰がいつ更新したかを確認できます（MC専用・閲覧のみ）。', [])}
+    <div class="card">
+      <div class="card-head"><h2>ログインユーザー</h2><button class="btn primary sm" id="admReload">最新を取得</button></div>
+      <div class="card-body" id="admUsers"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>LC入力状況</h2><div class="sub">${escapeHtml(state.currentTerm)}</div></div>
+      <div class="card-body" id="admLcs"></div>
+    </div>
+  `;
+  const uBox = document.getElementById('admUsers');
+  const lBox = document.getElementById('admLcs');
+
+  if (!fb.ready) {
+    uBox.innerHTML = lBox.innerHTML = `<div class="perm-note">Firebase未設定のためローカルモードです。ログ/監査はFirebase接続時のみ利用できます。</div>`;
+    return;
+  }
+  if (!isMC()) {
+    uBox.innerHTML = lBox.innerHTML = `<div class="perm-note">このページはMC専用です。</div>`;
+    return;
+  }
+
+  const tsSec = (t) => (t && (t.seconds != null ? t.seconds : (typeof t.toDate === 'function' ? t.toDate().getTime() / 1000 : 0))) || 0;
+
+  function drawUsers() {
+    if (_mcUsers === null) { uBox.innerHTML = `<div class="empty small"><p>読み込み中…</p></div>`; return; }
+    const us = _mcUsers.slice().sort((a, b) => tsSec(b.updatedAt) - tsSec(a.updatedAt));
+    const mcN = us.filter(u => u.role === 'MC').length;
+    uBox.innerHTML = `
+      <div class="small muted" style="margin-bottom:8px">全 ${us.length} 人（MC ${mcN} / LC ${us.length - mcN}）</div>
+      <div style="overflow-x:auto">
+      <table class="data"><thead><tr><th>メール</th><th>LC</th><th>役割</th><th>最終ログイン</th></tr></thead><tbody>
+      ${us.map(u => `
+        <tr>
+          <td>${escapeHtml(u.email || '–')}</td>
+          <td>${u.lc ? escapeHtml(u.lc) : '<span class="muted">–</span>'}</td>
+          <td>${u.role === 'MC' ? '<span class="kpi-cvr good" style="font-size:11px">MC</span>' : '<span class="muted">LC</span>'}</td>
+          <td>${fmtTs(u.updatedAt)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  }
+
+  function drawLcs() {
+    if (_mcAllLcs === null) { lBox.innerHTML = `<div class="empty small"><p>読み込み中…</p></div>`; return; }
+    const all = _mcAllLcs || {};
+    const meta = _mcAllMeta || {};
+    const filled = LC_LIST.filter(c => all[c]).length;
+    lBox.innerHTML = `
+      <div class="small muted" style="margin-bottom:8px">入力済み ${filled} / ${LC_LIST.length} LC</div>
+      <div style="overflow-x:auto">
+      <table class="data"><thead><tr><th>LC</th><th>地域</th><th>状態</th><th>進捗</th><th>最終更新者</th><th>最終更新</th></tr></thead><tbody>
+      ${LC_LIST.map(code => {
+        const d = all[code]; const m = meta[code] || {};
+        const has = !!d;
+        const p = has ? mcProgress(d) : 0;
+        return `<tr>
+          <td><strong>${code}</strong></td>
+          <td><span class="muted">${LC_REGION[code] || '–'}</span></td>
+          <td>${has ? '<span class="kpi-cvr good" style="font-size:11px">入力済</span>' : '<span class="muted">未</span>'}</td>
+          <td>${has ? p + '%' : '<span class="muted">–</span>'}</td>
+          <td>${m.updatedBy ? escapeHtml(m.updatedBy) : '<span class="muted">–</span>'}</td>
+          <td>${fmtTs(m.updatedAt)}</td>
+        </tr>`;
+      }).join('')}
+      </tbody></table></div>`;
+  }
+
+  async function reloadAll() {
+    uBox.innerHTML = lBox.innerHTML = `<div class="empty small"><p>読み込み中…</p></div>`;
+    await Promise.all([fbLoadUsers(), fbLoadAllLCs()]);
+    if (state.currentPage === 'admin') { drawUsers(); drawLcs(); }
+  }
+  document.getElementById('admReload').onclick = reloadAll;
+
+  if (_mcUsers === null || _mcAllLcs === null) reloadAll();
+  else { drawUsers(); drawLcs(); }
+};
 
 PAGE_RENDERERS.mc_dashboard = (root) => {
   root.innerHTML = `
