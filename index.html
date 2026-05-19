@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2627term Spring Recruitment FR | AIESEC Japan</title>
+<title>Recruitment FR | AIESEC Japan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1678,7 +1678,7 @@
 <div class="login-screen" id="loginScreen" style="display:none;">
   <div class="login-card">
     <div class="login-logo" id="loginLogo"></div>
-    <h1 class="login-title">2627term Spring Recruitment FR</h1>
+    <h1 class="login-title">Recruitment FR</h1>
 
     <!-- Step A: Google認証 -->
     <div class="login-step" id="loginStepAuth">
@@ -1700,6 +1700,19 @@
       <div class="login-foot" id="loginAccountFoot"></div>
     </div>
 
+    <!-- Step C: 年度(term)選択 -->
+    <div class="login-step" id="loginStepTerm" style="display:none;">
+      <p class="login-sub">年度（term）を選択してください。<br>年度ごとにデータは独立して保存されます。</p>
+      <div class="login-label">年度を選択</div>
+      <select id="loginTermSelect" class="login-select"></select>
+      <input type="text" id="loginTermNew" class="login-select" placeholder="新しい年度を入力（例: 2728）" style="display:none;" maxlength="12">
+      <div class="login-actions">
+        <button class="btn" id="loginTermBack" style="flex:0 0 auto;">← LC選択へ</button>
+        <button class="btn primary" id="loginConfirmTerm" style="flex:1;">この年度で開始</button>
+      </div>
+      <div class="login-foot" id="loginTermFoot"></div>
+    </div>
+
     <!-- Loading -->
     <div class="login-step" id="loginStepLoading" style="display:none;">
       <p class="login-sub">読み込み中…</p>
@@ -1719,7 +1732,7 @@
         <img src="data:image/png;base64,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" alt="AIESEC" />
       </div>
       <div class="brand-title">
-        <span class="t1">Spring Recruitment FR</span>
+        <span class="t1">Recruitment FR</span>
         <span class="t2">AIESEC Japan</span>
       </div>
     </div>
@@ -1807,8 +1820,10 @@ function initFirebase() {
 /* =========================================================
    STATE & STORAGE
    ========================================================= */
-const STORAGE_KEY = 'aiesec_recruit_fr_2627_v1';
-const TERM = '2627';
+const STORAGE_KEY = 'aiesec_recruit_fr_v2';
+const STORAGE_KEY_LEGACY = 'aiesec_recruit_fr_2627_v1';
+const DEFAULT_TERM = '2627';
+const TERM_PRESETS = ['2627', '2728', '2829', '2930', '3031'];
 
 // 25LC構成（East 12 / Central 3 / West 10）写真通りロールコール順
 const LC_GROUPS = [
@@ -2126,20 +2141,41 @@ const PAGE_REFS = {
 let state = {
   currentLC: 'KO',
   currentPage: 'overview',
+  currentTerm: DEFAULT_TERM, // 選択中の年度
   identity: null,        // { role:'MC'|'LC', lc:コード }  未設定ならログイン画面
   globalCatalog: {},     // { catalog_key: url }  MC共通管理・全LC共有
-  lcs: {} // {lc_code: LC_DATA}
+  archive: {},           // { term: { lc_code: LC_DATA } }  年度ごとに分離
+  lcs: {} // ← state.archive[currentTerm] へのエイリアス（既存コード互換）
 };
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    let raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       state = { ...state, ...parsed };
+    } else {
+      // 旧キー(v1: term 2627のフラットstate.lcs)からの移行
+      const legacy = localStorage.getItem(STORAGE_KEY_LEGACY);
+      if (legacy) {
+        const lp = JSON.parse(legacy);
+        state = { ...state, ...lp };
+        state.currentTerm = DEFAULT_TERM;
+        state.archive = { [DEFAULT_TERM]: lp.lcs || {} };
+      }
     }
   } catch (e) { console.error('Load failed', e); }
-  if (!state.lcs) state.lcs = {};
+
+  if (!state.currentTerm) state.currentTerm = DEFAULT_TERM;
+  if (!state.archive || typeof state.archive !== 'object') state.archive = {};
+  // 旧形式(state.lcsのみ・archiveなし)を当該年度の archive に取り込む
+  if ((!state.archive[state.currentTerm]) && state.lcs && Object.keys(state.lcs).length) {
+    state.archive[state.currentTerm] = state.lcs;
+  }
+  if (!state.archive[state.currentTerm]) state.archive[state.currentTerm] = {};
+  // state.lcs は常に現在年度の archive への参照（既存コード互換）
+  state.lcs = state.archive[state.currentTerm];
+
   // 旧版（Keio/Waseda等の英語名）→新版（KO/WA等のコード）マイグレーション
   const LEGACY_MAP = {
     'Hokkaido':'HD','Aoyama':'AG','Chiba':null,'ICU':null,'Kanazawa':null,
@@ -2191,7 +2227,7 @@ function saveState() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
       indicator.classList.remove('saving');
       // Firebase接続中はクラウド保存表示、未設定時はローカル表示
       indicator.textContent = (typeof fb !== 'undefined' && fb.ready && state.identity && state.identity.email)
@@ -2211,6 +2247,38 @@ function currentData() {
     state.lcs[state.currentLC].meta.lc = state.currentLC;
   }
   return state.lcs[state.currentLC];
+}
+
+// 永続化用: state.lcs は archive[term] のエイリアスなので二重保存しない
+function serializeState() {
+  return {
+    currentLC: state.currentLC,
+    currentPage: state.currentPage,
+    currentTerm: state.currentTerm,
+    identity: state.identity,
+    globalCatalog: state.globalCatalog,
+    archive: state.archive
+  };
+}
+
+// 年度切替（データは年度ごとに独立）
+function switchTerm(term) {
+  if (!term) return;
+  state.currentTerm = term;
+  if (!state.archive[term]) state.archive[term] = {};
+  state.lcs = state.archive[term]; // エイリアス張り替え
+  if (!state.lcs[state.currentLC]) {
+    state.lcs[state.currentLC] = DEFAULT_LC_DATA();
+    state.lcs[state.currentLC].meta.lc = state.currentLC;
+  }
+  const tp = document.getElementById('termPill');
+  if (tp) tp.textContent = state.currentTerm;
+}
+
+// 既知の年度一覧（プリセット ∪ 保存済み、新しい順）
+function knownTerms() {
+  const set = new Set([...TERM_PRESETS, ...Object.keys(state.archive || {}), state.currentTerm]);
+  return Array.from(set).filter(Boolean).sort().reverse();
 }
 
 /* =========================================================
@@ -2326,7 +2394,7 @@ function savePageNow(btn) {
   clearTimeout(saveTimer);
   const indicator = document.getElementById('saveIndicator');
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
     indicator.classList.remove('saving');
     indicator.textContent = '自動保存済み';
     if (btn) {
@@ -2566,7 +2634,7 @@ PAGE_RENDERERS.overview = (root, data) => {
     ${pageHead('Overview', '概要・申し送りサマリー', 'このtermのRecruit全体の概況と、最も伝えたい申し送りを最初にまとめます。引き継ぎを受ける人は、まずここを読みます。', PAGE_REFS.overview)}
 
     <div class="card">
-      <div class="card-head"><h2>このtermのスナップショット</h2><div class="sub">${state.currentLC} / ${TERM} / ${LC_REGION[state.currentLC] || ''}</div></div>
+      <div class="card-head"><h2>このtermのスナップショット</h2><div class="sub">${state.currentLC} / ${state.currentTerm} / ${LC_REGION[state.currentLC] || ''}</div></div>
       <div class="card-body">
         <div class="stat-grid">
           <div class="stat-tile">
@@ -5354,7 +5422,19 @@ async function fbLoadAllLCs() {
   try {
     const snap = await fb.db.collection('lcs').get();
     const out = {};
-    snap.forEach(doc => { if (doc.data() && doc.data().data) out[doc.id] = doc.data().data; });
+    const pfx = state.currentTerm + '__';
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (!d || !d.data) return;
+      let code = null;
+      if (state.currentTerm === DEFAULT_TERM) {
+        // 2627: 接頭辞なしのLCコードのみ（他年度の {term}__ は除外）
+        if (LC_LIST.includes(doc.id)) code = doc.id;
+      } else if (doc.id.startsWith(pfx)) {
+        code = doc.id.slice(pfx.length);
+      }
+      if (code) out[code] = d.data;
+    });
     _mcAllLcs = out;
   } catch (e) {
     console.error('load all lcs', e);
@@ -5655,12 +5735,12 @@ function jumpTo(page) {
    IMPORT / EXPORT
    ========================================================= */
 function exportData() {
-  const payload = JSON.stringify(state, null, 2);
+  const payload = JSON.stringify(serializeState(), null, 2);
   const blob = new Blob([payload], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `aiesec-recruit-fr-${TERM}-${state.currentLC}-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `aiesec-recruit-fr-${state.currentTerm}-${state.currentLC}-${new Date().toISOString().slice(0,10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -5675,9 +5755,23 @@ document.getElementById('importFile').onchange = (e) => {
   reader.onload = () => {
     try {
       const parsed = JSON.parse(reader.result);
-      if (!parsed.lcs) throw new Error('Invalid file');
+      // 新形式(archive) と旧形式(lcs) 両対応
+      if (!parsed.archive && !parsed.lcs) throw new Error('Invalid file');
       if (!confirm('現在のデータをこのファイルで上書きしますか？')) return;
-      state = parsed;
+      if (parsed.archive) {
+        state = { ...state, ...parsed };
+        state.currentTerm = parsed.currentTerm || DEFAULT_TERM;
+      } else {
+        // 旧形式: lcs を当該年度にラップ
+        const t = parsed.currentTerm || DEFAULT_TERM;
+        state = { ...state, ...parsed };
+        state.currentTerm = t;
+        state.archive = { [t]: parsed.lcs || {} };
+      }
+      if (!state.archive[state.currentTerm]) state.archive[state.currentTerm] = {};
+      state.lcs = state.archive[state.currentTerm];
+      if (!state.lcs[state.currentLC]) { state.lcs[state.currentLC] = DEFAULT_LC_DATA(); state.lcs[state.currentLC].meta.lc = state.currentLC; }
+      const tp = document.getElementById('termPill'); if (tp) tp.textContent = state.currentTerm;
       saveState();
       renderLCSelector();
       renderSidebar();
@@ -5732,11 +5826,38 @@ function buildLoginLcOptions() {
 }
 
 function loginShowStep(which) {
-  ['loginStepAuth','loginStep2','loginStepLoading'].forEach(id => {
+  ['loginStepAuth','loginStep2','loginStepTerm','loginStepLoading'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = (id === which) ? '' : 'none';
   });
   document.getElementById('loginScreen').style.display = 'grid';
+}
+
+// 年度選択ステップ。onConfirm(term) / onBack は任意
+function showTermStep(onConfirm, opts) {
+  opts = opts || {};
+  ensureLoginLogo();
+  const sel = document.getElementById('loginTermSelect');
+  const newInput = document.getElementById('loginTermNew');
+  const terms = knownTerms();
+  sel.innerHTML = terms.map(t => `<option value="${escapeHtml(t)}" ${t === state.currentTerm ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')
+    + `<option value="__new__">＋ 新しい年度を追加…</option>`;
+  newInput.style.display = 'none';
+  newInput.value = '';
+  sel.onchange = () => {
+    if (sel.value === '__new__') { newInput.style.display = ''; newInput.focus(); }
+    else newInput.style.display = 'none';
+  };
+  const backBtn = document.getElementById('loginTermBack');
+  backBtn.style.display = opts.hideBack ? 'none' : '';
+  backBtn.onclick = opts.onBack || (() => loginShowStep('loginStep2'));
+  document.getElementById('loginTermFoot').innerHTML = opts.foot || '';
+  document.getElementById('loginConfirmTerm').onclick = () => {
+    let term = sel.value === '__new__' ? (newInput.value || '').trim() : sel.value;
+    if (!term) { alert('年度を入力してください'); return; }
+    onConfirm(term);
+  };
+  loginShowStep('loginStepTerm');
 }
 function hideLoginScreen() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -5758,9 +5879,13 @@ function ensureLoginLogo() {
 }
 
 /* ---------- Firestore helpers ---------- */
+// 年度スコープのドキュメントID。既存の2627データを壊さないため2627は従来通りLCコードのまま
+function termDocId(code) {
+  return state.currentTerm === DEFAULT_TERM ? code : (state.currentTerm + '__' + code);
+}
 const FS = {
   catalogRef: () => fb.db.collection('config').doc('globalCatalog'),
-  lcRef:      (code) => fb.db.collection('lcs').doc(code),
+  lcRef:      (code) => fb.db.collection('lcs').doc(termDocId(code)),
   userRef:    (uid) => fb.db.collection('users').doc(uid),
   adminRef:   (email) => fb.db.collection('admins').doc(email.toLowerCase()),
 };
@@ -5865,7 +5990,11 @@ function startAuth() {
     document.getElementById('loginAccountFoot').innerHTML =
       '<span style="color:var(--aiesec-orange)">Firebase未設定のためローカルモードです（データは共有されません）</span>';
     document.getElementById('loginConfirmLC').onclick = () => {
-      finishLocalLogin(document.getElementById('loginLcSelect').value);
+      const lc = document.getElementById('loginLcSelect').value;
+      state.currentLC = lc;
+      showTermStep(term => finishLocalLogin(lc, term), { hideBack: false,
+        onBack: () => loginShowStep('loginStep2'),
+        foot: '<span style="color:var(--aiesec-orange)">ローカルモード（データは共有されません）</span>' });
     };
     return;
   }
@@ -5921,7 +6050,11 @@ async function handleAuthState(user) {
         const sel = document.getElementById('loginLcSelect').value;
         await uref.set({ email, lc: sel, role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         state.identity.lc = sel;
-        await enterApp();
+        state.currentLC = sel;
+        showTermStep(term => { switchTerm(term); enterApp(); }, {
+          onBack: () => loginShowStep('loginStep2'),
+          foot: 'ログイン中: ' + escapeHtml(email)
+        });
       };
       loginShowStep('loginStep2');
       return;
@@ -5931,7 +6064,14 @@ async function handleAuthState(user) {
     if (role === 'MC' && !lc) lc = 'KO';
     await uref.set({ email, lc: lc || null, role, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
     state.identity = { role, lc: (role === 'MC' ? (lc || null) : lc), email, uid: user.uid };
-    await enterApp();
+    if (state.identity.lc) state.currentLC = state.identity.lc;
+    showTermStep(term => { switchTerm(term); enterApp(); }, {
+      hideBack: true,
+      foot: 'ログイン中: ' + escapeHtml(email) + ' ・ <a id="logoutLink2">ログアウト</a>'
+    });
+    const ll2 = document.getElementById('logoutLink2');
+    if (ll2) ll2.onclick = () => fb.auth.signOut();
+    return;
   } catch (e) {
     console.error(e);
     loginError('読み込みに失敗しました: ' + (e.message || e));
@@ -5940,9 +6080,10 @@ async function handleAuthState(user) {
 }
 
 // ローカルモード（Firebase未設定時）のログイン
-function finishLocalLogin(lc) {
+function finishLocalLogin(lc, term) {
   state.identity = { role: 'LC', lc, email: '', uid: '' };
   state.currentLC = lc;
+  switchTerm(term || state.currentTerm || DEFAULT_TERM);
   if (!state.lcs[lc]) { state.lcs[lc] = DEFAULT_LC_DATA(); state.lcs[lc].meta.lc = lc; }
   saveState();
   hideLoginScreen();
@@ -6041,10 +6182,42 @@ document.getElementById('identityBadge').onclick = () => {
   }
 };
 
+// 年度pillクリックで年度切替（データは年度ごとに独立・再ログイン不要）
+(function () {
+  const tp = document.getElementById('termPill');
+  if (!tp) return;
+  tp.style.cursor = 'pointer';
+  tp.title = '年度を切り替える';
+  tp.textContent = state.currentTerm || DEFAULT_TERM;
+  tp.onclick = () => {
+    showTermStep(async (term) => {
+      switchTerm(term);
+      saveState();
+      if (fb.ready && state.identity && state.identity.email) {
+        loginShowStep('loginStepLoading');
+        try { await fbLoadLC(state.currentLC, { subscribe: !canEditCurrentLC() }); } catch (e) { console.error(e); }
+        hideLoginScreen();
+      } else {
+        hideLoginScreen();
+      }
+      applyIdentity();
+      renderLCSelector();
+      renderSidebar();
+      renderPage();
+      if (typeof applyReadOnlyState === 'function') applyReadOnlyState();
+    }, {
+      hideBack: false,
+      onBack: () => hideLoginScreen(),
+      foot: '年度を切り替えます（各年度のデータは独立して保存されます）'
+    });
+  };
+})();
+
 /* =========================================================
    INIT
    ========================================================= */
 loadState();          // localStorageキャッシュ（オフライン耐性）
+(function(){ const _tp=document.getElementById('termPill'); if(_tp) _tp.textContent = state.currentTerm || DEFAULT_TERM; })();
 applyIdentity();
 renderLCSelector();
 applyHashRoute();
