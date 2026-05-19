@@ -2414,7 +2414,7 @@ const NAV = [
   ]},
   { group: '2. KGI / KPI', items: [
     { page: 'funnel', num: '2.1', label: 'Customer Flow (KPI)' },
-    { page: 'journey', num: '2.2', label: 'Customer Journey' }
+    { page: 'journey', num: '2.2', label: '施策評価' }
   ]},
   { group: '3. Reach', items: [
     { page: 'reach_overall', num: '3.1', label: 'Reach Overall' },
@@ -2700,7 +2700,7 @@ PAGE_RENDERERS.overview = (root, data) => {
     { page: 'uni_constraints', label: '大学与件', test: () => data.uni_constraints.distribute_allowed || data.uni_constraints.classroom_speak },
     { page: 'oc', label: 'OC体制', test: () => data.oc.members.length > 0 },
     { page: 'funnel', label: 'KPI実測', test: () => data.funnel.paid.actual },
-    { page: 'journey', label: 'Journey', test: () => data.customer_journey.design },
+    { page: 'journey', label: '施策評価', test: () => data.customer_journey.cvr_keep1 || data.customer_journey.cvr_problem1 || data.customer_journey.cvr_try1 },
     { page: 'reach_overall', label: 'Reach Overall', test: () => data.reach_overall.overall_perf || data.reach_overall.direction_ops || data.reach_overall.why },
     { page: 'reach_sns', label: 'SNS', test: () => data.reach_sns_ig.role || data.reach_sns_x.role },
     { page: 'reach_flyer', label: 'ビラ', test: () => data.reach_flyer.role },
@@ -3289,21 +3289,7 @@ function renderFnNotes(root, data) {
    ========================================================= */
 PAGE_RENDERERS.journey = (root, data) => {
   root.innerHTML = `
-    ${pageHead('2. KGI / KPI / 2.2', 'Customer Journey / 感情設計', '市場視点と組織視点の両面から、ペルソナの認知〜入会までの感情設計を振り返ります。', PAGE_REFS.journey)}
-
-    <div class="card">
-      <div class="card-head"><h2>顧客の感情設計</h2><div class="sub">Touch points</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>設計内容</label>
-          <textarea id="j_design" class="tall" placeholder="ペルソナの各ステージでどんな感情を作りたかったか、それに対応するtouchpointの設計"></textarea>
-        </div>
-        <div class="gm-grid">
-          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="j_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="j_more"></textarea></div>
-        </div>
-      </div>
-    </div>
+    ${pageHead('2. KGI / KPI / 2.2', '施策評価', '各ファネルのCVR向上施策について、KeepしたいことProblemと感じたことを振り返り、次年度へのTryを残します。', PAGE_REFS.journey)}
 
     <div class="card">
       <div class="card-head"><h2>CVR向上施策 — 認知 → 説明会参加申込</h2><div class="sub">KPT</div></div>
@@ -3320,10 +3306,6 @@ PAGE_RENDERERS.journey = (root, data) => {
       <div class="card-body">${kptHtml('cvr3')}</div>
     </div>
   `;
-
-  bindInput('#j_design', () => data.customer_journey.design, v => data.customer_journey.design = v);
-  bindInput('#j_good', () => data.customer_journey.good, v => data.customer_journey.good = v);
-  bindInput('#j_more', () => data.customer_journey.more, v => data.customer_journey.more = v);
 
   ['cvr1', 'cvr2', 'cvr3'].forEach(prefix => {
     bindInput(`#${prefix}_keep`, () => data.customer_journey[`${prefix}_keep`] || data.customer_journey[`${prefix.replace('cvr','cvr_keep')}`], v => data.customer_journey[`cvr_keep${prefix.slice(-1)}`] = v);
@@ -5396,7 +5378,7 @@ function mcProgress(d) {
     fa('af_submit'), fa('pass'), fa('paid'),
     f(d.reach_overall && (d.reach_overall.overall_perf || d.reach_overall.direction_ops || d.reach_overall.purpose)),
     f(d.funnel_handover && d.funnel_handover.calc_method),
-    f(d.customer_journey && d.customer_journey.design),
+    f(d.customer_journey && (d.customer_journey.cvr_keep1 || d.customer_journey.cvr_problem1 || d.customer_journey.cvr_try1)),
     f(d.oc && d.oc.structure_note)
   ];
   const done = checks.filter(Boolean).length;
