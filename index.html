@@ -1824,6 +1824,7 @@ const STORAGE_KEY = 'aiesec_recruit_fr_v2';
 const STORAGE_KEY_LEGACY = 'aiesec_recruit_fr_2627_v1';
 const DEFAULT_TERM = '2627';
 const TERM_PRESETS = ['2627', '2728', '2829', '2930', '3031'];
+const CURRENT_SCHEMA_VERSION = 1; // データ構造を変えたら +1 して MIGRATIONS に手順を追加
 
 // 25LC構成（East 12 / Central 3 / West 10）写真通りロールコール順
 const LC_GROUPS = [
@@ -1896,6 +1897,7 @@ const DEFAULT_LC_DATA = () => ({
   meta: {
     lc: 'KO',
     fr_status: '記入中',
+    schemaVersion: CURRENT_SCHEMA_VERSION, // データ構造のバージョン（移行判定に使用）
     completion: {} // page_key -> bool
   },
   overview: {
@@ -1928,7 +1930,7 @@ const DEFAULT_LC_DATA = () => ({
     pass:              { plan: '', actual: '' }
   },
   funnel_handover: { calc_method: '', good: '', more: '', focus: [] }, // focus:{stage,reason,background,handover}
-  customer_journey: { design: '', good: '', more: '', cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
+  customer_journey: { cvr_keep1: '', cvr_problem1: '', cvr_try1: '', cvr_keep2: '', cvr_problem2: '', cvr_try2: '', cvr_keep3: '', cvr_problem3: '', cvr_try3: '' },
   direction: {
     lc_direction: '',       // LCの経営目標
     lc_issue: '',           // 経営課題
@@ -1966,8 +1968,6 @@ const DEFAULT_LC_DATA = () => ({
     member_engagement: { sessions: [], note: '' } // sessions: {date, content, slide}
   },
   reach_overall: {
-    purpose: '',                 // legacy(UI廃止・データ保持)
-    direction: '',               // legacy → direction_ops へ自動移行
     direction_ops: '',           // Brand Direction (運営人材向け)
     direction_ixp: '',           // Brand Direction (IXP人材: GV説明会集客 / GV広告 向け)
     overall_perf: '',            // Overall Performance
@@ -2193,6 +2193,9 @@ function loadState() {
   });
   if (LEGACY_MAP[state.currentLC]) state.currentLC = LEGACY_MAP[state.currentLC];
   if (!state.currentLC || !LC_LIST.includes(state.currentLC)) state.currentLC = 'KO';
+
+  // 古い形のデータを最新スキーマへ自動移行（全年度・全LC）
+  migrateAll();
   if (!state.lcs[state.currentLC]) {
     state.lcs[state.currentLC] = DEFAULT_LC_DATA();
     state.lcs[state.currentLC].meta.lc = state.currentLC;
@@ -2247,6 +2250,76 @@ function currentData() {
     state.lcs[state.currentLC].meta.lc = state.currentLC;
   }
   return state.lcs[state.currentLC];
+}
+
+// =========================================================
+//  スキーマ・マイグレーション
+//  「古い形のデータを毎年自動で最新形へ直す係」。
+//  構造を変えたら CURRENT_SCHEMA_VERSION を +1 し、
+//  MIGRATIONS[新バージョン] に変換手順を1つ足すだけ。
+// =========================================================
+const MIGRATIONS = {
+  // v0(バージョン無し) -> v1 : UIから削除済みの廃止キーを掃除
+  1: (d) => {
+    if (d.reach_overall) {
+      // 旧 direction を direction_ops へ移行（データを失わない）
+      if (d.reach_overall.direction && !d.reach_overall.direction_ops) {
+        d.reach_overall.direction_ops = d.reach_overall.direction;
+      }
+      delete d.reach_overall.direction;
+      delete d.reach_overall.purpose;                               // 3.1 全体観ボード化で廃止
+    }
+    if (d.customer_journey) {                                       // 2.2 施策評価化で感情設計を廃止
+      delete d.customer_journey.design;
+      delete d.customer_journey.good;
+      delete d.customer_journey.more;
+    }
+  }
+  // 例) 次回: 2: (d) => { ...新しい変換... }
+};
+
+// 雛形(DEFAULT_LC_DATA)に対して「不足キーだけ」補完。既存値は絶対に上書きしない
+function deepFill(target, template) {
+  if (!template || typeof template !== 'object' || Array.isArray(template)) return;
+  Object.keys(template).forEach(k => {
+    if (!(k in target) || target[k] === undefined || target[k] === null) {
+      target[k] = JSON.parse(JSON.stringify(template[k]));
+    } else if (
+      target[k] && typeof target[k] === 'object' && !Array.isArray(target[k]) &&
+      template[k] && typeof template[k] === 'object' && !Array.isArray(template[k])
+    ) {
+      deepFill(target[k], template[k]);
+    }
+  });
+}
+
+// 1つのLCデータを最新スキーマへ移行
+function migrateLcData(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (!d.meta || typeof d.meta !== 'object') d.meta = {};
+  let v = (typeof d.meta.schemaVersion === 'number') ? d.meta.schemaVersion : 0;
+  while (v < CURRENT_SCHEMA_VERSION) {
+    const step = MIGRATIONS[v + 1];
+    if (step) {
+      try { step(d); }
+      catch (e) { console.error('[migrate] step ' + (v + 1) + ' 失敗', e); }
+    }
+    v++;
+  }
+  d.meta.schemaVersion = CURRENT_SCHEMA_VERSION;
+  // 雛形に増えた新キーを補完（古いデータでも欠損なく開ける）
+  try { deepFill(d, DEFAULT_LC_DATA()); } catch (e) { console.error('[migrate] deepFill 失敗', e); }
+  return d;
+}
+
+// 全年度・全LCに適用
+function migrateAll() {
+  if (!state.archive) return;
+  Object.keys(state.archive).forEach(term => {
+    const m = state.archive[term];
+    if (!m) return;
+    Object.keys(m).forEach(lc => { m[lc] = migrateLcData(m[lc]); });
+  });
 }
 
 // 永続化用: state.lcs は archive[term] のエイリアスなので二重保存しない
@@ -3998,7 +4071,6 @@ PAGE_RENDERERS.reach_overall = (root, data) => {
   if (R.overall_perf === undefined) R.overall_perf = '';
   if (!R.board) R.board = { ig:{visit:'',inflow:''}, x:{visit:'',inflow:''}, flyer:{visit:'',inflow:''}, circle:{visit:'',inflow:''} };
   ['ig','x','flyer','circle'].forEach(k => { if (!R.board[k]) R.board[k] = { visit:'', inflow:'' }; });
-  if (!R.direction_ops && R.direction) R.direction_ops = R.direction;
 
   const f = data.funnel;
   const totalReach   = parseFloat(f.total_reach && f.total_reach.actual) || 0;
@@ -5433,7 +5505,7 @@ async function fbLoadAllLCs() {
       } else if (doc.id.startsWith(pfx)) {
         code = doc.id.slice(pfx.length);
       }
-      if (code) out[code] = d.data;
+      if (code) out[code] = migrateLcData(d.data);
     });
     _mcAllLcs = out;
   } catch (e) {
@@ -5456,7 +5528,7 @@ function mcProgress(d) {
     f(d.direction && d.direction.lc_direction),
     fa('total_reach'), fa('line_registration'), fa('event_attend'),
     fa('af_submit'), fa('pass'), fa('paid'),
-    f(d.reach_overall && (d.reach_overall.overall_perf || d.reach_overall.direction_ops || d.reach_overall.purpose)),
+    f(d.reach_overall && (d.reach_overall.overall_perf || d.reach_overall.direction_ops || d.reach_overall.why)),
     f(d.funnel_handover && d.funnel_handover.calc_method),
     f(d.customer_journey && (d.customer_journey.cvr_keep1 || d.customer_journey.cvr_problem1 || d.customer_journey.cvr_try1)),
     f(d.oc && d.oc.structure_note)
@@ -5921,6 +5993,7 @@ async function fbLoadLC(code, { subscribe } = {}) {
       state.lcs[code] = snap.data().data;
       state.lcs[code].meta = state.lcs[code].meta || {};
       state.lcs[code].meta.lc = code;
+      migrateLcData(state.lcs[code]);
     } else if (!state.lcs[code]) {
       state.lcs[code] = DEFAULT_LC_DATA();
       state.lcs[code].meta.lc = code;
@@ -5937,6 +6010,7 @@ async function fbLoadLC(code, { subscribe } = {}) {
         state.lcs[code] = snap.data().data;
         state.lcs[code].meta = state.lcs[code].meta || {};
         state.lcs[code].meta.lc = code;
+        migrateLcData(state.lcs[code]);
         renderPage();
         _applyingRemote = false;
       }

@@ -1,0 +1,12 @@
+{
+  "name": "recruit-report",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AIESEC Japan Recruitment FR (single-file web app). package.json は開発時のスモークテスト用のみ。本番(GitHub Pages)はindex.html単体で動作。",
+  "scripts": {
+    "test": "node smoke-test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}
