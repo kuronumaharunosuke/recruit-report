@@ -1897,8 +1897,7 @@ const DEFAULT_LC_DATA = () => ({
   meta: {
     lc: 'KO',
     fr_status: '記入中',
-    schemaVersion: CURRENT_SCHEMA_VERSION, // データ構造のバージョン（移行判定に使用）
-    completion: {} // page_key -> bool
+    schemaVersion: CURRENT_SCHEMA_VERSION // データ構造のバージョン（移行判定に使用）
   },
   overview: {
     target_total: '',
@@ -2227,23 +2226,30 @@ function loadState() {
 
 let saveTimer = null;
 function saveState() {
+  // ローカル編集タイムスタンプと未同期フラグを刻む（Firestoreとの競合検知に使用）
+  if (state.lcs && state.lcs[state.currentLC]) {
+    const m = state.lcs[state.currentLC].meta = state.lcs[state.currentLC].meta || {};
+    m.localUpdatedAt = Date.now();
+    m.hasUnsyncedChanges = true;
+  }
   const indicator = document.getElementById('saveIndicator');
   indicator.classList.add('saving');
   indicator.textContent = '保存中…';
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
+  // localStorageには即時同期書き込み（350msデバウンスを撤去・タブクローズ時の消失を防ぐ）
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
+    // インジケータは少し「保存中」を見せてから切替（演出のみ・データには無関係）
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
       indicator.classList.remove('saving');
-      // Firebase接続中はクラウド保存表示、未設定時はローカル表示
       indicator.textContent = (typeof fb !== 'undefined' && fb.ready && state.identity && state.identity.email)
         ? 'クラウド同期中…' : 'ローカル保存済み';
-    } catch (e) {
-      indicator.textContent = '保存エラー';
-      console.error(e);
-    }
-  }, 350);
-  // Firestoreへ反映（権限はクライアント＋Rules両方で制御）
+    }, 250);
+  } catch (e) {
+    indicator.textContent = '保存エラー';
+    console.error(e);
+  }
+  // Firestoreへの反映（権限はクライアント＋Rules両方で制御）
   if (typeof fbQueueSave === 'function') fbQueueSave();
 }
 
@@ -2683,6 +2689,27 @@ window.addEventListener('hashchange', () => {
   }
 });
 
+// タブクローズ/リフレッシュ時の保護: 保留中の保存を強制発火し、未同期なら離脱警告
+window.addEventListener('beforeunload', (e) => {
+  // 1) 保存インジケータ用の遅延タイマーは止めるだけでOK（書き込み自体は即時化済み）
+  clearTimeout(saveTimer);
+  // 2) 念のため最新stateをlocalStorageへ同期書き込み（残存する未保存を救う）
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState())); } catch (_) {}
+  // 3) Firestoreの600msデバウンスを強制発火（ベストエフォート・非同期）
+  if (typeof _fbWriteTimer !== 'undefined' && _fbWriteTimer) {
+    clearTimeout(_fbWriteTimer);
+    _fbWriteTimer = null;
+    try { if (typeof fbFlushSave === 'function') fbFlushSave(); } catch (_) {}
+  }
+  // 4) 未同期の変更が残っていれば離脱警告を出す
+  const lc = state.lcs && state.lcs[state.currentLC];
+  if (lc && lc.meta && lc.meta.hasUnsyncedChanges) {
+    e.preventDefault();
+    e.returnValue = ''; // 古いChromeの仕様
+    return '';
+  }
+});
+
 // 各カードのヘッダーに保存ボタンを必ず付ける
 function injectCardSaveButtons(root) {
   root.querySelectorAll('.card-head').forEach(head => {
@@ -2718,23 +2745,23 @@ PAGE_RENDERERS.overview = (root, data) => {
         <div class="stat-grid">
           <div class="stat-tile">
             <div class="stat-label">採用目標 (KGI)</div>
-            <div class="stat-value">${f.paid.plan || '–'}</div>
+            <div class="stat-value">${escapeHtml(f.paid.plan || '–')}</div>
             <div class="stat-sub">入金者数</div>
           </div>
           <div class="stat-tile ${achievement != null && achievement >= 100 ? 'green' : achievement != null && achievement >= 80 ? 'yellow' : achievement != null ? 'red' : ''}">
             <div class="stat-label">実績</div>
-            <div class="stat-value">${f.paid.actual || '–'}</div>
+            <div class="stat-value">${escapeHtml(f.paid.actual || '–')}</div>
             <div class="stat-sub">${achievement != null ? '達成率 ' + achievement.toFixed(1) + '%' : '入金者数'}</div>
           </div>
           <div class="stat-tile">
             <div class="stat-label">説明会参加</div>
-            <div class="stat-value">${f.event_attend.actual || '–'}</div>
-            <div class="stat-sub">目標 ${f.event_attend.plan || '–'}</div>
+            <div class="stat-value">${escapeHtml(f.event_attend.actual || '–')}</div>
+            <div class="stat-sub">目標 ${escapeHtml(f.event_attend.plan || '–')}</div>
           </div>
           <div class="stat-tile">
             <div class="stat-label">AF提出</div>
-            <div class="stat-value">${f.af_submit.actual || '–'}</div>
-            <div class="stat-sub">目標 ${f.af_submit.plan || '–'}</div>
+            <div class="stat-value">${escapeHtml(f.af_submit.actual || '–')}</div>
+            <div class="stat-sub">目標 ${escapeHtml(f.af_submit.plan || '–')}</div>
           </div>
         </div>
         <div id="ajTotalBox" style="margin-top:14px"></div>
@@ -2852,7 +2879,11 @@ PAGE_RENDERERS.overview = (root, data) => {
     { page: 'reach_sns', label: 'SNS', test: () => data.reach_sns_ig.role || data.reach_sns_x.role },
     { page: 'reach_flyer', label: 'ビラ', test: () => data.reach_flyer.role },
     { page: 'reach_circle', label: 'サークル紹介', test: () => data.reach_circle.role },
-    { page: 'reach_paid_class', label: '有料広告/授業', test: () => data.reach_paid_class.paid_ad_used === 'yes' || data.reach_paid_class.class_speak_used === 'yes' },
+    { page: 'reach_paid_class', label: '有料広告/授業', test: () => {
+      const r = data.reach_paid_class;
+      return (r.paid_ad_on !== false && r.paid_ad_used === 'yes')
+          || (r.class_speak_on !== false && r.class_speak_used === 'yes');
+    } },
     { page: 'line_bliss', label: 'LINE/BLISS', test: () => data.line_bliss.line_purpose },
     { page: 'ldr_event', label: 'LC説明会', test: () => data.ldr_event.events.length > 0 },
     { page: 'ixp_event', label: 'GV説明会', test: () => data.ixp_event.events.length > 0 },
@@ -5230,54 +5261,6 @@ PAGE_RENDERERS.post_event_com = (root, data) => {
 };
 
 /* =========================================================
-   PAGE: LCmkt → LCmem (NEW)
-   ========================================================= */
-PAGE_RENDERERS.lcmkt_to_lcmem = (root, data) => {
-  root.innerHTML = `
-    ${pageHead('4. Lead / 4.4', 'LCmkt → LCmem 引き継ぎ', 'Marketing側からMember側への引き継ぎがスムーズに行えたかを検証します。採用が終わってから次のLCmemが立ち上がるまでの動線をここで言語化します。', PAGE_REFS.lcmkt_to_lcmem)}
-
-    <div class="card">
-      <div class="card-head"><h2>引き継ぎのタイミング・方法</h2><div class="sub">Process</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>引き継ぎを開始したタイミング</label>
-          <input type="text" id="lm_timing" placeholder="例: 5月末のRecruit Call後 / 入金完了から1週間以内 など" />
-        </div>
-        <div class="field">
-          <label>引き継ぎの方法 (媒体・場)</label>
-          <textarea id="lm_method" placeholder="例: 引き継ぎMtg2回 + 個別1on1 + Notionドキュメント"></textarea>
-        </div>
-        <div class="field">
-          <label>どんな情報を渡したか</label>
-          <textarea id="lm_info" class="tall" placeholder="例: 新入生1人ずつのcom履歴、温度感、配置希望、本人の課題感など"></textarea>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>振り返り</h2><div class="sub">Eval</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>発生した課題・引き継ぎが詰まったポイント</label>
-          <textarea id="lm_issues" class="tall"></textarea>
-        </div>
-        <div class="gm-grid">
-          <div class="gm-cell good"><div class="gm-label">Good</div><textarea id="lm_good"></textarea></div>
-          <div class="gm-cell more"><div class="gm-label">More</div><textarea id="lm_more"></textarea></div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  bindInput('#lm_timing', () => data.lcmkt_to_lcmem.handoff_timing, v => data.lcmkt_to_lcmem.handoff_timing = v);
-  bindInput('#lm_method', () => data.lcmkt_to_lcmem.handoff_method, v => data.lcmkt_to_lcmem.handoff_method = v);
-  bindInput('#lm_info', () => data.lcmkt_to_lcmem.info_transferred, v => data.lcmkt_to_lcmem.info_transferred = v);
-  bindInput('#lm_issues', () => data.lcmkt_to_lcmem.issues, v => data.lcmkt_to_lcmem.issues = v);
-  bindInput('#lm_good', () => data.lcmkt_to_lcmem.good, v => data.lcmkt_to_lcmem.good = v);
-  bindInput('#lm_more', () => data.lcmkt_to_lcmem.more, v => data.lcmkt_to_lcmem.more = v);
-};
-
-/* =========================================================
    PAGE: SELECTION (LDR入会)
    ========================================================= */
 PAGE_RENDERERS.selection = (root, data) => {
@@ -5455,116 +5438,6 @@ PAGE_RENDERERS.ixp_selection = (root, data) => {
   bindInput('#ix_signup_reason', () => s.signup_eval_reason, v => s.signup_eval_reason = v);
   bindInput('#ix_handover', () => s.handover, v => s.handover = v);
 };
-
-/* =========================================================
-   PAGE: MEMBER SURVEY (NEW)
-   ========================================================= */
-PAGE_RENDERERS.member_survey = (root, data) => {
-  const s = data.member_survey;
-  root.innerHTML = `
-    ${pageHead('6. 振り返り / 6.1', 'メンバーアンケート結果', 'メンバーに一律で取ったアンケートの結果を集約します。MC→LCの働きかけへのFB、LCmkt→LCmemのスムーズさへのFBなどをまとめます。', PAGE_REFS.member_survey)}
-
-    <div class="card">
-      <div class="card-head"><h2>回答状況</h2><div class="sub">Response</div></div>
-      <div class="card-body">
-        <div class="field-row cols-2">
-          <div class="field"><label>回答数</label><input type="number" id="ms_count" /></div>
-          <div class="field"><label>回答率 (%)</label><input type="number" id="ms_rate" /></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>主な所見</h2><div class="sub">Findings</div></div>
-      <div class="card-body">
-        <div class="field">
-          <label>MC → LC への働きかけに関するFB</label>
-          <textarea id="ms_mc_fb" class="tall" placeholder="MC on LC、Recruit Callなどに対するメンバーからのFB"></textarea>
-        </div>
-        <div class="field">
-          <label>LCmkt → LCmem の引き継ぎに関するFB</label>
-          <textarea id="ms_lcmkt_fb" class="tall"></textarea>
-        </div>
-        <div class="field">
-          <label>その他の発見・気になった声</label>
-          <textarea id="ms_other" class="tall"></textarea>
-        </div>
-        <div class="field">
-          <label>次年度に向けた具体的なアクション</label>
-          <textarea id="ms_action" class="tall"></textarea>
-        </div>
-      </div>
-    </div>
-  `;
-
-  bindInput('#ms_count', () => s.response_count, v => s.response_count = v);
-  bindInput('#ms_rate', () => s.response_rate, v => s.response_rate = v);
-  bindInput('#ms_mc_fb', () => s.mc_to_lc_fb, v => s.mc_to_lc_fb = v);
-  bindInput('#ms_lcmkt_fb', () => s.lcmkt_to_lcmem_fb, v => s.lcmkt_to_lcmem_fb = v);
-  bindInput('#ms_other', () => s.other_findings, v => s.other_findings = v);
-  bindInput('#ms_action', () => s.actions_for_next, v => s.actions_for_next = v);
-};
-
-/* =========================================================
-   PAGE: EVALUATION
-   ========================================================= */
-PAGE_RENDERERS.evaluation = (root, data) => {
-  root.innerHTML = `
-    ${pageHead('6. 振り返り / 6.2', 'Evaluation', '上のタブで拾いきれなかった申し送り、トラブル、金銭、大学対応など、その他何でも残します。', PAGE_REFS.evaluation)}
-
-    <div class="card">
-      <div class="card-head">
-        <h2>申し送り項目</h2>
-        <button class="btn primary sm" id="addEval">＋ 項目を追加</button>
-      </div>
-      <div class="card-body" id="evalBox"></div>
-    </div>
-  `;
-
-  document.getElementById('addEval').onclick = () => {
-    data.evaluation.items.push({ topic: '', summary: '', note: '' });
-    saveState();
-    renderEvalBox(data);
-  };
-  renderEvalBox(data);
-};
-
-function renderEvalBox(data) {
-  const box = document.getElementById('evalBox');
-  if (!data.evaluation.items.length) {
-    box.innerHTML = `<div class="empty"><h3>項目がまだありません</h3><p>例: トラブル / 金銭 / 大学対応 など</p></div>`;
-    return;
-  }
-  box.innerHTML = `
-    <table class="data">
-      <thead><tr><th style="width:200px">内容</th><th>概要</th><th style="width:200px">備考</th><th style="width:36px"></th></tr></thead>
-      <tbody>
-        ${data.evaluation.items.map((e, i) => `
-          <tr data-i="${i}">
-            <td><input type="text" data-k="topic" value="${escapeHtml(e.topic)}" /></td>
-            <td><textarea data-k="summary">${escapeHtml(e.summary)}</textarea></td>
-            <td><input type="text" data-k="note" value="${escapeHtml(e.note)}" /></td>
-            <td><button class="row-delete" data-del="${i}">×</button></td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-  box.querySelectorAll('input,textarea').forEach(el => {
-    el.oninput = () => {
-      const i = parseInt(el.closest('tr').dataset.i);
-      data.evaluation.items[i][el.dataset.k] = el.value;
-      saveState();
-    };
-  });
-  box.querySelectorAll('[data-del]').forEach(b => {
-    b.onclick = () => {
-      data.evaluation.items.splice(parseInt(b.dataset.del), 1);
-      saveState();
-      renderEvalBox(data);
-    };
-  });
-}
 
 /* =========================================================
    PAGE: RESOURCES (Reference URL registration)
@@ -6169,6 +6042,7 @@ const FS = {
 
 let _fbUnsub = { catalog: null, viewLc: null };
 let _fbWriteTimer = null;
+let _fbWriteMaxTimer = null;   // 連続入力時にデバウンスがflushを永久に遅らせるのを防ぐ最大待機タイマー
 let _applyingRemote = false;   // リモート反映中の保存ループ防止
 
 // 現在表示中LCを自分が編集できるか（FRデータ本体の編集可否）
@@ -6194,11 +6068,24 @@ async function fbLoadGlobalCatalog() {
 async function fbLoadLC(code, { subscribe } = {}) {
   try {
     const snap = await FS.lcRef(code).get();
+    // ローカルに未同期の編集が残っている場合は Firestore で上書きしない
+    // （タブを早く閉じて 600ms デバウンスが間に合わなかった等のケースの保護）
+    const localHasUnsynced =
+      state.lcs[code] && state.lcs[code].meta && state.lcs[code].meta.hasUnsyncedChanges === true;
+
     if (snap.exists && snap.data().data) {
-      state.lcs[code] = snap.data().data;
-      state.lcs[code].meta = state.lcs[code].meta || {};
-      state.lcs[code].meta.lc = code;
-      migrateLcData(state.lcs[code]);
+      if (localHasUnsynced && canEditCurrentLC()) {
+        console.warn('[fbLoadLC] ローカルに未同期の変更があるため上書きをスキップ・push up します:', code);
+        // 既存のstate.lcs[code]を尊重し、Firestoreへ反映キューを積む
+        if (typeof fbQueueSave === 'function') fbQueueSave();
+      } else {
+        state.lcs[code] = snap.data().data;
+        state.lcs[code].meta = state.lcs[code].meta || {};
+        state.lcs[code].meta.lc = code;
+        // Firestoreから読んだ時点では未同期フラグはfalseに揃える
+        state.lcs[code].meta.hasUnsyncedChanges = false;
+        migrateLcData(state.lcs[code]);
+      }
     } else if (!state.lcs[code]) {
       state.lcs[code] = DEFAULT_LC_DATA();
       state.lcs[code].meta.lc = code;
@@ -6215,6 +6102,7 @@ async function fbLoadLC(code, { subscribe } = {}) {
         state.lcs[code] = snap.data().data;
         state.lcs[code].meta = state.lcs[code].meta || {};
         state.lcs[code].meta.lc = code;
+        state.lcs[code].meta.hasUnsyncedChanges = false;
         migrateLcData(state.lcs[code]);
         renderPage();
         _applyingRemote = false;
@@ -6228,19 +6116,40 @@ function fbQueueSave() {
   if (_applyingRemote) return;
   clearTimeout(_fbWriteTimer);
   _fbWriteTimer = setTimeout(fbFlushSave, 600);
+  // 連続入力でデバウンスが永久にリセットされてもFirestoreに反映が届くよう、最大5秒で強制発火
+  if (!_fbWriteMaxTimer) {
+    _fbWriteMaxTimer = setTimeout(() => {
+      _fbWriteMaxTimer = null;
+      clearTimeout(_fbWriteTimer);
+      _fbWriteTimer = null;
+      fbFlushSave();
+    }, 5000);
+  }
 }
 async function fbFlushSave() {
   if (!fb.ready || !state.identity) return;
+  // 最大待機タイマーをクリア（flushが発火したので役目終了）
+  if (_fbWriteMaxTimer) { clearTimeout(_fbWriteMaxTimer); _fbWriteMaxTimer = null; }
   const ind = document.getElementById('saveIndicator');
   const email = state.identity.email || '';
   const tasks = [];
-  // 自分の編集権限があるLCのみFRデータを書き込む（Rulesでもサーバー側強制）
-  if (canEditCurrentLC() && state.lcs[state.currentLC]) {
-    tasks.push(FS.lcRef(state.currentLC).set({
-      data: state.lcs[state.currentLC],
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedBy: email
-    }, { merge: true }));
+  const savedCodes = [];
+  // 未同期の変更があるLCを全てFirestoreに反映（currentLC固定だとLC切替時に取りこぼす）
+  if (state.lcs) {
+    Object.keys(state.lcs).forEach(code => {
+      const lc = state.lcs[code];
+      if (!lc || !lc.meta || !lc.meta.hasUnsyncedChanges) return;
+      // 編集権限チェック: MCは全LC可、LCは自LCのみ
+      const canEditThis = isMC() ||
+        (state.identity && state.identity.role === 'LC' && state.identity.lc === code);
+      if (!canEditThis) return;
+      tasks.push(FS.lcRef(code).set({
+        data: lc,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: email
+      }, { merge: true }));
+      savedCodes.push(code);
+    });
   }
   // 標準カタログはMCのみ
   if (isMC()) {
@@ -6252,6 +6161,17 @@ async function fbFlushSave() {
   }
   try {
     await Promise.all(tasks);
+    // 保存に成功した各LCで未同期フラグを下げる
+    savedCodes.forEach(code => {
+      const lc = state.lcs[code];
+      if (lc && lc.meta) {
+        lc.meta.hasUnsyncedChanges = false;
+        lc.meta.lastSyncedAt = Date.now();
+      }
+    });
+    if (savedCodes.length) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState())); } catch (_) {}
+    }
     if (ind) { ind.classList.remove('saving'); ind.textContent = 'クラウド保存済み'; }
   } catch (e) {
     console.error('fb save', e);
@@ -6295,7 +6215,19 @@ async function doGoogleSignIn() {
 }
 
 async function handleAuthState(user) {
-  if (!user) { loginShowStep('loginStepAuth'); return; }
+  if (!user) {
+    // ログアウト時はセッション残骸を片付ける（共有PCで前ユーザーのデータが見えるのを防ぐ）
+    try { if (_fbUnsub.catalog) { _fbUnsub.catalog(); _fbUnsub.catalog = null; } } catch (_) {}
+    try { if (_fbUnsub.viewLc) { _fbUnsub.viewLc(); _fbUnsub.viewLc = null; } } catch (_) {}
+    clearTimeout(_fbWriteTimer); _fbWriteTimer = null;
+    if (_fbWriteMaxTimer) { clearTimeout(_fbWriteMaxTimer); _fbWriteMaxTimer = null; }
+    state.identity = null;
+    state.lcs = {};
+    state.archive = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+    loginShowStep('loginStepAuth');
+    return;
+  }
   const email = (user.email || '').toLowerCase();
   if (!email.endsWith('@' + ALLOWED_EMAIL_DOMAIN)) {
     await fb.auth.signOut();
